@@ -13,8 +13,8 @@ namespace core {
  * operations in constant time when utilising a deque.
  */
 struct Lane {
-	size_t max_capacity;   // Each lane can have a maximum capacity.
-	size_t speed_limit;    // Each lane can have a maximum speed limit.
+	std::size_t max_capacity;   // Each lane can have a maximum capacity.
+	std::size_t speed_limit;    // Each lane can have a maximum speed limit.
 	std::deque<int> cells; // A lane consists of a series of cells.
 };
 
