@@ -16,8 +16,7 @@ protected:
 	 * @description Takes the state, learns from its mistakes, then changes itself.
 	 * @param state the current state of the simulator.
 	 */
-	void action(State & const state) {
-	}	
+	void action(State & const state);
 };
 
 } // End of namespace ml.

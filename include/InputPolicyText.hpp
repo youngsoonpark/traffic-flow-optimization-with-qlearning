@@ -11,7 +11,7 @@ protected:
 	/**
 	 * @param state the state of the simulation
 	 */
-	void parse(State & const state) {}
+	void parse(State & const state);
 };
 
 } // End of namespace io.
