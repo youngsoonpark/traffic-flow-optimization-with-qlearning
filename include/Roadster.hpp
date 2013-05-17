@@ -46,7 +46,7 @@ class Roadster: private InputPolicy, private GraphicsPolicy, private SimulationP
 		 * Run calls, update then draw, update blocks for the ticks specified in state.
 		 */
 		void run(void) {
-			while (true) {
+			while (m_state.isRunning()) {
 				action(m_state); // Learner is given control to modify the state.
 				update(m_state); // Update the current state.
 				draw(m_state);   // Draw the updated state.

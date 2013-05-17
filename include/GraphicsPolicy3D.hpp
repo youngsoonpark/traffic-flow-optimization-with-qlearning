@@ -1,10 +1,14 @@
 #ifndef ROAD_GRAPHICS_POLICY_3D_H_
 #define ROAD_GRAPHICS_POLICY_3D_H_
 
+#include <iostream>
+#include <irrlicht.h>
+
 namespace road {
 
-namespace core { class State;} // Prototype of state class.
-namespace graphics{
+namespace core { class State; } // Prototype of state class.
+
+namespace graphics {
 
 
 /**
@@ -14,8 +18,14 @@ namespace graphics{
  * modify the state.
  */
 class GraphicsPolicy3D {
+	irr::IrrlichtDevice* m_device;
+	irr::video::IVideoDriver* m_driver;
+	irr::scene::ISceneManager* m_smgr;
+	irr::gui::IGUIEnvironment* m_gui;
+
 	protected:
-		void draw(const core::State& state) const;
+		GraphicsPolicy3D();
+		void draw(core::State& state);
 };
 
 } // End of namespace out.

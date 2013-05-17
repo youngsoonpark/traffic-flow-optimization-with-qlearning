@@ -1,13 +1,19 @@
-#ifndef ROAD_SIM_STATE_H_
-#define ROAD_SIM_STATE_H_
+#ifndef ROAD_CORE_STATE_H_
+#define ROAD_CORE_STATE_H_
 
 namespace road {
 namespace core {
 
-struct State {
+class State {
+	bool m_running;
+	public:
+		State() : m_running(true) {}
+		~State() {}
+		bool isRunning() { return m_running; }
+		void setRunning(bool running) { m_running = running; }
 };
 
 } // End of namespace core.
 } // End of namespace road.
 
-#endif  // ROAD_SIM_STATE_H_
+#endif  // ROAD_CORE_STATE_H_

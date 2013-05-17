@@ -1,10 +1,10 @@
 
 CPP=g++
-INCLUDES=-I../include -I/usr/local/include 
+INCLUDES=-I../include -I/usr/local/include  -I/usr/include/irrlicht
 
 CFLAGS = ${INCLUDES} -g -Wall -O2 -pipe
 LDFLAGS = -L/usr/local/lib
-LDLIBS = 
+LDLIBS = -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -ljpeg -lpng 
 
 SRC := $(shell echo *.cpp)
 OBJS := $(addprefix obj/, $(SRC:.cpp=.o))
