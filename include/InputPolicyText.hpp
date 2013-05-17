@@ -1,7 +1,11 @@
+
+
 namespace road {
+
+namespace core {class State;} // Prototype of the state.
+
 namespace io {
 
-class State; // Prototype of the state.
 
 /**
  * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
@@ -11,7 +15,7 @@ protected:
 	/**
 	 * @param state the state of the simulation
 	 */
-	void parse(State & const state);
+	void parse(core::State& state);
 };
 
 } // End of namespace io.

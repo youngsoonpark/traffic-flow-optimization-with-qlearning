@@ -3,7 +3,7 @@
 namespace road {
 namespace sim {
 
-void SimulationPolicyCellular::update(State & const state) {
+void SimulationPolicyCellular::update(core::State& state) {
 }
 
 } // End of namespace sim.

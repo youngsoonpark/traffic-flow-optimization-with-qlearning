@@ -10,10 +10,10 @@ SRC := $(shell echo *.cpp)
 OBJS := $(addprefix obj/, $(SRC:.cpp=.o))
 
 all: ${OBJS}
-$(CPP) -o ../Roadster ${OBJS} ${LDFLAGS} ${LDLIBS}
+	$(CPP) -o ../Roadster ${OBJS} ${LDFLAGS} ${LDLIBS}
 
 obj/%.o: %.cpp
-${CPP} -c -o $@ ${CFLAGS} $<
+	${CPP} -c -o $@ ${CFLAGS} $<
 
 clean:
-rm obj/*.o
+	rm obj/*.o

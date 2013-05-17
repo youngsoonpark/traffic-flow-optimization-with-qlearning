@@ -3,7 +3,7 @@
 namespace road {
 namespace graphics{
 
-void GraphicsPolicy3D::draw(const State& state) const {
+void GraphicsPolicy3D::draw(const core::State& state) const {
 }
 
 } // End of namespace graphics.

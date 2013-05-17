@@ -2,9 +2,11 @@
 #define ROAD_SIM_SIMULATION_POLICY_CELLULAR_H_
 
 namespace road {
+
+namespace core { class State; }
+
 namespace sim {
 
-class State;
 
 /**
  * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
@@ -13,7 +15,7 @@ class State;
  */
 class SimulationPolicyCellular {
 	protected:
-		void update(State & const state);
+		void update(core::State& state);
 };
 
 } // End of namespace sim.

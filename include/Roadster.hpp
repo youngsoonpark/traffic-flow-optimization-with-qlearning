@@ -1,13 +1,15 @@
 #ifndef ROAD_ROADSTER_H_
 #define ROAD_ROADSTER_H_
 
+#include  <string>
+
 // Import the core state.
 #include "State.hpp"
 // Include the valid policies.
-#include "OutputPolicy3D.hpp"
+#include "GraphicsPolicy3D.hpp"
 #include "InputPolicyText.hpp"
 #include "LearnerPolicyRL.hpp"
-#include "SimulatorPolicyCellular.hpp"
+#include "SimulationPolicyCellular.hpp"
 #include "SimulationPolicyNaive.hpp"
 
 namespace road {
@@ -25,7 +27,7 @@ class Roadster: private InputPolicy, private GraphicsPolicy, private SimulationP
 	using GraphicsPolicy::draw;     // Draw the simulation to output.
 	using SimulationPolicy::update; // Create an update tick, using the simulation policy.
 	using LearnerPolicy::action;    // Gets fed back, the previous state, learns from that then decides an action.
-	sim::State m_state;             // Defines the actual state of the simulator.
+	core::State m_state;             // Defines the actual state of the simulator.
 
 	public:
 		/**
@@ -49,10 +51,12 @@ class Roadster: private InputPolicy, private GraphicsPolicy, private SimulationP
 			draw(m_state);   // Draw the updated state.
 		}
 };
-} // End of road namespac.
 
 // Some useful typedefs, that build some standard approaches we want to utilise.
-typedef Roadster<InputPolicyText, GraphicsPolicy3D, SimulationPolicyNaive, LearnerPolicyRL> RoadsterNaive;
-typedef Roadster<InputPolicyText, GraphicsPolicy3D, SimulationPolicyCellular, LearnerPolicyRL> RoadsterCellular;
+typedef Roadster<io::InputPolicyText, graphics::GraphicsPolicy3D, sim::SimulationPolicyNaive, ml::LearnerPolicyRL> RoadsterNaive;
+typedef Roadster<io::InputPolicyText, graphics::GraphicsPolicy3D, sim::SimulationPolicyCellular, ml::LearnerPolicyRL> RoadsterCellular;
+
+} // End of road namespace
+
 
 #endif  // ROAD_ROADSTER_H_

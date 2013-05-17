@@ -2,9 +2,10 @@
 #define ROAD_GRAPHICS_POLICY_3D_H_
 
 namespace road {
+
+namespace core { class State;} // Prototype of state class.
 namespace graphics{
 
-class State; // Prototype of state class.
 
 /**
  * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
@@ -14,7 +15,7 @@ class State; // Prototype of state class.
  */
 class GraphicsPolicy3D {
 	protected:
-		void draw(const State& state) const;
+		void draw(const core::State& state) const;
 };
 
 } // End of namespace out.

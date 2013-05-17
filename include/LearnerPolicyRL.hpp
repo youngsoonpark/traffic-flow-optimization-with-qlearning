@@ -2,9 +2,12 @@
 #define ROAD_ML_LEARNER_POLICY_RL_H_
 
 namespace road {
+
+// State prototype
+namespace core {class State;}
+
 namespace ml {
 
-class State; // Prototype of state.
 
 /**
  * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
@@ -16,7 +19,7 @@ protected:
 	 * @description Takes the state, learns from its mistakes, then changes itself.
 	 * @param state the current state of the simulator.
 	 */
-	void action(State & const state);
+	void action(core::State& state);
 };
 
 } // End of namespace ml.
