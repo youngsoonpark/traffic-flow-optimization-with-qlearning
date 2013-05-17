@@ -1,6 +1,9 @@
 #ifndef ROAD_CORE_STATE_H_
 #define ROAD_CORE_STATE_H_
 
+#include "Lane.hpp"
+#include "Intersection.hpp"
+
 namespace road {
 namespace core {
 
