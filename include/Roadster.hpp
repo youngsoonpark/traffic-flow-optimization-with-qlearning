@@ -33,7 +33,7 @@ class Roadster: private InputPolicy, private GraphicsPolicy, private SimulationP
 		/**
 		 * Constructor requires a filepath to generate a state.
 		 */
-		Roadster(const std::string& filepath) {
+		Roadster(const std::string& filepath) : m_state() {
 			parse(m_state);  // Parse the configuration file, return a state.
 		}
 
@@ -46,9 +46,11 @@ class Roadster: private InputPolicy, private GraphicsPolicy, private SimulationP
 		 * Run calls, update then draw, update blocks for the ticks specified in state.
 		 */
 		void run(void) {
-			action(m_state); // Learner is given control to modify the state.
-			update(m_state); // Update the current state.
-			draw(m_state);   // Draw the updated state.
+			while (true) {
+				action(m_state); // Learner is given control to modify the state.
+				update(m_state); // Update the current state.
+				draw(m_state);   // Draw the updated state.
+			}
 		}
 };
 
