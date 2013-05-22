@@ -1,6 +1,6 @@
 #include "GraphicsPolicy3D.hpp"
 #include "State.hpp"
-
+#include "RTSCamera.hpp"
 #include <sstream>
 
 using namespace irr;
@@ -23,13 +23,15 @@ GraphicsPolicy3D::GraphicsPolicy3D() {
 
 	// Build the basic scene
 	// Calibrate the other stuff.
-	// Add a camera to the scene
-	m_smgr->addCameraSceneNodeFPS();
+   	RTSCamera* camera = new RTSCamera(m_device, m_smgr->getRootSceneNode(), m_smgr,-1,100.0f,10.0f,10.0f);
+   	camera->setPosition(vector3df(0,9,-14)); 
+   	camera->setTranslateSpeed(5);//speed of cam movement
+   	camera->setRotationSpeed(50);//speed of cam rotation	
 	// Hide the mouse
-	m_device->getCursorControl()->setVisible(false);
+	//m_device->getCursorControl()->setVisible(false);
 	// Add a simple skydome
 	m_smgr->addSkyDomeSceneNode(m_driver->getTexture("data/media/skydome.jpg"), 16, 8, 0.95f, 2.0f);
-
+	
 	// Add cars
 	IAnimatedMesh* mesh;
 	ISceneNode* node;
