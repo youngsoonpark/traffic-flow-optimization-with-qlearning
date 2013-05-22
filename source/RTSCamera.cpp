@@ -455,7 +455,7 @@ void RTSCamera::animate()
          oldTarget = translate; 
       } 
    } 
-   else if (isKeyDown(KEY_KEY_W) || isKeyDown(KEY_UP) && !zooming) 
+   else if ((isKeyDown(KEY_KEY_W) || isKeyDown(KEY_UP)) && !zooming) 
    { 
       if (!translating) 
          translating = true; 
@@ -470,7 +470,7 @@ void RTSCamera::animate()
          updateAbsolutePosition(); 
       } 
    } 
-   else if (isKeyDown(KEY_KEY_S) || isKeyDown(KEY_DOWN) && !zooming) 
+   else if ((isKeyDown(KEY_KEY_S) || isKeyDown(KEY_DOWN)) && !zooming) 
    { 
       if (!translating) 
          translating = true; 
@@ -485,7 +485,7 @@ void RTSCamera::animate()
          updateAbsolutePosition(); 
       } 
    } 
-   else if (isKeyDown(KEY_KEY_A) || isKeyDown(KEY_LEFT) && !zooming) 
+   else if ((isKeyDown(KEY_KEY_A) || isKeyDown(KEY_LEFT)) && !zooming) 
    { 
       if (!translating) 
          translating = true; 
@@ -501,7 +501,7 @@ void RTSCamera::animate()
          updateAbsolutePosition(); 
       } 
    } 
-   else if (isKeyDown(KEY_KEY_D) || isKeyDown(KEY_RIGHT) && !zooming) 
+   else if ((isKeyDown(KEY_KEY_D) || isKeyDown(KEY_RIGHT)) && !zooming) 
    { 
       if (!translating) 
          translating = true; 

@@ -1,6 +1,8 @@
 #include "GraphicsPolicy3D.hpp"
 #include "State.hpp"
+
 #include "RTSCamera.hpp"
+
 #include <sstream>
 
 using namespace irr;
@@ -15,7 +17,11 @@ namespace graphics{
 
 
 GraphicsPolicy3D::GraphicsPolicy3D() {
-	m_device = createDevice(EDT_OPENGL, dimension2d<u32>(1024, 768), 16, false, false, false, 0);
+	// Retrieve resolution
+	IrrlichtDevice* null_device = createDevice(EDT_NULL);
+	dimension2d<u32> resolution = null_device->getVideoModeList()->getDesktopResolution();
+
+	m_device = createDevice(EDT_OPENGL, resolution, 16, false, false, false, 0);
 	m_device->setWindowCaption(L"Roadster Simulation");
 	m_driver = m_device->getVideoDriver();
 	m_smgr = m_device->getSceneManager();
@@ -25,13 +31,12 @@ GraphicsPolicy3D::GraphicsPolicy3D() {
 	// Calibrate the other stuff.
    	RTSCamera* camera = new RTSCamera(m_device, m_smgr->getRootSceneNode(), m_smgr,-1,100.0f,10.0f,10.0f);
    	camera->setPosition(vector3df(0,9,-14)); 
-   	camera->setTranslateSpeed(5);//speed of cam movement
-   	camera->setRotationSpeed(50);//speed of cam rotation	
-	// Hide the mouse
-	//m_device->getCursorControl()->setVisible(false);
+   	camera->setTranslateSpeed(20);  //speed of cam movement
+   	camera->setRotationSpeed(50);   //speed of cam rotation
+	camera->setFarValue(10000.0f);  // Set the far value.
+
 	// Add a simple skydome
 	m_smgr->addSkyDomeSceneNode(m_driver->getTexture("data/media/skydome.jpg"), 16, 8, 0.95f, 2.0f);
-	
 	// Add cars
 	IAnimatedMesh* mesh;
 	ISceneNode* node;
@@ -54,12 +59,13 @@ GraphicsPolicy3D::GraphicsPolicy3D() {
 	node->setMaterialFlag(EMF_LIGHTING, false);
 	node->setScale(vector3df(100,1, 100));
 
+
 	// Add some water, for fun.
 	mesh = m_smgr->addHillPlaneMesh( "myHill",
 	dimension2d<f32>(20,20),
 	dimension2d<u32>(100,100), 0, 0,
 	dimension2d<f32>(0,0),
-	dimension2d<f32>(10,10));
+	dimension2d<f32>(100,100));
 	
 	node = m_smgr->addWaterSurfaceSceneNode(mesh->getMesh(0), 3.0f, 300.0f, 30.0f);
 	node->setPosition(vector3df(0,-15,0));
@@ -67,6 +73,12 @@ GraphicsPolicy3D::GraphicsPolicy3D() {
 	node->setMaterialTexture(1, m_driver->getTexture("data/media/water.jpg"));
 	node->setMaterialType(video::EMT_REFLECTION_2_LAYER);
 	node->setMaterialFlag(EMF_LIGHTING, false);
+
+	// Add some basic gui.
+
+	IGUITabControl* tabctrl = m_gui->addTabControl(rect<int>(50,50,300, (int)(resolution.Height - 150)), 0, true, true);
+	IGUITab* optTab = tabctrl->addTab(L"Statistics");
+	IGUITab* aboutTab = tabctrl->addTab(L"Settings");
 
 }
 
