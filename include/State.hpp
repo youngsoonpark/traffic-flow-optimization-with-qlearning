@@ -5,7 +5,7 @@ namespace road {
 namespace core {
 
 // Predefine a lane and an intersection.
-class Lane;
+class Road;
 class Intersection;
 
 /**
