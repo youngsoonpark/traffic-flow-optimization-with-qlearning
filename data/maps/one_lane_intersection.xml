@@ -1,0 +1,11 @@
+<roadster>
+	<source id="source-0" x="0"   y="50" />
+	<source id="source-1" x="50"  y="0" />
+	<sink   id="sink-0" x="100" y = "50" />
+	<sink   id="sink-0" x="50"  y="100" />
+	<intersection id="intersection" x="50" y="50" />
+	<road id="road-0" from="source-0" to="intersection-0" />
+	<road id="road-1" from="source-1" to="intersection-0" />
+	<road id="road-2" from="intersection-0" to="sink-0" />
+	<road id="road-3" from="intersection-0" to="sink-1" />
+</roadster>
