@@ -22,6 +22,7 @@ class GraphicsPolicy3D {
 	irr::video::IVideoDriver* m_driver;
 	irr::scene::ISceneManager* m_smgr;
 	irr::gui::IGUIEnvironment* m_gui;
+	irr::IEventReceiver* m_receiver;
 
 	protected:
 		GraphicsPolicy3D();

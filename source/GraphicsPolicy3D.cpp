@@ -16,6 +16,51 @@ namespace road {
 namespace graphics{
 
 
+// Define the context that the receiver can see.
+struct Context {
+	IrrlichtDevice* device;
+};
+
+// Enum to handle custom events
+enum {
+	GUI_ID_FILE_OPEN = 101
+};
+// Define the custom event handler for the graphical user interface.
+class GUIEventReceiver : public IEventReceiver {
+	Context context; // Define the context, that the receiver.
+
+	public:
+	GUIEventReceiver(Context context) : context(context) {}
+
+	virtual bool OnEvent(const SEvent& event) {
+		if (event.EventType == EET_GUI_EVENT) {
+			s32 id = event.GUIEvent.Caller->getID();
+			IGUIEnvironment* gui = context.device->getGUIEnvironment();
+			switch(event.GUIEvent.EventType) {
+				// Case where the user requests a file to be opened.
+				case EGET_BUTTON_CLICKED:
+					switch (id) {
+						// If the open button is clicked.
+						case GUI_ID_FILE_OPEN:
+							gui->addFileOpenDialog(L"Please choose a file.", true, 0, -1);
+							return true;
+						break;
+						default:
+							return false;
+						break;
+					}
+				break;
+				// Default condition.
+				default:
+					return false;
+				break;
+			}
+		}
+		return false;	
+	}
+};
+
+
 GraphicsPolicy3D::GraphicsPolicy3D() {
 	// Retrieve resolution
 	IrrlichtDevice* null_device = createDevice(EDT_NULL);
@@ -74,12 +119,30 @@ GraphicsPolicy3D::GraphicsPolicy3D() {
 	node->setMaterialType(video::EMT_REFLECTION_2_LAYER);
 	node->setMaterialFlag(EMF_LIGHTING, false);
 
-	// Add some basic gui.
 
+	// Set the gui font to be less bad.
+    	IGUISkin* skin = m_gui->getSkin();
+	IGUIFont* font = m_gui->getFont("data/media/fonthaettenschweiler.bmp");
+
+	if (font) {
+          skin->setFont(font);
+	}
+        skin->setFont(m_gui->getBuiltInFont(), EGDF_TOOLTIP);
+
+	// Set up the GUI panel
 	IGUITabControl* tabctrl = m_gui->addTabControl(rect<int>(50,50,300, (int)(resolution.Height - 150)), 0, true, true);
-	IGUITab* optTab = tabctrl->addTab(L"Statistics");
-	IGUITab* aboutTab = tabctrl->addTab(L"Settings");
+	IGUITab* confTab = tabctrl->addTab(L"Configuration");
+	IGUITab* analyticsTab = tabctrl->addTab(L"Analytics");
+	// Add a button.
+	m_gui->addButton(rect<s32>(10,10,100,42), confTab, GUI_ID_FILE_OPEN, L"Open Map", L"Opens a file");
 
+	// Allocate the context.
+	Context context;
+	context.device = m_device;
+
+	// Bind the event receiver to the device.
+	m_receiver = new GUIEventReceiver(context);
+	m_device->setEventReceiver(m_receiver);
 }
 
 void GraphicsPolicy3D::draw(core::State& state) {
