@@ -3,6 +3,7 @@
 
 #include "RTSCamera.hpp"
 
+#include <iostream>
 #include <sstream>
 
 using namespace irr;
@@ -23,12 +24,21 @@ struct Context {
 
 // Enum to handle custom events
 enum {
-	GUI_ID_FILE_OPEN = 101,
-	GUI_ID_TICK_SCROLLBAR,
-	GUI_ID_BUTTON_OPEN_MAP,
-	GUI_ID_BUTTON_OPEN,
-	GUI_ID_BUTTON_SHOW_TOOLBOX,
-	GUI_ID_BUTTON_SHOW_ABOUT
+	GUI_ID_LOAD_MAP = 101,
+	GUI_ID_SAVE_MAP,
+	GUI_ID_QUIT,
+	GUI_ID_ADD_SOURCE,
+	GUI_ID_ADD_SINK,
+	GUI_ID_ADD_INTERSECTION,
+	GUI_ID_ADD_ROAD,
+	GUI_ID_EDITOR_PANEL,
+	GUI_ID_SIMULATOR_STATE,
+	GUI_ID_LEARNER_STATE,
+	GUI_ID_RUN,
+	GUI_ID_PAUSE,
+	GUI_ID_SIMULATION_PANEL,
+	GUI_ID_ABOUT,
+	GUI_ID_LICENSE
 };
 // Define the custom event handler for the graphical user interface.
 class GUIEventReceiver : public IEventReceiver {
@@ -43,21 +53,104 @@ class GUIEventReceiver : public IEventReceiver {
 			IGUIEnvironment* gui = context.device->getGUIEnvironment();
 			switch(event.GUIEvent.EventType) {
 				// Case where the user requests a file to be opened.
+				case EGET_FILE_SELECTED:
+					{
+					IGUIFileOpenDialog* dialog = (IGUIFileOpenDialog*)event.GUIEvent.Caller;
+					std::cout << dialog->getFileName() << std::endl;
+					}
+				break;
+
+				// Used in the tooltip, to quickly load key features.
 				case EGET_BUTTON_CLICKED:
-					switch (id) {
-						// If the open button is clicked.
-						case GUI_ID_FILE_OPEN:
+					switch(id) {
+						// Load in a new map.		
+						case GUI_ID_LOAD_MAP:
 							gui->addFileOpenDialog(L"Please choose a file.", true, 0, -1);
 							return true;
 						break;
+						// Loads the editor panel, that takes the selected element and lets you modify it.
+						case GUI_ID_EDITOR_PANEL:
+							return true;
+						break;
+						// Presents the about menu.
+						case GUI_ID_ABOUT:
+						    {
+						    IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 400), false, L"About Roadster");
+						    gui->addStaticText(L"Roadster is a traffic simulator that utilises machine learning to"
+								         "produce a very efficient traffic light controller. The controller is"
+									 "attempting to minimise the global weighting time of vehicles in the system."
+									 "To achieve this we had to build a fairly realistic traffic simulator that worked"
+									 "on Manhattan style grid like roads."
+									 "Graphics and Simulator by: Benjamin James Wright <bwright@cse.unsw.edu.au",
+									 rect<s32>(10,35,290,290), false, true, window);
+						    }
+						    return true;
+						break;
 						default:
-							return false;
 						break;
 					}
+
 				break;
-				// Default condition.
+
+				case EGET_MENU_ITEM_SELECTED:
+					{	
+					IGUIContextMenu* menu = ((IGUIContextMenu*)event.GUIEvent.Caller);
+					id = menu->getItemCommandId(menu->getSelectedItem());
+					std::cout << id << std::endl;
+					switch (id) {
+						case GUI_ID_LOAD_MAP:
+							gui->addFileOpenDialog(L"Please choose a file.", true, 0, -1);
+							return true;
+						break;
+
+						case GUI_ID_SAVE_MAP:
+						break;	
+
+						case GUI_ID_QUIT:
+						break;	
+
+						case GUI_ID_ADD_SOURCE:
+						break;	
+
+						case GUI_ID_ADD_SINK:
+						break;	
+
+						case GUI_ID_ADD_INTERSECTION:
+						break;	
+
+						case GUI_ID_ADD_ROAD:
+						break;	
+
+						case GUI_ID_EDITOR_PANEL:
+						break;
+
+						case GUI_ID_SIMULATOR_STATE:
+						break;
+
+						case GUI_ID_LEARNER_STATE:
+						break;
+
+						case GUI_ID_RUN:
+						break;
+
+						case GUI_ID_PAUSE:
+						break;
+
+						case GUI_ID_SIMULATION_PANEL:
+						break;
+
+						case GUI_ID_ABOUT:
+						break;
+
+						case GUI_ID_LICENSE:
+						break;
+
+						default:
+						break;
+					}
+				    }
+				break;
 				default:
-					return false;
 				break;
 			}
 		}
@@ -151,45 +244,50 @@ void GraphicsPolicy3D::create_gui() {
         menu->addItem(L"Simulate", -1, true, true);
         menu->addItem(L"Help", -1, true, true);
 
-	// Define the submenus
+	// Define the file submenu.
 	IGUIContextMenu* submenu = menu->getSubMenu(0);
-        submenu->addItem(L"Load Map Configuration.", 1);
-        submenu->addItem(L"Save Map Configuration.", 1);
-        submenu->addItem(L"Load Learner State.", 1);
-        submenu->addItem(L"Save Learner State", 1);
+        submenu->addItem(L"Load Map", GUI_ID_LOAD_MAP);
+        submenu->addItem(L"Save Map", GUI_ID_SAVE_MAP);
         submenu->addSeparator();
-        submenu->addItem(L"Quit", 1);
+        submenu->addItem(L"Quit", GUI_ID_QUIT);
 	
+	// Define the edit submenu.
 	submenu = menu->getSubMenu(1);
-        submenu->addItem(L"Add Source", 1);
-        submenu->addItem(L"Add Sink",   1);
-        submenu->addItem(L"Add Intersection", 1);
-        submenu->addItem(L"Add Road", 1);
+        submenu->addItem(L"Add Source", GUI_ID_ADD_SOURCE);
+        submenu->addItem(L"Add Sink",   GUI_ID_ADD_SINK);
+        submenu->addItem(L"Add Intersection", GUI_ID_ADD_INTERSECTION);
+        submenu->addItem(L"Add Road",         GUI_ID_ADD_ROAD);
         submenu->addSeparator();
-        submenu->addItem(L"Open Editor Panel", 1);
-
+        submenu->addItem(L"Open Editor Panel", GUI_ID_EDITOR_PANEL);
+	
+	// Define the simulation submenu.	
 	submenu = menu->getSubMenu(2);
-        submenu->addItem(L"Simulation State", 1);
-        submenu->addItem(L"Learner State", 1);
+        submenu->addItem(L"Simulation State", GUI_ID_SIMULATOR_STATE);
+        submenu->addItem(L"Learner State",    GUI_ID_LEARNER_STATE);
 
+	// Define the simulation submenu.
 	submenu = menu->getSubMenu(3);
-        submenu->addItem(L"Run", 1);
-        submenu->addItem(L"Pause", 1);
+        submenu->addItem(L"Run", GUI_ID_RUN);
+        submenu->addItem(L"Pause", GUI_ID_PAUSE);
         submenu->addSeparator();
-        submenu->addItem(L"Open Simulation Panel", 1);
+        submenu->addItem(L"Open Simulation Panel", GUI_ID_SIMULATION_PANEL);
 
+	// Define the help submenu.
 	submenu = menu->getSubMenu(4);
-        submenu->addItem(L"About ", 1);
-        submenu->addItem(L"Licence ", 1);
+        submenu->addItem(L"About ", GUI_ID_ABOUT);
+        submenu->addItem(L"Licence ", GUI_ID_LICENSE);
+	
 	
 	// Create the toolbar.
 	IGUIToolBar* bar = m_gui->addToolBar();
         ITexture* image = m_driver->getTexture("data/media/open.png");
-        bar->addButton(GUI_ID_BUTTON_OPEN_MAP, 0, L"Open a model",image, 0, false, true);
+        bar->addButton(GUI_ID_LOAD_MAP, 0, L"Open a model",image, 0, false, true);
+
         image = m_driver->getTexture("data/media/tools.png");
-        bar->addButton(GUI_ID_BUTTON_SHOW_TOOLBOX, 0, L"Open Toolset",image, 0, false, true);
+        bar->addButton(GUI_ID_EDITOR_PANEL, 0, L"Open Toolset",image, 0, false, true);
+
         image = m_driver->getTexture("data/media/help.png");
-        bar->addButton(GUI_ID_BUTTON_SHOW_ABOUT, 0, L"Open Help", image, 0, false, true);
+        bar->addButton(GUI_ID_ABOUT, 0, L"Open Help", image, 0, false, true);
 
 		
 	

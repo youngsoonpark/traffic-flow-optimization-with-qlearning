@@ -521,6 +521,7 @@ void RTSCamera::animate()
    { 
       translating = false; 
 
+      /*
       if (!translating && !zooming && !rotating) 
       { 
 	 //Mouse Coordinates go from 0 to 1 on both axes 
@@ -566,7 +567,7 @@ void RTSCamera::animate()
             setTarget(getTarget() + movevector * translateSpeed); 
             updateAbsolutePosition(); 
          } 
-      } 
+      } */
    } 
 
    //Set Position 
