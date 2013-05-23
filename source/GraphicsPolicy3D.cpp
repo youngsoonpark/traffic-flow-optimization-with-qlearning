@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <math.h>
 
 using namespace irr;
 using namespace irr::core;
@@ -65,6 +66,9 @@ class GUIEventReceiver : public IEventReceiver {
 				col_mgr->getCollisionPoint(ray, context.selector, point, hit_triangle, node);
 				// Print it out.
 				std::cout << point.X <<  point.Y << point.Z << std::endl;
+				point.X = floor(point.X/100)*100 + 50;
+				point.Z = floor(point.Z/100)*100 + 50;
+
 				context.sphere->setPosition(point);
 			}
 		}
