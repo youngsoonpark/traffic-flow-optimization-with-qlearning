@@ -20,6 +20,8 @@ namespace graphics{
 // Define the context that the receiver can see.
 struct Context {
 	IrrlichtDevice* device;
+	ITriangleSelector* selector;
+	ISceneNode* sphere;
 };
 
 // Enum to handle custom events
@@ -48,6 +50,24 @@ class GUIEventReceiver : public IEventReceiver {
 	GUIEventReceiver(Context context) : context(context) {}
 
 	virtual bool OnEvent(const SEvent& event) {
+		if (EET_MOUSE_INPUT_EVENT) {
+			// Cast a ray.
+			if (event.MouseInput.isLeftPressed()) {
+				// Retrieve the collision manager.
+				ISceneCollisionManager* col_mgr = context.device->getSceneManager()->getSceneCollisionManager();
+				// Grab the ray to cast.
+				line3d<f32> ray = col_mgr->getRayFromScreenCoordinates(context.device->getCursorControl()->getPosition());
+				// Define some structures we need.
+				vector3df point;
+				triangle3df hit_triangle;
+				const ISceneNode* node = 0;
+				// Find the hit triangle
+				col_mgr->getCollisionPoint(ray, context.selector, point, hit_triangle, node);
+				// Print it out.
+				std::cout << point.X <<  point.Y << point.Z << std::endl;
+				context.sphere->setPosition(point);
+			}
+		}
 		if (event.EventType == EET_GUI_EVENT) {
 			s32 id = event.GUIEvent.Caller->getID();
 			IGUIEnvironment* gui = context.device->getGUIEnvironment();
@@ -107,6 +127,7 @@ class GUIEventReceiver : public IEventReceiver {
 						break;	
 
 						case GUI_ID_QUIT:
+							context.device->drop();
 						break;	
 
 						case GUI_ID_ADD_SOURCE:
@@ -179,18 +200,18 @@ GraphicsPolicy3D::GraphicsPolicy3D() {
 void GraphicsPolicy3D::create_scene() {
 	 // Build the basic scene
         // Calibrate the other stuff.
-        RTSCamera* camera = new RTSCamera(m_device, m_smgr->getRootSceneNode(), m_smgr,-1,100.0f,10.0f,10.0f);
+        RTSCamera* camera = new RTSCamera(m_device, m_smgr->getRootSceneNode(), m_smgr,-1,100.0f,100.0f,10.0f);
         camera->setTarget(vector3df(0,100,0));
         camera->setPosition(vector3df(0,400,-800));
-        camera->setTranslateSpeed(20);  //speed of cam movement
+        camera->setTranslateSpeed(200);  //speed of cam movement
         camera->setRotationSpeed(50);   //speed of cam rotation
-        camera->setFarValue(10000.0f);  // Set the far value.
+        camera->setFarValue(100000.0f);  // Set the far value.
 
         // Add a simple skydome
         m_smgr->addSkyDomeSceneNode(m_driver->getTexture("data/media/skydome.jpg"), 16, 8, 0.95f, 2.0f);
         // Add cars
         IAnimatedMesh* mesh;
-        ISceneNode* node;
+        IMeshSceneNode* node;
         for (int i = 1; i <= 11; i++) {
                 std::stringstream ss;
                 ss << "data/media/cars/" << i << ".lwo";
@@ -211,21 +232,28 @@ void GraphicsPolicy3D::create_scene() {
 	node->setMaterialFlag(EMF_BILINEAR_FILTER, true);
 	node->setMaterialFlag(EMF_TRILINEAR_FILTER, true);
 	node->setMaterialFlag(EMF_ANTI_ALIASING, true);	
-        node->setScale(vector3df(100,1, 100));
+        node->setScale(vector3df(1000,1, 1000));
+
+	// Add a triangle selector
+	m_selector = m_smgr->createOctreeTriangleSelector(node->getMesh(), node, 128);
+	node->setTriangleSelector(m_selector);
 
 	// Add some water, for fun.
+	/*
         mesh = m_smgr->addHillPlaneMesh( "myHill",
         dimension2d<f32>(20,20),
         dimension2d<u32>(100,100), 0, 0,
         dimension2d<f32>(0,0),
         dimension2d<f32>(100,100));
-
+	
+	
         node = m_smgr->addWaterSurfaceSceneNode(mesh->getMesh(0), 3.0f, 300.0f, 30.0f);
-        node->setPosition(vector3df(0,-15,0));
-        node->setMaterialTexture(0, m_driver->getTexture("data/media/stones.jpg"));
+	node->setMaterialTexture(0, m_driver->getTexture("data/media/stones.jpg"));
         node->setMaterialTexture(1, m_driver->getTexture("data/media/water.jpg"));
         node->setMaterialType(video::EMT_REFLECTION_2_LAYER);
         node->setMaterialFlag(EMF_LIGHTING, false);
+	node->setPosition(vector3df(-50,-15,0));
+	*/
 }
 
 void GraphicsPolicy3D::create_gui() {
@@ -299,8 +327,11 @@ void GraphicsPolicy3D::create_gui() {
 	}
 											       
 	// Finally attach the receiver
+	ISceneNode* sphere = m_smgr->addCubeSceneNode(100);
 	Context context;
 	context.device = m_device;
+	context.selector = m_selector;
+	context.sphere = sphere;
 	m_receiver = new GUIEventReceiver(context);
 	m_device->setEventReceiver(m_receiver);
 }
@@ -313,6 +344,13 @@ void GraphicsPolicy3D::draw(core::State& state) {
 	}
 	// Render the scene.
 	m_driver->beginScene(true, true, SColor(255, 100, 101, 140));
+
+	// Render a grid.	
+	for (int i = -51; i < 51; i++)  {
+		m_driver->draw3DLine(vector3df(i*0.1, 20, -50), vector3df(i*0.1, 20, 50));
+		m_driver->draw3DLine(vector3df(-50, 20, i*0.1), vector3df(50, 20, i*0.1));
+	}
+
 	m_smgr->drawAll();
 	m_gui->drawAll();
 	m_driver->endScene();

@@ -19,17 +19,25 @@ namespace graphics {
  * modify the state.
  */
 class GraphicsPolicy3D {
+	// Device managers and other core components
 	irr::IrrlichtDevice* m_device;
 	irr::video::IVideoDriver* m_driver;
 	irr::scene::ISceneManager* m_smgr;
 	irr::gui::IGUIEnvironment* m_gui;
 	irr::IEventReceiver* m_receiver;
+	irr::scene::ITriangleSelector* m_selector;
 
+	// Graphics Data.
 	std::vector<irr::scene::IMesh*> m_cars;
+
 	protected:
+		// Constructs the project.
 		GraphicsPolicy3D();
+		// Creates the scene.
 		void create_scene();
+		// Creates the graphical user interface.
 		void create_gui();
+		// Must be included for policies to work.
 		void draw(core::State& state);
 };
 
