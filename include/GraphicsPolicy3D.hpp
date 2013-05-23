@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <irrlicht.h>
+#include <vector>
 
 namespace road {
 
@@ -24,8 +25,11 @@ class GraphicsPolicy3D {
 	irr::gui::IGUIEnvironment* m_gui;
 	irr::IEventReceiver* m_receiver;
 
+	std::vector<irr::scene::IMesh*> m_cars;
 	protected:
 		GraphicsPolicy3D();
+		void create_scene();
+		void create_gui();
 		void draw(core::State& state);
 };
 

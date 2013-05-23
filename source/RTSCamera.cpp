@@ -523,8 +523,8 @@ void RTSCamera::animate()
 
       if (!translating && !zooming && !rotating) 
       { 
-         //Mouse Coordinates go from 0 to 1 on both axes 
-         if (MousePos.X < 0.05)   //Up 
+	 //Mouse Coordinates go from 0 to 1 on both axes 
+         if (MousePos.X < 0.01)   //Up 
          { 
             vector3df totargetvector = getPosition() - getTarget(); 
             totargetvector.normalize(); 
@@ -535,7 +535,7 @@ void RTSCamera::animate()
             setTarget(getTarget() - strafevector * translateSpeed); 
             updateAbsolutePosition(); 
          } 
-         else if (MousePos.X > 0.95) //Down 
+         else if (MousePos.X > 0.99) //Down 
          { 
             vector3df totargetvector = getPosition() - getTarget(); 
             totargetvector.normalize(); 
@@ -546,7 +546,7 @@ void RTSCamera::animate()
             setTarget(getTarget() + strafevector * translateSpeed); 
             updateAbsolutePosition(); 
          } 
-         else if (MousePos.Y < 0.05)   //Up 
+         else if (MousePos.Y < 0.01)   //Up 
          { 
             vector3df movevector = getPosition() - getTarget(); 
             movevector.Y = 0; 
@@ -555,8 +555,8 @@ void RTSCamera::animate()
             setPosition(getPosition() - movevector * translateSpeed); 
             setTarget(getTarget() - movevector * translateSpeed); 
             updateAbsolutePosition(); 
-         } 
-         else if (MousePos.Y > 0.95) //Down 
+         }
+         else if (MousePos.Y > 0.99) //Down 
          { 
             vector3df movevector = getPosition() - getTarget(); 
             movevector.Y = 0; 

@@ -23,7 +23,12 @@ struct Context {
 
 // Enum to handle custom events
 enum {
-	GUI_ID_FILE_OPEN = 101
+	GUI_ID_FILE_OPEN = 101,
+	GUI_ID_TICK_SCROLLBAR,
+	GUI_ID_BUTTON_OPEN_MAP,
+	GUI_ID_BUTTON_OPEN,
+	GUI_ID_BUTTON_SHOW_TOOLBOX,
+	GUI_ID_BUTTON_SHOW_ABOUT
 };
 // Define the custom event handler for the graphical user interface.
 class GUIEventReceiver : public IEventReceiver {
@@ -72,75 +77,132 @@ GraphicsPolicy3D::GraphicsPolicy3D() {
 	m_smgr = m_device->getSceneManager();
 	m_gui = m_device->getGUIEnvironment();
 
-	// Build the basic scene
-	// Calibrate the other stuff.
-   	RTSCamera* camera = new RTSCamera(m_device, m_smgr->getRootSceneNode(), m_smgr,-1,100.0f,10.0f,10.0f);
-   	camera->setPosition(vector3df(0,9,-14)); 
-   	camera->setTranslateSpeed(20);  //speed of cam movement
-   	camera->setRotationSpeed(50);   //speed of cam rotation
-	camera->setFarValue(10000.0f);  // Set the far value.
+	// Create Scene Manager
+	create_scene();
+	create_gui();
+	
+}
 
-	// Add a simple skydome
-	m_smgr->addSkyDomeSceneNode(m_driver->getTexture("data/media/skydome.jpg"), 16, 8, 0.95f, 2.0f);
-	// Add cars
-	IAnimatedMesh* mesh;
-	ISceneNode* node;
-	for (int i = 1; i <= 11; i++) {
-		std::stringstream ss;
-		ss << "data/media/cars/" << i << ".lwo";
-		std::string filepath = ss.str();
-		mesh = m_smgr->getMesh(filepath.c_str());
-		node = m_smgr->addAnimatedMeshSceneNode(mesh);
-		node->setMaterialFlag(EMF_LIGHTING, false);
-		node->setPosition(vector3df(i*8.0f,0.0f,0.0f));
-	}
+void GraphicsPolicy3D::create_scene() {
+	 // Build the basic scene
+        // Calibrate the other stuff.
+        RTSCamera* camera = new RTSCamera(m_device, m_smgr->getRootSceneNode(), m_smgr,-1,100.0f,10.0f,10.0f);
+        camera->setTarget(vector3df(0,100,0));
+        camera->setPosition(vector3df(0,400,-800));
+        camera->setTranslateSpeed(20);  //speed of cam movement
+        camera->setRotationSpeed(50);   //speed of cam rotation
+        camera->setFarValue(10000.0f);  // Set the far value.
 
-	// Make the ground
+        // Add a simple skydome
+        m_smgr->addSkyDomeSceneNode(m_driver->getTexture("data/media/skydome.jpg"), 16, 8, 0.95f, 2.0f);
+        // Add cars
+        IAnimatedMesh* mesh;
+        ISceneNode* node;
+        for (int i = 1; i <= 11; i++) {
+                std::stringstream ss;
+                ss << "data/media/cars/" << i << ".lwo";
+                std::string filepath = ss.str();
+		m_cars.push_back(m_smgr->getMesh(filepath.c_str()));
+                //node = m_smgr->addAnimatedMeshSceneNode(mesh);
+                //node->setMaterialFlag(EMF_LIGHTING, false);
+                //node->setPosition(vector3df(i*8.0f,0.0f,0.0f));
+        }
+
+        // Make the ground
 	node = m_smgr->addCubeSceneNode(10);
 	node->setMaterialTexture(0, m_driver->getTexture("data/media/grass.jpg"));
 	node->getMaterial(0).getTextureMatrix(0).setTextureScale(10,10);
-
-	node->setPosition(vector3df(0,-10,0));
+	node->setPosition(vector3df(0 ,-10, 0));
 	node->setMaterialFlag(EMF_LIGHTING, false);
-	node->setScale(vector3df(100,1, 100));
-
+	node->setMaterialFlag(EMF_ANTI_ALIASING, true);
+	node->setMaterialFlag(EMF_BILINEAR_FILTER, true);
+	node->setMaterialFlag(EMF_TRILINEAR_FILTER, true);
+	node->setMaterialFlag(EMF_ANTI_ALIASING, true);	
+        node->setScale(vector3df(100,1, 100));
 
 	// Add some water, for fun.
-	mesh = m_smgr->addHillPlaneMesh( "myHill",
-	dimension2d<f32>(20,20),
-	dimension2d<u32>(100,100), 0, 0,
-	dimension2d<f32>(0,0),
-	dimension2d<f32>(100,100));
+        mesh = m_smgr->addHillPlaneMesh( "myHill",
+        dimension2d<f32>(20,20),
+        dimension2d<u32>(100,100), 0, 0,
+        dimension2d<f32>(0,0),
+        dimension2d<f32>(100,100));
+
+        node = m_smgr->addWaterSurfaceSceneNode(mesh->getMesh(0), 3.0f, 300.0f, 30.0f);
+        node->setPosition(vector3df(0,-15,0));
+        node->setMaterialTexture(0, m_driver->getTexture("data/media/stones.jpg"));
+        node->setMaterialTexture(1, m_driver->getTexture("data/media/water.jpg"));
+        node->setMaterialType(video::EMT_REFLECTION_2_LAYER);
+        node->setMaterialFlag(EMF_LIGHTING, false);
+}
+
+void GraphicsPolicy3D::create_gui() {
+	IGUISkin* skin = m_gui->getSkin();
+        IGUIFont* font = m_gui->getFont("data/media/fonthaettenschweiler.bmp");
+
+        if (font) {
+                skin->setFont(font);
+	}	
+
+	// Create the menu
+	IGUIContextMenu* menu = m_gui->addMenu();
+        menu->addItem(L"File", -1, true, true);
+        menu->addItem(L"Edit", -1, true, true);
+        menu->addItem(L"Analyse", -1, true, true);
+        menu->addItem(L"Simulate", -1, true, true);
+        menu->addItem(L"Help", -1, true, true);
+
+	// Define the submenus
+	IGUIContextMenu* submenu = menu->getSubMenu(0);
+        submenu->addItem(L"Load Map Configuration.", 1);
+        submenu->addItem(L"Save Map Configuration.", 1);
+        submenu->addItem(L"Load Learner State.", 1);
+        submenu->addItem(L"Save Learner State", 1);
+        submenu->addSeparator();
+        submenu->addItem(L"Quit", 1);
 	
-	node = m_smgr->addWaterSurfaceSceneNode(mesh->getMesh(0), 3.0f, 300.0f, 30.0f);
-	node->setPosition(vector3df(0,-15,0));
-	node->setMaterialTexture(0, m_driver->getTexture("data/media/stones.jpg"));
-	node->setMaterialTexture(1, m_driver->getTexture("data/media/water.jpg"));
-	node->setMaterialType(video::EMT_REFLECTION_2_LAYER);
-	node->setMaterialFlag(EMF_LIGHTING, false);
+	submenu = menu->getSubMenu(1);
+        submenu->addItem(L"Add Source", 1);
+        submenu->addItem(L"Add Sink",   1);
+        submenu->addItem(L"Add Intersection", 1);
+        submenu->addItem(L"Add Road", 1);
+        submenu->addSeparator();
+        submenu->addItem(L"Open Editor Panel", 1);
 
+	submenu = menu->getSubMenu(2);
+        submenu->addItem(L"Simulation State", 1);
+        submenu->addItem(L"Learner State", 1);
 
-	// Set the gui font to be less bad.
-    	IGUISkin* skin = m_gui->getSkin();
-	IGUIFont* font = m_gui->getFont("data/media/fonthaettenschweiler.bmp");
+	submenu = menu->getSubMenu(3);
+        submenu->addItem(L"Run", 1);
+        submenu->addItem(L"Pause", 1);
+        submenu->addSeparator();
+        submenu->addItem(L"Open Simulation Panel", 1);
 
-	if (font) {
-          skin->setFont(font);
+	submenu = menu->getSubMenu(4);
+        submenu->addItem(L"About ", 1);
+        submenu->addItem(L"Licence ", 1);
+	
+	// Create the toolbar.
+	IGUIToolBar* bar = m_gui->addToolBar();
+        ITexture* image = m_driver->getTexture("data/media/open.png");
+        bar->addButton(GUI_ID_BUTTON_OPEN_MAP, 0, L"Open a model",image, 0, false, true);
+        image = m_driver->getTexture("data/media/tools.png");
+        bar->addButton(GUI_ID_BUTTON_SHOW_TOOLBOX, 0, L"Open Toolset",image, 0, false, true);
+        image = m_driver->getTexture("data/media/help.png");
+        bar->addButton(GUI_ID_BUTTON_SHOW_ABOUT, 0, L"Open Help", image, 0, false, true);
+
+		
+	
+	// Remove alpha, make it look cleaner.
+	for (s32 i=0; i < EGDC_COUNT; ++i) {
+		SColor col = m_gui->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
+		col.setAlpha(255);
+		m_gui->getSkin()->setColor((EGUI_DEFAULT_COLOR)i, col);
 	}
-        skin->setFont(m_gui->getBuiltInFont(), EGDF_TOOLTIP);
-
-	// Set up the GUI panel
-	IGUITabControl* tabctrl = m_gui->addTabControl(rect<int>(50,50,300, (int)(resolution.Height - 150)), 0, true, true);
-	IGUITab* confTab = tabctrl->addTab(L"Configuration");
-	IGUITab* analyticsTab = tabctrl->addTab(L"Analytics");
-	// Add a button.
-	m_gui->addButton(rect<s32>(10,10,100,42), confTab, GUI_ID_FILE_OPEN, L"Open Map", L"Opens a file");
-
-	// Allocate the context.
+											       
+	// Finally attach the receiver
 	Context context;
 	context.device = m_device;
-
-	// Bind the event receiver to the device.
 	m_receiver = new GUIEventReceiver(context);
 	m_device->setEventReceiver(m_receiver);
 }
