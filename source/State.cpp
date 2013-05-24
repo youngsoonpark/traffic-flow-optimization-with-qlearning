@@ -1,6 +1,4 @@
 #include "State.hpp"
-#include "Road.hpp"
-#include "Intersection.hpp"
 
 namespace road {
 namespace core {
@@ -17,6 +15,10 @@ bool State::isRunning() {
 
 void State::setRunning(bool running) {
 	m_running = running;
+}
+
+State::Map& State::getMap() {
+	return m_map;			
 }
 
 } // End of namespace core.

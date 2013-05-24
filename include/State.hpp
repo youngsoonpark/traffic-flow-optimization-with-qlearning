@@ -1,12 +1,31 @@
 #ifndef ROAD_CORE_STATE_H_
 #define ROAD_CORE_STATE_H_
 
+#include <boost/graph/adjacency_list.hpp>
+
 namespace road {
 namespace core {
 
-// Predefine a lane and an intersection.
-class Road;
-class Intersection;
+struct Car {
+	int speed;  // Speed of the car.
+};
+
+enum NodeType {
+	SOURCE,
+	SINK,
+	INTERSECTION
+};
+
+struct Node {
+	NodeType type;    // Source, Sink or Intersection.
+	size_t x;         // X position.
+	size_t y;         // Y Position.
+};
+
+struct Road {
+	size_t speed_limit;    // Speed limit.
+	std::vector<Car> cars; // Cars on the road.
+};
 
 /**
  * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
@@ -19,29 +38,14 @@ class Intersection;
  */
 class State {
 	bool m_running; // Whether the game is running or not, we set this to true at the start.
-
+	typedef boost::adjacency_list<boost::listS, boost::vecS, boost::bidirectionalS, Node, Road> Map;
+	Map m_map;
 	public:
-		/**
-		 * @description Default Constructor, sets running to true.
-		 */	
 		State();
-
-		/**
-		 * @description Default Destructor.
-		 */
 		~State();
-
-		/**
-		 * @description getter for m_running
-		 * @return if the system is running or not.
-		 */
 		bool isRunning();
-
-		/**
-		 * @description settter for m_running
-		 * @param new running value
-		 */
 		void setRunning(bool running);
+		Map& getMap();
 };
 
 } // End of namespace core.

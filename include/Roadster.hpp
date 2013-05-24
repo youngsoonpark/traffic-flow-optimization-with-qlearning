@@ -7,7 +7,7 @@
 #include "State.hpp"
 // Include the valid policies.
 #include "GraphicsPolicy3D.hpp"
-#include "SerializationPolicyText.hpp"
+#include "SerializationPolicyXML.hpp"
 #include "LearnerPolicyRL.hpp"
 #include "SimulationPolicyCellular.hpp"
 #include "SimulationPolicyNaive.hpp"
@@ -34,7 +34,7 @@ class Roadster: private SerializationPolicy, private GraphicsPolicy, private Sim
 		/**
 		 * Constructor requires a filepath to generate a state.
 		 */
-		Roadster(const std::string& filepath) : m_state() {
+		Roadster(const std::string& filepath) : GraphicsPolicy(m_state), m_state() {
 			load(filepath, m_state);  // Parse the configuration file, return a state.
 		}
 
@@ -59,8 +59,8 @@ class Roadster: private SerializationPolicy, private GraphicsPolicy, private Sim
 };
 
 // Some useful typedefs, that build some standard approaches we want to utilise.
-typedef Roadster<io::SerializationPolicyText, graphics::GraphicsPolicy3D, sim::SimulationPolicyNaive, ml::LearnerPolicyRL> RoadsterNaive;
-typedef Roadster<io::SerializationPolicyText, graphics::GraphicsPolicy3D, sim::SimulationPolicyCellular, ml::LearnerPolicyRL> RoadsterCellular;
+typedef Roadster<io::SerializationPolicyXML, graphics::GraphicsPolicy3D, sim::SimulationPolicyNaive, ml::LearnerPolicyRL> RoadsterNaive;
+typedef Roadster<io::SerializationPolicyXML, graphics::GraphicsPolicy3D, sim::SimulationPolicyCellular, ml::LearnerPolicyRL> RoadsterCellular;
 
 } // End of road namespace
 

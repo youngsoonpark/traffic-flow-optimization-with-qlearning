@@ -18,11 +18,15 @@ namespace road {
 namespace graphics{
 
 
-// Define the context that the receiver can see.
+// Define the context that the receiver can see, this is partially limited.
 struct Context {
+	Context(IrrlichtDevice* device, ITriangleSelector* selector,
+		ISceneNode* cursor, core::State& state) :
+		device(device), selector(selector), cursor(cursor), state(state) {}
 	IrrlichtDevice* device;
 	ITriangleSelector* selector;
-	ISceneNode* sphere;
+	ISceneNode* cursor;
+	core::State& state;
 };
 
 // Enum to handle custom events
@@ -69,7 +73,7 @@ class GUIEventReceiver : public IEventReceiver {
 				point.X = floor(point.X/100)*100 + 50;
 				point.Z = floor(point.Z/100)*100 + 50;
 
-				context.sphere->setPosition(point);
+				context.cursor->setPosition(point);
 			}
 		}
 		if (event.EventType == EET_GUI_EVENT) {
@@ -184,7 +188,7 @@ class GUIEventReceiver : public IEventReceiver {
 };
 
 
-GraphicsPolicy3D::GraphicsPolicy3D() {
+GraphicsPolicy3D::GraphicsPolicy3D(core::State& state) : m_state(state) {
 	// Retrieve resolution
 	IrrlichtDevice* null_device = createDevice(EDT_NULL);
 	dimension2d<u32> resolution = null_device->getVideoModeList()->getDesktopResolution();
@@ -214,7 +218,6 @@ void GraphicsPolicy3D::create_scene() {
         // Add a simple skydome
         m_smgr->addSkyDomeSceneNode(m_driver->getTexture("data/media/skydome.jpg"), 16, 8, 0.95f, 2.0f);
         // Add cars
-        IAnimatedMesh* mesh;
         IMeshSceneNode* node;
         for (int i = 1; i <= 11; i++) {
                 std::stringstream ss;
@@ -331,11 +334,8 @@ void GraphicsPolicy3D::create_gui() {
 	}
 											       
 	// Finally attach the receiver
-	ISceneNode* sphere = m_smgr->addCubeSceneNode(100);
-	Context context;
-	context.device = m_device;
-	context.selector = m_selector;
-	context.sphere = sphere;
+	ISceneNode* cursor = m_smgr->addCubeSceneNode(100);
+	Context context(m_device, m_selector, cursor, m_state);
 	m_receiver = new GUIEventReceiver(context);
 	m_device->setEventReceiver(m_receiver);
 }

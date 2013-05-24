@@ -26,13 +26,14 @@ class GraphicsPolicy3D {
 	irr::gui::IGUIEnvironment* m_gui;
 	irr::IEventReceiver* m_receiver;
 	irr::scene::ITriangleSelector* m_selector;
+	core::State& m_state;
 
 	// Graphics Data.
 	std::vector<irr::scene::IMesh*> m_cars;
 
 	protected:
 		// Constructs the project.
-		GraphicsPolicy3D();
+		GraphicsPolicy3D(core::State& state);
 		// Creates the scene.
 		void create_scene();
 		// Creates the graphical user interface.
