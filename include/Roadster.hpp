@@ -7,7 +7,6 @@
 #include "State.hpp"
 // Include the valid policies.
 #include "GraphicsPolicy3D.hpp"
-#include "SerializationPolicyXML.hpp"
 #include "LearnerPolicyRL.hpp"
 #include "SimulationPolicyCellular.hpp"
 #include "SimulationPolicyNaive.hpp"
@@ -21,17 +20,14 @@ namespace road {
  * that decides how to display that output and a simulation policy that updates the
  * state. The roadster, then simply adapts these three policies.
  */
-template <typename SerializationPolicy, typename GraphicsPolicy, typename SimulationPolicy, typename LearnerPolicy>
-class Roadster: private SerializationPolicy, private GraphicsPolicy, private SimulationPolicy, private LearnerPolicy {
+template <typename GraphicsPolicy, typename SimulationPolicy, typename LearnerPolicy>
+class Roadster : private GraphicsPolicy, private SimulationPolicy, private LearnerPolicy {
 	using GraphicsPolicy::draw;        // Draw the simulation to output.
 	using SimulationPolicy::update;    // Create an update tick, using the simulation policy.
 	using LearnerPolicy::action;       // Gets fed back, the previous state, learns from that then decides an action.
 	core::State m_state;               // Defines the actual state of the simulator.
 
 	public:
-		using SerializationPolicy::load;   // Parse the input configuration file.
-		using SerializationPolicy::save;   // Parse the input configuration file.
-
 		/**
 		 * Constructor requires a filepath to generate a state.
 		 */
@@ -43,7 +39,6 @@ class Roadster: private SerializationPolicy, private GraphicsPolicy, private Sim
 		 * freed.
 		 */
 		~Roadster(void) {
-			save(m_state); // Save the outgoing state.
 		}
 
 		/**
@@ -59,8 +54,8 @@ class Roadster: private SerializationPolicy, private GraphicsPolicy, private Sim
 };
 
 // Some useful typedefs, that build some standard approaches we want to utilise.
-typedef Roadster<io::SerializationPolicyXML, graphics::GraphicsPolicy3D, sim::SimulationPolicyNaive, ml::LearnerPolicyRL> RoadsterNaive;
-typedef Roadster<io::SerializationPolicyXML, graphics::GraphicsPolicy3D, sim::SimulationPolicyCellular, ml::LearnerPolicyRL> RoadsterCellular;
+typedef Roadster<graphics::GraphicsPolicy3D, sim::SimulationPolicyNaive, ml::LearnerPolicyRL> RoadsterNaive;
+typedef Roadster<graphics::GraphicsPolicy3D, sim::SimulationPolicyCellular, ml::LearnerPolicyRL> RoadsterCellular;
 
 } // End of road namespace
 

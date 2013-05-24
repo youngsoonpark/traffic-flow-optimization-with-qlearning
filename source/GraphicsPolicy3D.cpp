@@ -2,6 +2,7 @@
 #include "State.hpp"
 
 #include "RTSCamera.hpp"
+#include "SerializationXML.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -89,7 +90,11 @@ class GUIEventReceiver : public IEventReceiver {
 				case EGET_FILE_SELECTED:
 					{
 					IGUIFileOpenDialog* dialog = (IGUIFileOpenDialog*)event.GUIEvent.Caller;
-					std::cout << dialog->getFileName() << std::endl;
+					std::cout << stringc(dialog->getFileName()).c_str() << std::endl;
+					std::string path(stringc(dialog->getFileName()).c_str());
+					std::cout << path << std::endl;
+					road::io::SerializationXML serialize;
+					serialize.load(path, context.state);
 					}
 				break;
 
