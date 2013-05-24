@@ -20,9 +20,12 @@ namespace graphics{
 
 // Define the context that the receiver can see, this is partially limited.
 struct Context {
+	// Construct the context.
 	Context(IrrlichtDevice* device, ITriangleSelector* selector,
 		ISceneNode* cursor, core::State& state) :
 		device(device), selector(selector), cursor(cursor), state(state) {}
+
+	// The public attributes.
 	IrrlichtDevice* device;
 	ITriangleSelector* selector;
 	ISceneNode* cursor;
@@ -45,7 +48,8 @@ enum {
 	GUI_ID_PAUSE,
 	GUI_ID_SIMULATION_PANEL,
 	GUI_ID_ABOUT,
-	GUI_ID_LICENSE
+	GUI_ID_LICENSE,
+	GUI_ID_RESET_CAMERA
 };
 // Define the custom event handler for the graphical user interface.
 class GUIEventReceiver : public IEventReceiver {
@@ -55,7 +59,7 @@ class GUIEventReceiver : public IEventReceiver {
 	GUIEventReceiver(Context context) : context(context) {}
 
 	virtual bool OnEvent(const SEvent& event) {
-		if (EET_MOUSE_INPUT_EVENT) {
+		if (event.EventType == EET_MOUSE_INPUT_EVENT) {
 			// Cast a ray.
 			if (event.MouseInput.isLeftPressed()) {
 				// Retrieve the collision manager.
@@ -68,12 +72,13 @@ class GUIEventReceiver : public IEventReceiver {
 				const ISceneNode* node = 0;
 				// Find the hit triangle
 				col_mgr->getCollisionPoint(ray, context.selector, point, hit_triangle, node);
-				// Print it out.
-				std::cout << point.X <<  point.Y << point.Z << std::endl;
-				point.X = floor(point.X/100)*100 + 50;
-				point.Z = floor(point.Z/100)*100 + 50;
-
-				context.cursor->setPosition(point);
+				if (point.X && point.Y && point.Z) {
+					// Print it out.
+					point.X = floor(point.X/100)*100 + 50;
+					point.Z = floor(point.Z/100)*100 + 50;
+					// Set the cursor to the new position.
+					context.cursor->setPosition(point);
+				}
 			}
 		}
 		if (event.EventType == EET_GUI_EVENT) {
@@ -100,17 +105,10 @@ class GUIEventReceiver : public IEventReceiver {
 						case GUI_ID_EDITOR_PANEL:
 							return true;
 						break;
-						// Presents the about menu.
-						case GUI_ID_ABOUT:
+						// Resets the camera, if it gets too lost.
+						case GUI_ID_RESET_CAMERA:
 						    {
-						    IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 400), false, L"About Roadster");
-						    gui->addStaticText(L"Roadster is a traffic simulator that utilises machine learning to"
-								         "produce a very efficient traffic light controller. The controller is"
-									 "attempting to minimise the global weighting time of vehicles in the system."
-									 "To achieve this we had to build a fairly realistic traffic simulator that worked"
-									 "on Manhattan style grid like roads."
-									 "Graphics and Simulator by: Benjamin James Wright <bwright@cse.unsw.edu.au",
-									 rect<s32>(10,35,290,290), false, true, window);
+							context.device->getSceneManager()->getActiveCamera()->setPosition(vector3df(0, 400, -800));
 						    }
 						    return true;
 						break;
@@ -151,12 +149,21 @@ class GUIEventReceiver : public IEventReceiver {
 						break;	
 
 						case GUI_ID_EDITOR_PANEL:
+						{
+						    IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 800), false, L"Editor Panel");
+						}
 						break;
 
 						case GUI_ID_SIMULATOR_STATE:
+						{
+						    IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 800), false, L"Simulation State");
+						}
 						break;
 
 						case GUI_ID_LEARNER_STATE:
+						{
+						    IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 800), false, L"Learner State");
+						}
 						break;
 
 						case GUI_ID_RUN:
@@ -166,12 +173,31 @@ class GUIEventReceiver : public IEventReceiver {
 						break;
 
 						case GUI_ID_SIMULATION_PANEL:
+						{
+						    IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 800), false, L"Simulation Panel");
+						}
 						break;
 
 						case GUI_ID_ABOUT:
+						{
+						    IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 400), false, L"About Roadster");
+						    gui->addStaticText(L"Roadster is a traffic simulator that utilises machine learning to "
+								         "produce a very efficient traffic light controller. The controller is "
+									 "attempting to minimise the global weighting time of vehicles in the system. "
+									 "To achieve this we had to build a fairly realistic traffic simulator that worked "
+									 "on Manhattan style grid like roads.\n"
+									 "Graphics and Simulator by: Benjamin James Wright <bwright@cse.unsw.edu.au",
+									 rect<s32>(10,35,290,290), false, true, window);
+						}
 						break;
 
 						case GUI_ID_LICENSE:
+						{
+						    IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 400), false, L"Roadster Licence");
+						    gui->addStaticText(L"Roadster is licensed under the Irrlicht License, you can find a copy of it "
+								    	"here: http://irrlicht.sourceforge.net/license/",
+									 rect<s32>(10,35,290,290), false, true, window);
+						}
 						break;
 
 						default:
@@ -322,7 +348,7 @@ void GraphicsPolicy3D::create_gui() {
         bar->addButton(GUI_ID_EDITOR_PANEL, 0, L"Open Toolset",image, 0, false, true);
 
         image = m_driver->getTexture("data/media/help.png");
-        bar->addButton(GUI_ID_ABOUT, 0, L"Open Help", image, 0, false, true);
+        bar->addButton(GUI_ID_RESET_CAMERA, 0, L"Open Help", image, 0, false, true);
 
 		
 	
@@ -335,6 +361,8 @@ void GraphicsPolicy3D::create_gui() {
 											       
 	// Finally attach the receiver
 	ISceneNode* cursor = m_smgr->addCubeSceneNode(100);
+	cursor->setMaterialFlag(EMF_LIGHTING, false);
+
 	Context context(m_device, m_selector, cursor, m_state);
 	m_receiver = new GUIEventReceiver(context);
 	m_device->setEventReceiver(m_receiver);

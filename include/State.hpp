@@ -6,25 +6,31 @@
 namespace road {
 namespace core {
 
-struct Car {
-	int speed;  // Speed of the car.
-};
-
-enum NodeType {
-	SOURCE,
-	SINK,
-	INTERSECTION
-};
-
+/**
+ * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
+ * @description A node is, either a source, sink or intersection. They behave
+ *  much the same for the most part. Their explict behaviour is interpreted
+ *  based on their type by the simulator. This is just a simple data store.
+ */
 struct Node {
-	NodeType type;    // Source, Sink or Intersection.
-	size_t x;         // X position.
-	size_t y;         // Y Position.
+	// Defines the val
+	enum Type { SOURCE, SINK, INTERSECTION } type; // Defines the type.
+	std::string name; // Every node has a specific name.
+	size_t x;         // X position, used in the graphics.
+	size_t y;         // Y Position, using in the graphics.
 };
 
+/**
+ * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
+ * @description A road represents an edge in the property graph, it contains
+ *  a speed limit, a vector of cars, a source and a destination. We keep the
+ *  source and destination to make it easier.
+ */
 struct Road {
-	size_t speed_limit;    // Speed limit.
-	std::vector<Car> cars; // Cars on the road.
+	std::string source;      // Name of the source node.
+	std::string destination; // Name of the destination node.
+	//size_t speed_limit;    // Speed limit.
+	//std::vector<Car> cars; // Cars on the road.
 };
 
 /**
@@ -34,17 +40,41 @@ struct Road {
  * are located at what speed and in which lane. In additon
  * to this everything about the current state of the intersections
  * and the learner.
- *
  */
 class State {
-	bool m_running; // Whether the game is running or not, we set this to true at the start.
 	typedef boost::adjacency_list<boost::listS, boost::vecS, boost::bidirectionalS, Node, Road> Map;
-	Map m_map;
+	bool m_running;      // Whether the game is running or not, we set this to true at the start.
+	size_t m_tick_speed; // Determines the speed of a tick in the simulator.
+	Map m_map;           // The map, the actual graph of the entire scene. This is critical.
+
 	public:
+		/**
+		 * @description Constructs the initial state, it doesn't load
+		 *  anything this is left up to the SerializationPolicy that
+		 *  takes a reference and modifies the internals, as required.
+		 *  It does, however set the core state to running.
+		 */
 		State();
+
+		/**
+		 * @description cleans up the internals data structures
+		 *   used to represent the states.
+		 */
 		~State();
+
+		/**
+		 * @return if the state is running.
+		 */
 		bool isRunning();
+
+		/**
+		 * @param what to set the running state to.
+		 */
 		void setRunning(bool running);
+
+		/**
+		 * @return returns the adjacency list, with everything we need.
+		 */
 		Map& getMap();
 };
 

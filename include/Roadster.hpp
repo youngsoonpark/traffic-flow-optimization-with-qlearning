@@ -23,19 +23,19 @@ namespace road {
  */
 template <typename SerializationPolicy, typename GraphicsPolicy, typename SimulationPolicy, typename LearnerPolicy>
 class Roadster: private SerializationPolicy, private GraphicsPolicy, private SimulationPolicy, private LearnerPolicy {
-	using SerializationPolicy::load;   // Parse the input configuration file.
-	using SerializationPolicy::save;   // Parse the input configuration file.
 	using GraphicsPolicy::draw;        // Draw the simulation to output.
 	using SimulationPolicy::update;    // Create an update tick, using the simulation policy.
 	using LearnerPolicy::action;       // Gets fed back, the previous state, learns from that then decides an action.
 	core::State m_state;               // Defines the actual state of the simulator.
 
 	public:
+		using SerializationPolicy::load;   // Parse the input configuration file.
+		using SerializationPolicy::save;   // Parse the input configuration file.
+
 		/**
 		 * Constructor requires a filepath to generate a state.
 		 */
-		Roadster(const std::string& filepath) : GraphicsPolicy(m_state), m_state() {
-			load(filepath, m_state);  // Parse the configuration file, return a state.
+		Roadster() : GraphicsPolicy(m_state), m_state() {
 		}
 
 		/**
