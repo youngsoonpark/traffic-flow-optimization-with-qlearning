@@ -224,7 +224,12 @@ GraphicsPolicy3D::GraphicsPolicy3D(core::State& state) : m_state(state) {
 	IrrlichtDevice* null_device = createDevice(EDT_NULL);
 	dimension2d<u32> resolution = null_device->getVideoModeList()->getDesktopResolution();
 
-	m_device = createDevice(EDT_OPENGL, resolution, 16, false, false, false, 0);
+	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
+	params.AntiAlias = true;
+	params.DriverType = EDT_OPENGL;
+	params.WindowSize = resolution;
+	m_device = createDeviceEx(params);
+	//m_device = createDevice(EDT_OPENGL, resolution, 16, false, false, false, 0);
 	m_device->setWindowCaption(L"Roadster Simulation");
 	m_driver = m_device->getVideoDriver();
 	m_smgr = m_device->getSceneManager();
