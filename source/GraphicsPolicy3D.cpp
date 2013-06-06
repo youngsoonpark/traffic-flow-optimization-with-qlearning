@@ -18,7 +18,6 @@ using namespace io;
 namespace road {
 namespace graphics{
 
-
 // Define the context that the receiver can see, this is partially limited.
 struct Context {
 	// Construct the context.
@@ -36,6 +35,25 @@ struct Context {
   // have to load our current state from the boost graph, clear the old one in
   // the scene managers graph and push in the new one.
   void sync_scene_with_state() {
+    // Retrieve the graph
+    core::State::Graph* g = state.getGraph();
+
+    // Iterate over the verticies adding them to the scene.
+    typedef core::State::graph_traits::vertex_iterator vert_it_t;
+    //road::core::State::Graph::graph_traits::vertex_descriptor vert_desc;
+    std::pair<vert_it_t, vert_it_t> vert;
+    for (vert = boost::vertices(*g); vert.first != vert.second; vert.first++) {
+      size_t x = g->graph()[*vert.first].x;
+      size_t y = g->graph()[*vert.first].y;
+         
+    }
+
+    // Iterate over the edges
+    typedef core::State::graph_traits::edge_iterator edge_it_t;
+    std::pair<edge_it_t, edge_it_t> edge;
+    for (edge = boost::edges(*g); edge.first != edge.second; edge.first++) {
+      //edge_desc = *edge.first;
+    } 
   }
 
 };
@@ -151,7 +169,7 @@ class GUIEventReceiver : public IEventReceiver {
 						break;	
 
 						case GUI_ID_QUIT:
-							context.device->drop();
+							context.device->closeDevice();
 						break;	
 
 						case GUI_ID_ADD_SOURCE:
@@ -235,14 +253,14 @@ class GUIEventReceiver : public IEventReceiver {
 GraphicsPolicy3D::GraphicsPolicy3D(core::State& state) : m_state(state) {
 	// Retrieve resolution
 	IrrlichtDevice* null_device = createDevice(EDT_NULL);
-	dimension2d<u32> resolution = null_device->getVideoModeList()->getDesktopResolution();
+	m_resolution = null_device->getVideoModeList()->getDesktopResolution();
 
 	/*SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
 	params.AntiAlias = true;
 	params.DriverType = EDT_OPENGL;
 	params.WindowSize = resolution;
 	m_device = createDeviceEx(params);*/
-	m_device = createDevice(EDT_OPENGL, resolution, 16, false, false, false, 0);
+	m_device = createDevice(EDT_OPENGL, m_resolution, 16, false, false, false, 0);
 	m_device->setWindowCaption(L"Roadster Simulation");
 	m_driver = m_device->getVideoDriver();
 	m_smgr = m_device->getSceneManager();
@@ -279,22 +297,23 @@ void GraphicsPolicy3D::create_scene() {
         }
 
         // Make the ground
-	node = m_smgr->addCubeSceneNode(10);
-	node->setMaterialTexture(0, m_driver->getTexture("data/media/grass.jpg"));
-	node->getMaterial(0).getTextureMatrix(0).setTextureScale(10,10);
-	node->setPosition(vector3df(0 ,-10, 0));
-	node->setMaterialFlag(EMF_LIGHTING, false);
-	node->setMaterialFlag(EMF_ANTI_ALIASING, true);
-	node->setMaterialFlag(EMF_BILINEAR_FILTER, true);
-	node->setMaterialFlag(EMF_TRILINEAR_FILTER, true);
-	node->setMaterialFlag(EMF_ANTI_ALIASING, true);	
-        node->setScale(vector3df(1000,1, 1000));
+  node = m_smgr->addCubeSceneNode(10);
+  node->setMaterialTexture(0, m_driver->getTexture("data/media/grass.jpg"));
+  node->getMaterial(0).getTextureMatrix(0).setTextureScale(10,10);
+  node->setPosition(vector3df(0 ,-10, 0));
+  node->setMaterialFlag(EMF_LIGHTING, false);
+  node->setMaterialFlag(EMF_ANTI_ALIASING, true);
+  node->setMaterialFlag(EMF_BILINEAR_FILTER, true);
+  node->setMaterialFlag(EMF_TRILINEAR_FILTER, true);
+  node->setMaterialFlag(EMF_ANTI_ALIASING, true);	
+  node->setScale(vector3df(1000,1, 1000));
 
 	// Add a triangle selector
 	m_selector = m_smgr->createOctreeTriangleSelector(node->getMesh(), node, 128);
 	node->setTriangleSelector(m_selector);
 
-	// Add some water, for fun.
+
+  // Add some water, for fun.
 	/*
         mesh = m_smgr->addHillPlaneMesh( "myHill",
         dimension2d<f32>(20,20),
@@ -372,8 +391,6 @@ void GraphicsPolicy3D::create_gui() {
 
         image = m_driver->getTexture("data/media/help.png");
         bar->addButton(GUI_ID_RESET_CAMERA, 0, L"Open Help", image, 0, false, true);
-
-		
 	
 	// Remove alpha, make it look cleaner.
 	for (s32 i=0; i < EGDC_COUNT; ++i) {
@@ -401,7 +418,8 @@ void GraphicsPolicy3D::draw(core::State& state) {
 		state.setRunning(false);
 		return;
 	}
-	// Render the scene.
+
+  // Render the scene.
 	m_driver->beginScene(true, true, SColor(255, 100, 101, 140));
 
 	// Render a grid.	
@@ -414,7 +432,10 @@ void GraphicsPolicy3D::draw(core::State& state) {
   // modifying graphical components. It doesn't actually modify the state.
   update_state();
 
-	m_smgr->drawAll();
+  
+  m_smgr->drawAll();
+ 
+
 	m_gui->drawAll();
 	m_driver->endScene();
 }

@@ -2,6 +2,7 @@
 #define ROAD_CORE_STATE_H_
 
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/labeled_graph.hpp>
 
 namespace road {
 namespace core {
@@ -12,10 +13,9 @@ namespace core {
  *  much the same for the most part. Their explict behaviour is interpreted
  *  based on their type by the simulator. This is just a simple data store.
  */
-struct Node {
+struct Vertex {
 	// Defines the val
 	enum Type { SOURCE, SINK, INTERSECTION } type; // Defines the type.
-	std::string name; // Every node has a specific name.
 	size_t x;         // X position, used in the graphics.
 	size_t y;         // Y Position, using in the graphics.
 };
@@ -26,11 +26,9 @@ struct Node {
  *  a speed limit, a vector of cars, a source and a destination. We keep the
  *  source and destination to make it easier.
  */
-struct Road {
-	std::string source;      // Name of the source node.
-	std::string destination; // Name of the destination node.
-	//size_t speed_limit;    // Speed limit.
-	//std::vector<Car> cars; // Cars on the road.
+struct Edge {
+	size_t speed_limit;    // Speed limit.
+//	std::vector<Car> cars; // Cars on the road.
 };
 
 /**
@@ -42,16 +40,14 @@ struct Road {
  * and the learner.
  */
 class State {
-	// Declare the relevant types
-  typedef boost::adjacency_list<boost::listS, boost::vecS, boost::bidirectionalS, Node, Road> Graph;
-  typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
-  typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
-
-	bool m_running;      // Whether the game is running or not, we set this to true at the start.
-	size_t m_tick_speed; // Determines the speed of a tick in the simulator.
-	Graph m_graph;       // The map, the actual graph of the entire scene. This is critical.
-
 	public:
+	// Declare the relevant types
+  typedef boost::labeled_graph<
+            boost::adjacency_list<boost::listS, boost::vecS, boost::bidirectionalS, Vertex, Edge>,
+            std::string
+          > Graph;
+  typedef boost::graph_traits<Graph> graph_traits;
+
 		/**
 		 * @description Constructs the initial state, it doesn't load
 		 *  anything this is left up to the SerializationPolicy that
@@ -79,7 +75,11 @@ class State {
 		/**
 		 * @return returns the adjacency list, with everything we need.
 		 */
-		Graph& getGraph();
+		Graph* getGraph();
+  private:
+    bool m_running;      // Whether the game is running or not, we set this to true at the start.
+    size_t m_tick_speed; // Determines the speed of a tick in the simulator.
+    Graph m_graph;       // The map, the actual graph of the entire scene. This is critical.
 };
 
 } // End of namespace core.

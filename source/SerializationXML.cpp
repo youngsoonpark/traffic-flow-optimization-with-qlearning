@@ -4,6 +4,7 @@
 #include <irrlicht.h>
 #include <string>
 #include <sstream>
+#include <iostream>
 
 using namespace irr;
 using namespace core;
@@ -16,6 +17,8 @@ namespace road {
 namespace io {
 
 void SerializationXML::load(const std::string& filepath, core::State& state) const {
+  // Debug output.
+  std::cout << "SeriazilaztionXML.load: " << filepath << std::endl;
 	// Create the null device.
 	IrrlichtDevice* null_device = createDevice(EDT_NULL);
 	// Open the reader.
@@ -33,22 +36,41 @@ void SerializationXML::load(const std::string& filepath, core::State& state) con
 			int x = xml->getAttributeValueAsInt(L"x");
 			int y = xml->getAttributeValueAsInt(L"y");
 			// Retrieve the type of the nodes.
-			core::Node::Type type = (nn == stringw("source")) ? core::Node::SOURCE :
-						(nn == stringw("sink") ? core::Node::SINK :
-						core::Node::INTERSECTION);
-			// Set the node to the struct.
-			core::Node node = {type, name, x, y};
+			core::Vertex::Type type = (nn == stringw("source")) ? core::Vertex::SOURCE :
+						(nn == stringw("sink") ? core::Vertex::SINK :
+						core::Vertex::INTERSECTION);
       // Add the node to the state graph.
-      boost::add_vertex(node, state.getGraph());
+      road::core::State::Graph* g = state.getGraph();
+      // Add the vertex.
+      boost::add_vertex(name, *g);
+      // Add the vertex properties
+      (*g)[name].type = type;
+      (*g)[name].x = x;
+      (*g)[name].y = y;
+
+      // Debug statement. 
+      std::cout << "SerializationXML.load Node: " << name << std::endl;
 
 		} else if (stringw("road") == nn) {
 			// Retrieve the source.
-			stringc tmp = xml->getAttributeValue(L"source");
+			stringc tmp = xml->getAttributeValue(L"from");
 			std::string source(tmp.c_str());
 			// Retrieve the destination.
-			tmp = xml->getAttributeValue(L"destination");
+			tmp = xml->getAttributeValue(L"to");
 			std::string destination(tmp.c_str());
-			core::Road road = {source, destination};
+      // Retrieve the graph.
+      road::core::State::Graph* g = state.getGraph();
+
+      if (g->vertex(source) != road::core::State::Graph::null_vertex() &&
+          g->vertex(destination) != road::core::State::Graph::null_vertex()) {
+        // Add the road to the graph.
+        boost::add_edge_by_label(source, destination, *g);
+        // Debug statement. 
+        std::cout << "SerializationXML.load Road: " << source << " to " << destination << std::endl;
+      } else {
+        std::cout << "SerializationXML.load Road (Failed, Invalid Vertex): " << source << " to " << destination << std::endl;
+      }
+
 		}
 	}
 

@@ -1,8 +1,8 @@
 <source name="source-0" x="0"   y="50" />
 <source name="source-1" x="50"  y="0" />
 <sink   name="sink-0" x="100" y = "50" />
-<sink   name="sink-0" x="50"  y="100" />
-<intersection name="intersection" x="50" y="50" />
+<sink   name="sink-1" x="50"  y="100" />
+<intersection name="intersection-0" x="50" y="50" />
 <road name="road-0" from="source-0" to="intersection-0" />
 <road name="road-1" from="source-1" to="intersection-0" />
 <road name="road-2" from="intersection-0" to="sink-0" />

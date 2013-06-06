@@ -5,12 +5,12 @@
 #include <irrlicht.h>
 #include <vector>
 
+
 namespace road {
 
 namespace core { class State; } // Prototype of state class.
 
 namespace graphics {
-
 
 /**
  * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
@@ -26,10 +26,12 @@ class GraphicsPolicy3D {
 	irr::gui::IGUIEnvironment* m_gui;
 	irr::IEventReceiver* m_receiver;
 	irr::scene::ITriangleSelector* m_selector;
+
 	core::State& m_state;
 
 	// Graphics Data.
 	std::vector<irr::scene::IMesh*> m_cars;
+  irr::core::dimension2d<irr::u32> m_resolution;
 
 	protected:
 		// Constructs the project.

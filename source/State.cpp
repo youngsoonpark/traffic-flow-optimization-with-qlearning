@@ -17,8 +17,8 @@ void State::setRunning(bool running) {
 	m_running = running;
 }
 
-State::Graph& State::getGraph() {
-	return m_graph;			
+State::Graph* State::getGraph() {
+	return &m_graph;			
 }
 
 } // End of namespace core.
