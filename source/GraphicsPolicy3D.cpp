@@ -31,6 +31,13 @@ struct Context {
 	ITriangleSelector* selector;
 	ISceneNode* cursor;
 	core::State& state;
+
+  // Syncronises the scene with the new state, this is a graphics issue as we
+  // have to load our current state from the boost graph, clear the old one in
+  // the scene managers graph and push in the new one.
+  void sync_scene_with_state() {
+  }
+
 };
 
 // Enum to handle custom events
@@ -89,12 +96,18 @@ class GUIEventReceiver : public IEventReceiver {
 				// Case where the user requests a file to be opened.
 				case EGET_FILE_SELECTED:
 					{
+          // If a file has been selected from the dialog, retrieve the caller.
 					IGUIFileOpenDialog* dialog = (IGUIFileOpenDialog*)event.GUIEvent.Caller;
 					std::cout << stringc(dialog->getFileName()).c_str() << std::endl;
+          // Retrieve the file path.
 					std::string path(stringc(dialog->getFileName()).c_str());
 					std::cout << path << std::endl;
+          // Pass it to the seriazization class.
 					road::io::SerializationXML serialize;
+          // Load the new graph into our state, given the path.
 					serialize.load(path, context.state);
+          // Reset the previous map, loading in the new map.
+          context.sync_scene_with_state();
 					}
 				break;
 
@@ -378,6 +391,10 @@ void GraphicsPolicy3D::create_gui() {
 	m_device->setEventReceiver(m_receiver);
 }
 
+void GraphicsPolicy3D::update_state() {
+  
+}
+
 void GraphicsPolicy3D::draw(core::State& state) {
 	// Check if someone closed the window, if so close the state.
 	if (!m_device->run()) {
@@ -392,6 +409,10 @@ void GraphicsPolicy3D::draw(core::State& state) {
 		m_driver->draw3DLine(vector3df(i*0.1, 20, -50), vector3df(i*0.1, 20, 50));
 		m_driver->draw3DLine(vector3df(-50, 20, i*0.1), vector3df(50, 20, i*0.1));
 	}
+
+  // Runs all the required updates on our state in relation to it specifically
+  // modifying graphical components. It doesn't actually modify the state.
+  update_state();
 
 	m_smgr->drawAll();
 	m_gui->drawAll();

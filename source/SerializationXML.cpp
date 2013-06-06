@@ -38,6 +38,9 @@ void SerializationXML::load(const std::string& filepath, core::State& state) con
 						core::Node::INTERSECTION);
 			// Set the node to the struct.
 			core::Node node = {type, name, x, y};
+      // Add the node to the state graph.
+      boost::add_vertex(node, state.getGraph());
+
 		} else if (stringw("road") == nn) {
 			// Retrieve the source.
 			stringc tmp = xml->getAttributeValue(L"source");

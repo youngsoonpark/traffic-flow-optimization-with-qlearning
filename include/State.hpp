@@ -42,10 +42,14 @@ struct Road {
  * and the learner.
  */
 class State {
-	typedef boost::adjacency_list<boost::listS, boost::vecS, boost::bidirectionalS, Node, Road> Map;
+	// Declare the relevant types
+  typedef boost::adjacency_list<boost::listS, boost::vecS, boost::bidirectionalS, Node, Road> Graph;
+  typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
+  typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
+
 	bool m_running;      // Whether the game is running or not, we set this to true at the start.
 	size_t m_tick_speed; // Determines the speed of a tick in the simulator.
-	Map m_map;           // The map, the actual graph of the entire scene. This is critical.
+	Graph m_graph;       // The map, the actual graph of the entire scene. This is critical.
 
 	public:
 		/**
@@ -75,7 +79,7 @@ class State {
 		/**
 		 * @return returns the adjacency list, with everything we need.
 		 */
-		Map& getMap();
+		Graph& getGraph();
 };
 
 } // End of namespace core.

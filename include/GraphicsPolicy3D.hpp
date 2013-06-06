@@ -38,6 +38,8 @@ class GraphicsPolicy3D {
 		void create_scene();
 		// Creates the graphical user interface.
 		void create_gui();
+    // Draws our state, this is stored outside of the irrlicht scene manager.
+    void update_state();
 		// Must be included for policies to work.
 		void draw(core::State& state);
 };
