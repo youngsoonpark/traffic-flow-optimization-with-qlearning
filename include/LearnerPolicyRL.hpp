@@ -19,6 +19,13 @@ public:
     static constexpr double DEFAULT_EXPLORATION_RATE = 0.1f;
     static constexpr double DEFAULT_DISCOUNT_FACTOR = 0.9f;
     
+    static const int NUM_LIGHT_SETTINGS = 2;
+    static const int NUM_APPROACHING_LANES = 2;
+    static const int MAX_CAR_DISTANCE = 8;
+    static const int NUM_STATES = NUM_APPROACHING_LANES * 
+                                  (MAX_CAR_DISTANCE + 2) *
+                                  NUM_LIGHT_SETTINGS;
+    
 protected:
     /**
      * @description Construct a new learner policy wiht the default parameters
@@ -56,6 +63,29 @@ protected:
 
 private:
     /**
+     * @description Get a integer value >= 0 and < NUM_STATES which represents
+     * each possible observed state
+     */
+    int stateIndex(core::State& state);
+    
+    /**
+     * @description Get the reward earned in the specified state
+     */
+    double reward(core::State& state);
+    
+    /**
+     * @description Get the optimal action to perform in the specified state
+     * @param stateIndex the index of the state
+     */
+    int optimalAction(int state_index);
+    
+    /**
+     * @description Get the maximum reward that can be earned from the specified
+     * state, including discounted future reward.
+     */
+    double optimalReward(int state_index);
+
+    /**
      * The learning rate is the extent to which old information overwrites new
      * information. A larger value will result in faster learning but more
      * instability.
@@ -79,6 +109,16 @@ private:
      * exploring policies with little chance of being optimal.
      */
     double exploration_rate;
+    
+    /**
+     * the map of States and Actions to rewards
+     */
+    double reward_map[NUM_STATES][NUM_LIGHT_SETTINGS];
+    
+    /**
+     * The map of states to optimal actions
+     */
+    //int optimal_actions[NUM_STATES];
 };
 
 } // End of namespace ml.

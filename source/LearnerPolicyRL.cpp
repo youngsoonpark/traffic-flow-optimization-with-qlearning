@@ -1,5 +1,11 @@
 #include "LearnerPolicyRL.hpp"
-#include "assert.h"
+#include "State.hpp"
+
+#include <assert.h>
+#include <float.h>
+#include <cstdlib>
+#include <cstdint>
+#include <vector>
 
 namespace road {
 namespace ml {
@@ -7,11 +13,15 @@ namespace ml {
 LearnerPolicyRL::LearnerPolicyRL(): learning_rate(DEFAULT_LEARNING_RATE),
                                     discount_factor(DEFAULT_DISCOUNT_FACTOR),
                                     exploration_rate(DEFAULT_EXPLORATION_RATE) {
-    // TODO Initialise the huge array
+    for (int state = 0; state < NUM_STATES; state++) {
+        //optimal_actions[state] = -1;
+        for (int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
+            reward_map[state][action] = 0;
+        }
+    }
 }
 
 LearnerPolicyRL::~LearnerPolicyRL() {
-    // TODO Free the huge array
 }
 
 void LearnerPolicyRL::setLearningRate(double new_learning_rate) {
@@ -30,8 +40,75 @@ void LearnerPolicyRL::setDiscountFactor(double new_discount_factor) {
 }
 
 void LearnerPolicyRL::action(core::State& state) {
-    // TODO Do q-learning
-}	
+    // Determine what action to perform
+    int state_index = stateIndex(state);
+    int new_action = -1;
+    if (rand() % 100 <= exploration_rate * 100) {
+        new_action = rand() % NUM_LIGHT_SETTINGS;
+    } else {
+        // Find the optimal action to perform
+        new_action = optimalAction(state_index);
+    }
+    
+    // Perform the action
+    state.setLights(static_cast<core::State::Lights>(new_action));
+    
+    // Learn from action:
+    
+    // Find the reward of the new state
+    double observed_reward = reward(state);
+    observed_reward += discount_factor * optimalReward(stateIndex(state));
+    
+    // Change some of the recorded reward
+    reward_map[state_index][new_action] *= 1 - learning_rate;
+    reward_map[state_index][new_action] += observed_reward * learning_rate;
+}
+
+int LearnerPolicyRL::stateIndex(core::State& state) {
+    int state_index = 0;
+    std::vector<uint8_t> lanes = state.identity();
+    for (int lane = 0; lane < NUM_APPROACHING_LANES; lane++) {
+        state_index *= MAX_CAR_DISTANCE + 2;
+        state_index += lanes[lane];
+    }
+    state_index *= NUM_LIGHT_SETTINGS;
+    state_index += static_cast<int>(state.getLights());
+    return state_index;
+}
+
+double LearnerPolicyRL::reward(core::State& state) {
+    for (int lane = 0; lane < NUM_APPROACHING_LANES; lane++) {
+        if (state.identity()[lane] == 0) {
+            // There is a car waiting in this lane
+            return -1;
+        }
+    }
+    return 0;
+}
+
+int LearnerPolicyRL::optimalAction(int state_index) {
+    // Find the optimal action to perform
+    double optimal_reward = -DBL_MAX;
+    int optimal_action;
+    for (int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
+        if (reward_map[state_index][action] > optimal_reward) {
+            optimal_action = action;
+            optimal_reward = reward_map[state_index][action];
+        }
+    }
+    return optimal_action;
+}
+
+double LearnerPolicyRL::optimalReward(int state_index) {
+    // Find the optimal action to perform
+    double optimal_reward = -DBL_MAX;
+    for (int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
+        if (reward_map[state_index][action] > optimal_reward) {
+            optimal_reward = reward_map[state_index][action];
+        }
+    }
+    return optimal_reward;
+}
 
 } // End of namespace ml.
 } // End of namespace road.
