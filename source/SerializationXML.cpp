@@ -58,9 +58,10 @@ void SerializationXML::load(const std::string& filepath, core::State& state) con
 			// Retrieve the destination.
 			tmp = xml->getAttributeValue(L"to");
 			std::string destination(tmp.c_str());
+
       // Retrieve the graph.
       road::core::State::Graph* g = state.getGraph();
-
+      // Add edges to the graph
       if (g->vertex(source) != road::core::State::Graph::null_vertex() &&
           g->vertex(destination) != road::core::State::Graph::null_vertex()) {
         // Add the road to the graph.

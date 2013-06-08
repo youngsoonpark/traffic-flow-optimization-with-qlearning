@@ -12,6 +12,8 @@ namespace core { class State; } // Prototype of state class.
 
 namespace graphics {
 
+class Context;
+
 /**
  * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
  * @description Takes a state and renders it to the screne in Haskell this
@@ -19,6 +21,7 @@ namespace graphics {
  * modify the state.
  */
 class GraphicsPolicy3D {
+  friend class Context;
 	// Device managers and other core components
 	irr::IrrlichtDevice* m_device;
 	irr::video::IVideoDriver* m_driver;
@@ -32,6 +35,7 @@ class GraphicsPolicy3D {
 	// Graphics Data.
 	std::vector<irr::scene::IMesh*> m_cars;
   irr::core::dimension2d<irr::u32> m_resolution;
+  irr::core::array<irr::video::ITexture*> m_portal_textures;
 
 	protected:
 		// Constructs the project.
