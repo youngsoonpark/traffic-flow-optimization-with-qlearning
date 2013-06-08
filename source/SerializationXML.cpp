@@ -51,7 +51,7 @@ void SerializationXML::load(const std::string& filepath, core::State& state) con
 
 		} else if (stringw("road") == nn) {
       // Retrieve the uid.
-			stringc tmp = xml->getAttributeValue(L"uid");
+			stringc tmp = xml->getAttributeValue(L"name");
 			std::string uid(tmp.c_str());
 			// Retrieve the source.
 			tmp = xml->getAttributeValue(L"from");
