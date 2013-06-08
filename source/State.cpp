@@ -3,7 +3,9 @@
 namespace road {
     namespace core {
 
-        State::State() : m_running(true) {
+        State::State(const int& maxCars) : m_running(true), m_lights(Lights::Horisontal), m_maxCars(maxCars) {
+            noCar.badboyFactor = 1.0;
+            noCar.speed = 1;
         }
 
         State::~State() {
@@ -26,26 +28,16 @@ namespace road {
             return m_lights;
         }
 
-        State::setLights(Lights lights)
+        void State::setLights(State::Lights lights)
         {
             m_lights = lights;
         }
 
-        int8_t State::feedback() const
+        /*std::vector<int8_t> State::identity() const
         {
-            if (m_lights == Lights::Horisontal)
-            {
-                // return the number of cars stopped in vertical edges * -1
-            }
-            else if (m_lights == Lights::Vertical)
-            {
-                // return the number of cars stopped in horisontal edges * -1
-            }
-            else
-            {
-                return 0;
-            }
-        }
+            std::vector<int8_t>() x;
+            return x;
+        }*/
 
     } // End of namespace core.
 } // End of namespace road.

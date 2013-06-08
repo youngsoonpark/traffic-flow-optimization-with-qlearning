@@ -5,7 +5,8 @@
 #include <boost/graph/labeled_graph.hpp>
 #include <cstdint>
 #include <deque>
-#include <queue>
+#include <utility>
+#include <vector>
 
 namespace road {
     namespace core {
@@ -42,7 +43,8 @@ namespace road {
          */
         struct Edge {
             size_t speed_limit;    // Speed limit.
-        	std::queue<Car> cars; // Cars on the road.
+        	std::deque<Car> cars; // Cars on the road.
+        	uint8_t actualCars;
         };
 
         /**
@@ -78,7 +80,7 @@ namespace road {
                  *  takes a reference and modifies the internals, as required.
                  *  It does, however set the core state to running.
                  */
-                State();
+                State(const int& maxCars);
 
                 /**
                  * @description cleans up the internals data structures
@@ -112,15 +114,22 @@ namespace road {
                 void setLights(const Lights lights);
 
                 /**
-                 * @return The number of cars stopped at lights; this will be a
-                 *         negative number.
+                 * @return TO DO
                  */
-                 int8_t feedback() const;
+                 std::vector<uint8_t> identity() const;
+
+                 /**
+                  * @return returns the maximum number of allowed cars
+                  */
+                  uint8_t getMaxCars() const;
+
+                  Car noCar;
         private:
             bool m_running;      // Whether the game is running or not, we set this to true at the start.
             Lights m_lights;     // This determines what state the lights are in.
             size_t m_tick_speed; // Determines the speed of a tick in the simulator.
             Graph m_graph;       // The map, the actual graph of the entire scene. This is critical.
+            const int8_t m_maxCars; // The maximum number of cars that a road is allowed to hold at any given time.
         };
 
     } // End of namespace core.

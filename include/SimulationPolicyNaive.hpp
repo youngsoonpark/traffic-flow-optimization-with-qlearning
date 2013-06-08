@@ -3,12 +3,13 @@
 
 namespace road {
 
-    namespace core { class State; }
+    namespace core { class State; enum State::Lights; }
 
     namespace sim {
 
         /**
-         * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
+         * @author Benjamin James Wright <bwright@cse.unsw.edu.au>,
+         *         Christopher Di Bella <chrisdb@cse.unsw.edu.au>
          * @description Naive simulation policy, just randomly distributes vehicles in the lanes
          * of speed 1. It is stupid, but it is the requirement for the basic assignment. So we provide
          * it here.
