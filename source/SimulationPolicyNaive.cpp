@@ -4,12 +4,17 @@
 #include <cstdlib>
 #include <list>
 
+#include <iostream>
+
 namespace road {
     namespace sim {
 
+    typedef std::list<core::Vertex>::iterator vertex_iterator;
+
         void SimulationPolicyNaive::update(core::State& state) {
+
             int chanceToGetCar = rand() % 101; // 101 so our range is [0, 100]
-            int road = rand() % 2;             // Value meaning is dependent on State::Lights
+            int rd = rand() % 2;             // Value meaning is dependent on State::Lights
             core::Graph* g = state.getGraph();
 
             core::Car tempCar(1, 1.0, false);    // This is a temporary location for our car
@@ -17,10 +22,11 @@ namespace road {
             std::list<core::Vertex> verticiesSource = g->get_vertices(core::Vertex::Type::SOURCE);
             std::list<core::Vertex> verticiesSink = g->get_vertices(core::Vertex::Type::SINK);
             std::list<core::Vertex> intersection = g->get_vertices(core::Vertex::Type::INTERSECTION);
+
             core::Edge from, to;
 
             // move all cars up by 1
-            for (std::list<core::Vertex>::iterator it = verticiesSource.begin(); it != verticiesSource.end(); ++it)
+            for (vertex_iterator it = verticiesSource.begin(); it != verticiesSource.end(); ++it)
             {
                 // Naive sources should only ever have one edge, so we can assume it is the back one
                 from = g->get_edges_from(*it).back();
@@ -36,13 +42,14 @@ namespace road {
                 {
                     --from.actual_cars;
                 }
-
+std::cout << "Updating the road...." << std::endl;
                 // Re-add the edge to the graph (this is only a copy of it!)
                 g->add_edge(*it, intersection.back(), from);
 
                 // Now find the corresponding sink
-                for (std::list<core::Vertex>::iterator jt = verticiesSink.begin(); jt != verticiesSink.end(); ++jt)
+                for (vertex_iterator jt = verticiesSink.begin(); jt != verticiesSink.end(); ++jt)
                 {
+
                     // We only care about the one that has the same uid as the source...
                     if (jt->uid.substr(sizeof("sink-"), std::string::npos) == tempName)
                     {
@@ -68,35 +75,36 @@ namespace road {
                 }
             }
 
-/*******************************************************************************
- *******************************************************************************
- *******************************************************************************
- *******************************************************************************
- *******************************************************************************
- *******************************************************************************
- *******************************************************************************
- *******************************************************************************
-
-
-
- Don't go any further.... shitty code that needs to be updated!
-
-
-
-
             // There is a 45% chance that a car will enter a lane
-            if (chanceToGetCar >= 45)
-            {
-                std::string edgeTrait = (road == State::Lights::Horisontal) ? "HorisontalSource" : "VerticalSource";
-
-                for (core::State::graph_traits::vertex_iterator vit = g->begin(); vit != g->end(); ++g)
+                /*
+                 * FOR EACH Vertex v in g
+                 *     IF v->trait == goal THEN
+                 *         Edge e = v->from
+                 *         IF e->actual_cars <= state.maxCars THEN
+                 *             e->push_back(car)
+                 *         END IF
+                 *
+                 *         BREAK
+                 *     END IF
+                 * NEXT v
+                 */
+                for (vertex_iterator it = verticiesSource.begin(); it != verticiesSource.end(); ++it)
                 {
-                    if (vit->getTrait() == edgeTrait && vit->somehowyouaccesstheedge.cars.size() <= state.maxCars())
-                    {
-                        vit->somehowyouaccesstheedge.cars.push_back(Car()vit->somehowyouaccesstheedge.speedlimit, 1.0));
-                    }
+                std::cout << "Attempting to add a car...." << std::endl;
+                    from = g->get_edges_from(*it).back();
+
+                        if (from.actual_cars <= state.getMaxCars())
+                        {
+                            if (chanceToGetCar < 45 && atoi(it->uid.substr(sizeof("source-"), std::string::npos).c_str()) == rd)
+                            {
+                                from.cars.push_back(core::Car(1, 1.0, false));
+                            }
+                            else
+                            {
+                                from.cars.push_back(core::Car(1, 1.0, true));
+                            }
+                        }
                 }
-            }*/
         }
     } // End of namespace sim.
 } // End of namespace road.

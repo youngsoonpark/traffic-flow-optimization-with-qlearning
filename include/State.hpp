@@ -76,12 +76,7 @@ namespace core {
                /**
                 * @return returns the maximum number of allowed cars
                 */
-                uint8_t getMaxCars() const;
-
-                /**
-                 *
-                 */
-                 bool emptySpot(const Car& car) const;
+                int8_t getMaxCars() const;
       private:
           bool m_running;      // Whether the game is running or not, we set this to true at the start.
           Lights m_lights;     // This determines what state the lights are in.

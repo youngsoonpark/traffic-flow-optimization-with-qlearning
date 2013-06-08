@@ -36,6 +36,11 @@ namespace road {
             std::vector<int8_t>() x;
             return x;
         }*/
+
+        int8_t State::getMaxCars() const
+        {
+            return m_maxCars;
+        }
     } // End of namespace core.
 } // End of namespace road.
 

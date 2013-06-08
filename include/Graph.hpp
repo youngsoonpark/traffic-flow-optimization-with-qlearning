@@ -50,18 +50,18 @@ struct Car {
 };
 
 /**
- * @author Benjamin James Wright <bwright@cse.unsw.eu.au> 
+ * @author Benjamin James Wright <bwright@cse.unsw.eu.au>
  * @description Defines an edge in the graph, in our case this defines
  *  a road, which has a speed limit, a capacity and a deque of cars.
  */
 struct Edge {
-  std::string uid;         // What we use to access.          
+  std::string uid;         // What we use to access.
   std::string src;   // Makes indexing easier.
   std::string dest;  // Makes indexing easier.
 
   std::size_t speed_limit; // Defines the speed limit for the edge.
   std::deque<Car> cars; // Cars on the road.
-  std::size_t actual_cars;
+  std::int8_t actual_cars;
 
   // Constructor.
   Edge() {}
@@ -79,7 +79,7 @@ struct Edge {
 class Graph {
   public:
   // Create a typedef of the type we are using to store our graph.
-  typedef boost::labeled_graph< 
+  typedef boost::labeled_graph<
             boost::adjacency_list<boost::listS, boost::vecS,
             boost::bidirectionalS, Vertex, Edge>,
             std::string
@@ -141,7 +141,7 @@ class Graph {
       // Use the above, just retrieve the uid.
       add_edge(src.uid, dest.uid, edge);
     }
-    
+
     /**
      * @description retrieves all the verticies
      */
@@ -162,7 +162,7 @@ class Graph {
       }
       return vertices;
     }
-    
+
     /**
      * @description retrieves all the verticies of a given type.
      **/
@@ -182,7 +182,7 @@ class Graph {
       // Return the list.
       return vertices;
     }
-    
+
     /**
      * @description retrieves all the edges in the graph.
      */
@@ -197,7 +197,7 @@ class Graph {
         vertex_t source = boost::source(*it.first, m_graph);
         vertex_t destination = boost::target(*it.first, m_graph);
         // Add properties to the edge.
-        // Add internal representation to the edge. 
+        // Add internal representation to the edge.
         to_add.uid = m_graph.graph()[*it.first].uid;
         to_add.speed_limit = m_graph.graph()[*it.first].speed_limit;
         to_add.cars = m_graph.graph()[*it.first].cars;
@@ -234,10 +234,10 @@ class Graph {
 
     /**
      * @description retrieves all the edges that come from the vertex.
-     */ 
+     */
     std::list<Edge> get_edges_from(Vertex& vertex) {
       // Create the predicate functor, todo make efficient.
-      struct has_vertex { 
+      struct has_vertex {
         Vertex& vertex;
         has_vertex(Vertex& vertex) : vertex(vertex) {}
         bool operator()(const Edge& edge) {
