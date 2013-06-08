@@ -3,7 +3,6 @@
 namespace road {
 namespace ml {
 
-
 void LearnerPolicyRL::action(core::State& state) {
 }	
 

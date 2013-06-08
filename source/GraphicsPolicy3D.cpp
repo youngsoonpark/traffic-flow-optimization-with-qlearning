@@ -38,15 +38,12 @@ struct Context {
   void sync_scene_with_state() {
     // Retrieve the graph
     core::State::Graph* g = state.getGraph();
-   
     // Create a texture animator for the portal textures. 
     ISceneNodeAnimator* animator = gfx.m_smgr->createTextureAnimator(gfx.m_portal_textures, 100);
     IBillboardSceneNode* billboard = NULL;
-
     // Iterate over the verticies adding them to the scene.
     typedef core::State::graph_traits::vertex_iterator vert_it_t;
     std::pair<vert_it_t, vert_it_t> vert;
-
     for (vert = boost::vertices(*g); vert.first != vert.second; vert.first++) {
       int x = (g->graph()[*vert.first].x) * 100;
       int y = (g->graph()[*vert.first].y) * 100;
@@ -67,7 +64,7 @@ struct Context {
     std::pair<edge_it_t, edge_it_t> edge;
     for (edge = boost::edges(*g); edge.first != edge.second; edge.first++) {
       //edge_desc = *edge.first;
-    } 
+    }
   }
 
 };
@@ -310,10 +307,10 @@ void GraphicsPolicy3D::create_scene() {
         // Add cars
         IMeshSceneNode* node;
         for (int i = 1; i <= 11; i++) {
-                std::stringstream ss;
-                ss << "data/media/cars/" << i << ".lwo";
-                std::string filepath = ss.str();
-		m_cars.push_back(m_smgr->getMesh(filepath.c_str()));
+            std::stringstream ss;
+            ss << "data/media/cars/" << i << ".lwo";
+            std::string filepath = ss.str();
+            m_cars.push_back(m_smgr->getMesh(filepath.c_str()));
                 //node = m_smgr->addAnimatedMeshSceneNode(mesh);
                 //node->setMaterialFlag(EMF_LIGHTING, false);
                 //node->setPosition(vector3df(i*8.0f,0.0f,0.0f));

@@ -4,7 +4,6 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/labeled_graph.hpp>
 #include <cstdint>
-#include <deque>
 #include <queue>
 
 namespace road {
@@ -17,7 +16,7 @@ namespace core {
    */
   struct Car {
       size_t speed;
-      double badboyFactor;
+      double bad_boy_factor;  
   };
 
   /**
@@ -40,7 +39,7 @@ namespace core {
    */
   struct Edge {
       size_t speed_limit; // Speed limit.
-    std::queue<Car> cars; // Cars on the road.
+      std::queue<Car> cars; //
   };
 
   /**
