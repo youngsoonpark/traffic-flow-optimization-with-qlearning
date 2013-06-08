@@ -2,7 +2,11 @@
 CPP=g++
 INCLUDES=-I../include -I/usr/local/include  -I/usr/include/irrlicht
 
+<<<<<<< HEAD
 CFLAGS = ${INCLUDES} -g -Wall -O2 -pipe -std=c++11
+=======
+CFLAGS = ${INCLUDES} -g -Wall -O2 -pipe -std=c++0x
+>>>>>>> 2e33383836b177744c7e9f6d026b803a3527297a
 LDFLAGS = -L/usr/local/lib
 LDLIBS = -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -ljpeg -lpng 
 

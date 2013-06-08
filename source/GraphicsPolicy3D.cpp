@@ -21,11 +21,12 @@ namespace graphics{
 // Define the context that the receiver can see, this is partially limited.
 struct Context {
 	// Construct the context.
-	Context(IrrlichtDevice* device, ITriangleSelector* selector,
+	Context(GraphicsPolicy3D& gfx, IrrlichtDevice* device, ITriangleSelector* selector,
 		ISceneNode* cursor, core::State& state) :
-		device(device), selector(selector), cursor(cursor), state(state) {}
+		gfx(gfx), device(device), selector(selector), cursor(cursor), state(state) {}
 
 	// The public attributes.
+  GraphicsPolicy3D& gfx;  
 	IrrlichtDevice* device;
 	ITriangleSelector* selector;
 	ISceneNode* cursor;
@@ -37,23 +38,33 @@ struct Context {
   void sync_scene_with_state() {
     // Retrieve the graph
     core::State::Graph* g = state.getGraph();
-
+    // Create a texture animator for the portal textures. 
+    ISceneNodeAnimator* animator = gfx.m_smgr->createTextureAnimator(gfx.m_portal_textures, 100);
+    IBillboardSceneNode* billboard = NULL;
     // Iterate over the verticies adding them to the scene.
     typedef core::State::graph_traits::vertex_iterator vert_it_t;
-    //road::core::State::Graph::graph_traits::vertex_descriptor vert_desc;
     std::pair<vert_it_t, vert_it_t> vert;
     for (vert = boost::vertices(*g); vert.first != vert.second; vert.first++) {
-      size_t x = g->graph()[*vert.first].x;
-      size_t y = g->graph()[*vert.first].y;
-         
+      int x = (g->graph()[*vert.first].x) * 100;
+      int y = (g->graph()[*vert.first].y) * 100;
+      // Create a billboard.
+      billboard = gfx.m_smgr->addBillboardSceneNode(0, dimension2d<f32>(100,100), vector3df(x, 50, y));
+      // Set material properties.
+      billboard->setMaterialFlag(EMF_LIGHTING, false);
+      billboard->setMaterialTexture(0, gfx.m_portal_textures[0]);
+      billboard->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
+      // Attach the animator.
+      billboard->addAnimator(animator);
     }
+    // Drop the portal animator.
+    animator->drop();
 
     // Iterate over the edges
     typedef core::State::graph_traits::edge_iterator edge_it_t;
     std::pair<edge_it_t, edge_it_t> edge;
     for (edge = boost::edges(*g); edge.first != edge.second; edge.first++) {
       //edge_desc = *edge.first;
-    } 
+    }
   }
 
 };
@@ -266,6 +277,15 @@ GraphicsPolicy3D::GraphicsPolicy3D(core::State& state) : m_state(state) {
 	m_smgr = m_device->getSceneManager();
 	m_gui = m_device->getGUIEnvironment();
 
+  // Load portal textures.
+  for (s32 i = 1; i < 8; i++) {
+    stringc path("data/media/textures/portal/portal");
+    path += i;
+    path += ".bmp";
+    m_portal_textures.push_back(m_driver->getTexture(path));
+  }
+      
+
 	// Create Scene Manager
 	create_scene();
 	create_gui();
@@ -287,10 +307,10 @@ void GraphicsPolicy3D::create_scene() {
         // Add cars
         IMeshSceneNode* node;
         for (int i = 1; i <= 11; i++) {
-                std::stringstream ss;
-                ss << "data/media/cars/" << i << ".lwo";
-                std::string filepath = ss.str();
-		m_cars.push_back(m_smgr->getMesh(filepath.c_str()));
+            std::stringstream ss;
+            ss << "data/media/cars/" << i << ".lwo";
+            std::string filepath = ss.str();
+            m_cars.push_back(m_smgr->getMesh(filepath.c_str()));
                 //node = m_smgr->addAnimatedMeshSceneNode(mesh);
                 //node->setMaterialFlag(EMF_LIGHTING, false);
                 //node->setPosition(vector3df(i*8.0f,0.0f,0.0f));
@@ -403,7 +423,7 @@ void GraphicsPolicy3D::create_gui() {
 	ISceneNode* cursor = m_smgr->addCubeSceneNode(100);
 	cursor->setMaterialFlag(EMF_LIGHTING, false);
 
-	Context context(m_device, m_selector, cursor, m_state);
+	Context context(*this, m_device, m_selector, cursor, m_state);
 	m_receiver = new GUIEventReceiver(context);
 	m_device->setEventReceiver(m_receiver);
 }
@@ -431,11 +451,7 @@ void GraphicsPolicy3D::draw(core::State& state) {
   // Runs all the required updates on our state in relation to it specifically
   // modifying graphical components. It doesn't actually modify the state.
   update_state();
-
-  
   m_smgr->drawAll();
- 
-
 	m_gui->drawAll();
 	m_driver->endScene();
 }
