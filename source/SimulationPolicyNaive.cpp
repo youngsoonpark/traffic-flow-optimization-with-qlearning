@@ -44,7 +44,7 @@ namespace road {
                 }
 std::cout << "Updating the road...." << std::endl;
                 // Re-add the edge to the graph (this is only a copy of it!)
-                g->add_edge(*it, intersection.back(), from);
+                g->update_edge(*it, intersection.back(), from);
 
                 // Now find the corresponding sink
                 for (vertex_iterator jt = verticiesSink.begin(); jt != verticiesSink.end(); ++jt)
@@ -66,7 +66,7 @@ std::cout << "Updating the road...." << std::endl;
                         }
 
                         // Re-add the edge to the graph (this is only a copy of it!)
-                        g->add_edge(intersection.back(), *jt, to);
+                        g->update_edge(intersection.back(), *jt, to);
 
                         // Remove this from the list since we don't need it anymore :)
                         //verticiesSink.remove(jt); <== obviously this isn't working atm; either going to find a different solution or just ignore altogether :(
