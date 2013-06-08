@@ -40,13 +40,16 @@ void SerializationXML::load(const std::string& filepath, core::State& state) con
 						(nn == stringw("sink") ? core::Vertex::SINK :
 						core::Vertex::INTERSECTION);
       // Add the node to the state graph.
-      road::core::State::Graph* g = state.getGraph();
+      road::core::Graph* g = state.getGraph();
       // Add the vertex.
+      // Create a vertex
+      // g->add_vertex(Vertex);
+      /*
       boost::add_vertex(name, *g);
       // Add the vertex properties
       (*g)[name].type = type;
       (*g)[name].x = x;
-      (*g)[name].y = y;
+      (*g)[name].y = y;*/
 
       // Debug statement. 
       std::cout << "SerializationXML.load Node: " << name << std::endl;
@@ -60,18 +63,12 @@ void SerializationXML::load(const std::string& filepath, core::State& state) con
 			std::string destination(tmp.c_str());
 
       // Retrieve the graph.
-      road::core::State::Graph* g = state.getGraph();
+      road::core::Graph* g = state.getGraph();
       // Add edges to the graph
-      if (g->vertex(source) != road::core::State::Graph::null_vertex() &&
-          g->vertex(destination) != road::core::State::Graph::null_vertex()) {
-        // Add the road to the graph.
-        boost::add_edge_by_label(source, destination, *g);
-        // Debug statement. 
-        std::cout << "SerializationXML.load Road: " << source << " to " << destination << std::endl;
-      } else {
-        std::cout << "SerializationXML.load Road (Failed, Invalid Vertex): " << source << " to " << destination << std::endl;
-      }
-
+      // Add the road to the graph.
+      //g->add_edge(source, destination, edge);
+      // Debug statement. 
+      std::cout << "SerializationXML.load Road: " << source << " to " << destination << std::endl;
 		}
 	}
 

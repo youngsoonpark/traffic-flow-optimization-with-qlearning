@@ -36,35 +36,6 @@ struct Context {
   // have to load our current state from the boost graph, clear the old one in
   // the scene managers graph and push in the new one.
   void sync_scene_with_state() {
-    // Retrieve the graph
-    core::State::Graph* g = state.getGraph();
-    // Create a texture animator for the portal textures. 
-    ISceneNodeAnimator* animator = gfx.m_smgr->createTextureAnimator(gfx.m_portal_textures, 100);
-    IBillboardSceneNode* billboard = NULL;
-    // Iterate over the verticies adding them to the scene.
-    typedef core::State::graph_traits::vertex_iterator vert_it_t;
-    std::pair<vert_it_t, vert_it_t> vert;
-    for (vert = boost::vertices(*g); vert.first != vert.second; vert.first++) {
-      int x = (g->graph()[*vert.first].x) * 100;
-      int y = (g->graph()[*vert.first].y) * 100;
-      // Create a billboard.
-      billboard = gfx.m_smgr->addBillboardSceneNode(0, dimension2d<f32>(100,100), vector3df(x, 50, y));
-      // Set material properties.
-      billboard->setMaterialFlag(EMF_LIGHTING, false);
-      billboard->setMaterialTexture(0, gfx.m_portal_textures[0]);
-      billboard->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
-      // Attach the animator.
-      billboard->addAnimator(animator);
-    }
-    // Drop the portal animator.
-    animator->drop();
-
-    // Iterate over the edges
-    typedef core::State::graph_traits::edge_iterator edge_it_t;
-    std::pair<edge_it_t, edge_it_t> edge;
-    for (edge = boost::edges(*g); edge.first != edge.second; edge.first++) {
-      //edge_desc = *edge.first;
-    }
   }
 
 };

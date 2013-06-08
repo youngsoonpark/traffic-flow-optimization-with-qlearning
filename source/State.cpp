@@ -17,7 +17,7 @@ namespace road {
             m_running = running;
         }
 
-        State::Graph* State::getGraph() {
+        Graph* State::getGraph() {
             return &m_graph;
         }
 

@@ -66,6 +66,7 @@ void LearnerPolicyRL::action(core::State& state) {
 
 int LearnerPolicyRL::stateIndex(core::State& state) {
     int state_index = 0;
+    /* Identity isn't a thing, add it to the state.
     std::vector<uint8_t> lanes = state.identity();
     for (int lane = 0; lane < NUM_APPROACHING_LANES; lane++) {
         state_index *= MAX_CAR_DISTANCE + 2;
@@ -73,16 +74,18 @@ int LearnerPolicyRL::stateIndex(core::State& state) {
     }
     state_index *= NUM_LIGHT_SETTINGS;
     state_index += static_cast<int>(state.getLights());
+    */
     return state_index;
 }
 
 double LearnerPolicyRL::reward(core::State& state) {
-    for (int lane = 0; lane < NUM_APPROACHING_LANES; lane++) {
+  /*  
+  for (int lane = 0; lane < NUM_APPROACHING_LANES; lane++) {
         if (state.identity()[lane] == 0) {
             // There is a car waiting in this lane
             return -1;
         }
-    }
+  }*/
     return 0;
 }
 

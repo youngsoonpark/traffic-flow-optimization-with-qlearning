@@ -1,144 +1,96 @@
 #ifndef ROAD_CORE_STATE_H_
 #define ROAD_CORE_STATE_H_
 
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/labeled_graph.hpp>
 #include <cstdint>
 #include <deque>
 #include <utility>
 #include <vector>
+#include "Graph.hpp"
 
 namespace road {
-    namespace core {
-        /**
-         * @author Christopher Di Bella <chrisdb@cse.unsw.edu.au>
-         * @description A car represents an object on the road.
-         * The badboy factor represents how likely they are to speed
-         * or run a red light.
-         */
-        struct Car
-        {
-            size_t speed;
-            double badboyFactor;
-            bool noCar;
-        };
+namespace core {
+      /**
+       * @author Benjamin James Wright <bwright@cse.unsw.edu.au>,
+       *         Christopher Di Bella <chrisdb@cse.unsw.edu.au>
+       * @descripton The state controls all the data about the
+       * current state of the simulation, where all the cars
+       * are located at what speed and in which lane. In additon
+       * to this everything about the current state of the intersections
+       * and the learner.
+       */
+      class State {
+      public:
+          /**
+           * @description Which lights are allowed to be green.
+           * Turning lanes are read as "X turn on to Y road".
+           * e.g. RightTurnHorisontal == "Right turn on to Horisontal road"
+           *
+           * At present, lights only work for a T-intersection (i.e. Hor, Vert).
+           */
+          enum class Lights { Horisontal, Vertical };
 
-        /**
-         * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
-         * @description A node is, either a source, sink or intersection. They behave
-         *  much the same for the most part. Their explict behaviour is interpreted
-         *  based on their type by the simulator. This is just a simple data store.
-         */
-        struct Vertex {
-	    // Defines the val
-	        enum Type { SOURCE, SINK, INTERSECTION } type; // Defines the type.
-	        size_t x;         // X position, used in the graphics.
-	        size_t y;         // Y Position, using in the graphics.
-        };
+              /**
+               * @description Constructs the initial state, it doesn't load
+               *  anything this is left up to the SerializationPolicy that
+               *  takes a reference and modifies the internals, as required.
+               *  It does, however set the core state to running.
+               */
+              State();
 
-        /**
-         * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
-         * @description A road represents an edge in the property graph, it contains
-         *  a speed limit, a vector of cars, a source and a destination. We keep the
-         *  source and destination to make it easier.
-         */
-        struct Edge {
-            size_t speed_limit;    // Speed limit.
-        	std::deque<Car> cars; // Cars on the road.
-        	uint8_t actualCars;
-        };
+              /**
+               * @description cleans up the internals data structures
+               *   used to represent the states.
+               */
+              ~State();
 
-        /**
-         * @author Benjamin James Wright <bwright@cse.unsw.edu.au>,
-         *         Christopher Di Bella <chrisdb@cse.unsw.edu.au>
-         * @descripton The state controls all the data about the
-         * current state of the simulation, where all the cars
-         * are located at what speed and in which lane. In additon
-         * to this everything about the current state of the intersections
-         * and the learner.
-         */
-        class State {
-        public:
-            // Declare the relevant types
-            typedef boost::labeled_graph<
-                    boost::adjacency_list<boost::listS, boost::vecS, boost::bidirectionalS, Vertex, Edge>,
-                    std::string
-                    > Graph;
-            typedef boost::graph_traits<Graph> graph_traits;
-            typedef Graph::vertex_descriptor VertexID;
-            typedef Graph::edge_descriptor EdgeID;
+              /**
+               * @return if the state is running.
+               */
+              bool isRunning();
 
-            /**
-             * @description Which lights are allowed to be green.
-             * Turning lanes are read as "X turn on to Y road".
-             * e.g. RightTurnHorisontal == "Right turn on to Horisontal road"
-             *
-             * At present, lights only work for a T-intersection (i.e. Hor, Vert).
-             */
-            enum class Lights { Horisontal, Vertical };
+              /**
+               * @param what to set the running state to.
+               */
+              void setRunning(bool running);
 
-                /**
-                 * @description Constructs the initial state, it doesn't load
-                 *  anything this is left up to the SerializationPolicy that
-                 *  takes a reference and modifies the internals, as required.
-                 *  It does, however set the core state to running.
-                 */
-                State();
+              /**
+               * @return returns the adjacency list, with everything we need.
+               */
+              Graph* getGraph();
+
+              /**
+               * @return returns the state of the traffic lights
+               */
+              Lights getLights() const;
+
+              /**
+               * @param What the lights are set to
+               */
+              void setLights(const Lights lights);
+
+              /**
+               * @return TO DO
+               */
+               std::vector<uint8_t> identity() const;
+
+               /**
+                * @return returns the maximum number of allowed cars
+                */
+                uint8_t getMaxCars() const;
 
                 /**
-                 * @description cleans up the internals data structures
-                 *   used to represent the states.
+                 *
                  */
-                ~State();
+                 bool emptySpot(const Car& car) const;
+      private:
+          bool m_running;      // Whether the game is running or not, we set this to true at the start.
+          Lights m_lights;     // This determines what state the lights are in.
+          size_t m_tick_speed; // Determines the speed of a tick in the simulator.
+          Graph m_graph;       // The map, the actual graph of the entire scene. This is critical.
+          const int8_t m_maxCars; // The maximum number of cars that a road is allowed to hold at any given time.
+      };
 
-                /**
-                 * @return if the state is running.
-                 */
-                bool isRunning();
-
-                /**
-                 * @param what to set the running state to.
-                 */
-                void setRunning(bool running);
-
-                /**
-                 * @return returns the adjacency list, with everything we need.
-                 */
-                Graph* getGraph();
-
-                /**
-                 * @return returns the state of the traffic lights
-                 */
-                Lights getLights() const;
-
-                /**
-                 * @param What the lights are set to
-                 */
-                void setLights(const Lights lights);
-
-                /**
-                 * @return TO DO
-                 */
-                 std::vector<uint8_t> identity() const;
-
-                 /**
-                  * @return returns the maximum number of allowed cars
-                  */
-                  uint8_t getMaxCars() const;
-
-                  /**
-                   *
-                   */
-                   bool emptySpot(const Car& car) const;
-        private:
-            bool m_running;      // Whether the game is running or not, we set this to true at the start.
-            Lights m_lights;     // This determines what state the lights are in.
-            size_t m_tick_speed; // Determines the speed of a tick in the simulator.
-            Graph m_graph;       // The map, the actual graph of the entire scene. This is critical.
-            const int8_t m_maxCars; // The maximum number of cars that a road is allowed to hold at any given time.
-        };
-
-    } // End of namespace core.
+  } // End of namespace core.
 } // End of namespace road.
 
 #endif  // ROAD_CORE_STATE_H_

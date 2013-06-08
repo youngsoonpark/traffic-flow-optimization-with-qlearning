@@ -8,7 +8,7 @@ namespace road {
         void SimulationPolicyNaive::update(core::State& state) {
             int chanceToGetCar = rand() % 101; // 101 so our range is [0, 100]
             int road = rand() % 2; // Value meaning is dependent on State::Lights
-            core::State::Graph* g = state.getGraph();
+            core::Graph* g = state.getGraph();
 
            /* core::Car tempCar;
             std::string tempName;
