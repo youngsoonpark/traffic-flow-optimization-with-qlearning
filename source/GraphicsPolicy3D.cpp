@@ -241,16 +241,6 @@ GraphicsPolicy3D::GraphicsPolicy3D(core::State& state) : m_state(state) {
 	m_driver = m_device->getVideoDriver();
 	m_smgr = m_device->getSceneManager();
 	m_gui = m_device->getGUIEnvironment();
-
-  // Load portal textures.
-  for (s32 i = 1; i < 8; i++) {
-    stringc path("data/media/textures/portal/portal");
-    path += i;
-    path += ".bmp";
-    m_portal_textures.push_back(m_driver->getTexture(path));
-  }
-      
-
 	// Create Scene Manager
 	create_scene();
 	create_gui();
@@ -414,11 +404,20 @@ void GraphicsPolicy3D::sync_scene_and_state() {
         node = m_smgr->addCubeSceneNode(100);
       }
 
+      // TODO fix.
       float x = it->x == 50 ? it->x*100 - 50 : it->x*100 + 50;
       float y = it->y == 50 ? it->y*100 - 50 : it->y*100 + 50;
       // Set the nodes position.
       node->setPosition(vector3df(x, 50, y));      
   }
+
+  // Iterate over the edges.
+  /*
+  std::list<core::Edge> edges = graph->get_edges();
+  std::list<core::Edge>::iterator edge_it;
+  for (edge_it = edges.begin(); it != edges.end(); it++) {
+    
+  }*/
 
 }
 
