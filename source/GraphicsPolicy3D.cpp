@@ -412,12 +412,14 @@ void GraphicsPolicy3D::sync_scene_and_state() {
   }
 
   // Iterate over the edges.
-  /*
   std::list<core::Edge> edges = graph->get_edges();
   std::list<core::Edge>::iterator edge_it;
-  for (edge_it = edges.begin(); it != edges.end(); it++) {
-    
-  }*/
+  for (edge_it = edges.begin(); edge_it != edges.end(); edge_it++) {
+    core::Vertex src = graph->get_vertex(edge_it->src);
+    core::Vertex dest = graph->get_vertex(edge_it->dest);
+    std::cout << "Drawing Road From: " << src.x << ", " << src.y;
+    std::cout << " to " << dest.x << ", " << dest.y << std::endl;
+  }
 
 }
 
