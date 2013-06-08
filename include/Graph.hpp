@@ -275,17 +275,27 @@ class Graph {
     /**
      * @description provides an interface for updating an edge if it has been changed
      */
-    void update_edge(const Vertex& from, const Vertex& to, const Edge& edge)
-    {
-        std::pair<edge_iterator, edge_iterator> it;
-        Edge& edge;
+    void update_edge(const Vertex& from, const Vertex& to, const Edge& edge) {
+      /*
+       * Basic algorithm:
+       *
+       * FOR EACH Edge e in m_graph
+       *    IF e->from == from && e->to == to THEN
+       *        e = edge
+       *        RETURN
+       *    END IF
+       * NEXT e
+       */
 
-        for (it = boost::edges(m_graph); it.first != it.second; ++it.first) {
-          // Retrieve the source and destination.
-          vertex_t source = boost::source(*it.first, m_graph);
-          vertex_t destination = boost::target(*it.first, m_graph);
-          //if (*it.first)
-        }
+      std::pair<edge_iterator, edge_iterator> it;
+      Edge& edge;
+
+      for (it = boost::edges(m_graph); it.first != it.second; ++it.first) {
+        // Retrieve the source and destination.
+        vertex_t source = boost::source(*it.first, m_graph);
+        vertex_t destination = boost::target(*it.first, m_graph);
+        //if (*it.first)
+      }
     }
 
   private:
