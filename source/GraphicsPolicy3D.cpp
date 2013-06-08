@@ -419,6 +419,29 @@ void GraphicsPolicy3D::sync_scene_and_state() {
     core::Vertex dest = graph->get_vertex(edge_it->dest);
     std::cout << "Drawing Road From: " << src.x << ", " << src.y;
     std::cout << " to " << dest.x << ", " << dest.y << std::endl;
+
+    // Attach it to the scene.
+    int distance;
+    int offset;
+    ISceneNode* node = m_smgr->addCubeSceneNode(100);
+    // If the x values are equal.
+    if (dest.x == src.x) {
+      distance = std::abs(dest.y + src.y);
+      offset = dest.y > src.y ? (distance/2) : -(distance/2);
+      node->setScale(vector3df(1, 1, distance));
+      node->setPosition(vector3df(src.x*100, 1, src.y*100 + offset*100));
+
+    // Else if the x values are equal.
+    } else { 
+      distance = std::abs(dest.x + src.x);
+      offset = dest.x > src.x ? (distance/2) : -(distance/2);
+      node->setScale(vector3df(distance, 1, 1));
+      node->setPosition(vector3df(src.x*100 + offset*100, 1, src.y*100));
+    }
+    node->setMaterialFlag(EMF_LIGHTING, false);
+    //node->setMaterialTexture(0, m_driver->getTexture("./data/media/road.jpg"));
+    node->setMaterialTexture(0, m_driver->getTexture("data/media/grass.jpg"));
+    node->getMaterial(0).getTextureMatrix(0).setTextureScale(10,10);
   }
 
 }
