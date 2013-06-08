@@ -1,17 +1,12 @@
 #include "LearnerPolicyRL.hpp"
 #include "assert.h"
 
-#define DEFAULT_LEARNING_RATE 0.1
-#define DEFAULT_EXPLORATION_RATE 0.1
-#define DEFAULT_DISCOUNT_FACTOR 0.9
-
 namespace road {
 namespace ml {
 
-LearnerPolicyRL::LearnerPolicyRL() {
-    learning_rate = DEFAULT_LEARNING_RATE;
-    discount_factor = DEFAULT_DISCOUNT_FACTOR;
-    exploration_rate = DEFAULT_EXPLORATION_RATE;
+LearnerPolicyRL::LearnerPolicyRL(): learning_rate(DEFAULT_LEARNING_RATE),
+                                    discount_factor(DEFAULT_DISCOUNT_FACTOR),
+                                    exploration_rate(DEFAULT_EXPLORATION_RATE) {
     // TODO Initialise the huge array
 }
 
