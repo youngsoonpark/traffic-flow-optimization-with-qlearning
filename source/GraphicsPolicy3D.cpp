@@ -242,6 +242,12 @@ GraphicsPolicy3D::GraphicsPolicy3D(core::State& state) : m_state(state) {
 	m_smgr = m_device->getSceneManager();
 	m_gui = m_device->getGUIEnvironment();
   m_road_texture = m_driver->getTexture("data/media/road.jpg");
+  
+  // Add the source texture and mesh.
+  m_source_mesh = m_smgr->getMesh("data/media/buildings/houseF.obj");
+  // Add the sink texture and mesh
+  m_sink_mesh = m_smgr->getMesh("data/media/buildings/CPL5.3ds");
+
 	// Create Scene Manager
 	create_scene();
 	create_gui();
@@ -272,17 +278,18 @@ void GraphicsPolicy3D::create_scene() {
                 //node->setPosition(vector3df(i*8.0f,0.0f,0.0f));
         }
 
+
         // Make the ground
-  node = m_smgr->addCubeSceneNode(10);
-  node->setMaterialTexture(0, m_driver->getTexture("data/media/grass.jpg"));
-  node->getMaterial(0).getTextureMatrix(0).setTextureScale(10,10);
-  node->setPosition(vector3df(0 ,-10, 0));
-  node->setMaterialFlag(EMF_LIGHTING, false);
-  node->setMaterialFlag(EMF_ANTI_ALIASING, true);
-  node->setMaterialFlag(EMF_BILINEAR_FILTER, true);
-  node->setMaterialFlag(EMF_TRILINEAR_FILTER, true);
-  node->setMaterialFlag(EMF_ANTI_ALIASING, true);	
-  node->setScale(vector3df(1000,1, 1000));
+        node = m_smgr->addCubeSceneNode(10);
+        node->setMaterialTexture(0, m_driver->getTexture("data/media/grass.jpg"));
+        node->getMaterial(0).getTextureMatrix(0).setTextureScale(10,10);
+        node->setPosition(vector3df(0 ,-10, 0));
+        node->setMaterialFlag(EMF_LIGHTING, false);
+        node->setMaterialFlag(EMF_ANTI_ALIASING, true);
+        node->setMaterialFlag(EMF_BILINEAR_FILTER, true);
+        node->setMaterialFlag(EMF_TRILINEAR_FILTER, true);
+        node->setMaterialFlag(EMF_ANTI_ALIASING, true);	
+        node->setScale(vector3df(1000,1, 1000));
 
 	// Add a triangle selector
 	m_selector = m_smgr->createOctreeTriangleSelector(node->getMesh(), node, 128);
@@ -395,29 +402,38 @@ void GraphicsPolicy3D::sync_scene_and_state() {
   std::list<core::Vertex> vertices = graph->get_vertices();
   std::list<core::Vertex>::iterator it;
   for (it = vertices.begin(); it != vertices.end(); it++) {
-      ISceneNode* node;
-      // TODO make these unique.
-      if (it->type == core::Vertex::SOURCE) {
-        node = m_smgr->addCubeSceneNode(100);
-      } else if (it->type == core::Vertex::SINK) {
-        node = m_smgr->addCubeSceneNode(100);
-      } else if (it->type == core::Vertex::INTERSECTION) {
-        node = m_smgr->addCubeSceneNode(100);
-      }
+      IMeshSceneNode* node;;
 
-      // TODO fix.
       float x = it->x == 50 ? it->x*100 - 50 : it->x*100 + 50;
       float y = it->y == 50 ? it->y*100 - 50 : it->y*100 + 50;
-      // Set the nodes position.
-      node->setPosition(vector3df(x, 50, y));      
+
+      if (it->type == core::Vertex::SOURCE) {
+        node = m_smgr->addMeshSceneNode(m_source_mesh);
+        node->setScale(vector3df(20, 20, 20));
+        node->setMaterialFlag(EMF_LIGHTING, false);
+        node->setPosition(vector3df(x, 0, y));      
+      } else if (it->type == core::Vertex::SINK) {
+        node = m_smgr->addMeshSceneNode(m_sink_mesh);
+        node->setScale(vector3df(0.05, 0.05, 0.05));
+        //node = m_smgr->addCubeSceneNode(100);
+        node->setMaterialFlag(EMF_LIGHTING, false);
+        node->setPosition(vector3df(x, 0, y));      
+      } else if (it->type == core::Vertex::INTERSECTION) {
+        node = m_smgr->addCubeSceneNode(100);
+        node->setMaterialFlag(EMF_LIGHTING, false);
+        node->setPosition(vector3df(x, 50, y));      
+      }
   }
 
   // Iterate over the edges.
   std::list<core::Edge> edges = graph->get_edges();
   std::list<core::Edge>::iterator edge_it;
   for (edge_it = edges.begin(); edge_it != edges.end(); edge_it++) {
+    // Retrieve the source and dest vertexes.
     core::Vertex src = graph->get_vertex(edge_it->src);
     core::Vertex dest = graph->get_vertex(edge_it->dest);
+    
+    // Print some debug messages.
     std::cout << "Drawing Road From: " << src.x << ", " << src.y;
     std::cout << " to " << dest.x << ", " << dest.y << std::endl;
 
@@ -425,6 +441,7 @@ void GraphicsPolicy3D::sync_scene_and_state() {
     int distance;
     int offset;
     ISceneNode* node = m_smgr->addCubeSceneNode(100);
+
     node->setMaterialFlag(EMF_LIGHTING, false);
     node->setMaterialTexture(0, m_road_texture);
     // If the x values are equal.
