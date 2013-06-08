@@ -6,7 +6,7 @@ namespace road {
     namespace sim {
 
         void SimulationPolicyNaive::update(core::State& state) {
-        /*    int chanceToGetCar = rand() % 101; // 101 so our range is [0, 100]
+            int chanceToGetCar = rand() % 101; // 101 so our range is [0, 100]
             int road = rand() % 2; // Value meaning is dependent on State::Lights
             core::State::Graph* g = state.getGraph();
 
@@ -47,7 +47,7 @@ namespace road {
                         vit->somehowyouaccesstheedge.cars.push_back(Car()vit->somehowyouaccesstheedge.speedlimit, 1.0));
                     }
                 }
-            }*/
+            }
         }
     } // End of namespace sim.
 } // End of namespace road.
