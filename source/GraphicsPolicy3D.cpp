@@ -431,16 +431,16 @@ void GraphicsPolicy3D::sync_scene_and_state() {
     if (dest.x == src.x) {
       distance = std::abs(dest.y + src.y);
       offset = dest.y > src.y ? (distance/2) : -(distance/2);
-      node->setScale(vector3df(1, 1, distance));
-      node->setPosition(vector3df(src.x*100, 1, src.y*100 + offset*100));
+      node->setScale(vector3df(1, 0.1, distance));
+      node->setPosition(vector3df(src.x*100 + 50, -5, src.y*100 + offset*100));
       node->getMaterial(0).getTextureMatrix(0).setTextureScale(10,1);
       node->getMaterial(0).getTextureMatrix(0).setTextureRotationCenter(1.57f);
     // Else if the x values are equal.
     } else { 
       distance = std::abs(dest.x + src.x);
       offset = dest.x > src.x ? (distance/2) : -(distance/2);
-      node->setScale(vector3df(distance, 1, 1));
-      node->setPosition(vector3df(src.x*100 + offset*100, 1, src.y*100));
+      node->setScale(vector3df(distance, 0.1, 1));
+      node->setPosition(vector3df(src.x*100 + offset*100, -5, src.y*100 + 50));
       node->getMaterial(0).getTextureMatrix(0).setTextureScale(1,10);
     }
   }

@@ -123,8 +123,6 @@ class Graph {
     /**
      * @description adds an edge with custom defined user data.
      */
-
-    
     void add_edge(std::string src, std::string dest, Edge& edge) {
       edge_t new_edge;
       bool b;
