@@ -41,32 +41,30 @@ void SerializationXML::load(const std::string& filepath, core::State& state) con
 						core::Vertex::INTERSECTION);
       // Add the node to the state graph.
       road::core::Graph* g = state.getGraph();
+      // Create the vertex.
+      core::Vertex vertex(type, name, x, y);
       // Add the vertex.
-      // Create a vertex
-      // g->add_vertex(Vertex);
-      /*
-      boost::add_vertex(name, *g);
-      // Add the vertex properties
-      (*g)[name].type = type;
-      (*g)[name].x = x;
-      (*g)[name].y = y;*/
+      g->add_vertex(vertex);
 
       // Debug statement. 
       std::cout << "SerializationXML.load Node: " << name << std::endl;
 
 		} else if (stringw("road") == nn) {
+      // Retrieve the uid.
+			stringc tmp = xml->getAttributeValue(L"uid");
+			std::string uid(tmp.c_str());
 			// Retrieve the source.
-			stringc tmp = xml->getAttributeValue(L"from");
+			tmp = xml->getAttributeValue(L"from");
 			std::string source(tmp.c_str());
 			// Retrieve the destination.
 			tmp = xml->getAttributeValue(L"to");
 			std::string destination(tmp.c_str());
-
       // Retrieve the graph.
       road::core::Graph* g = state.getGraph();
       // Add edges to the graph
       // Add the road to the graph.
-      //g->add_edge(source, destination, edge);
+      core::Edge edge(uid, 100);
+      g->add_edge(source, destination, edge);
       // Debug statement. 
       std::cout << "SerializationXML.load Road: " << source << " to " << destination << std::endl;
 		}
