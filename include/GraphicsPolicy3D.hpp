@@ -36,6 +36,9 @@ class GraphicsPolicy3D {
 
 	// Graphics Data.
 	std::vector<irr::scene::IMesh*> m_cars;
+  irr::scene::IMesh* m_source_mesh; // Source mesh and texture.
+  irr::scene::IMesh* m_sink_mesh;   // Sink mesh and texture.
+
   irr::video::ITexture* m_road_texture;
   irr::core::dimension2d<irr::u32> m_resolution;
 
