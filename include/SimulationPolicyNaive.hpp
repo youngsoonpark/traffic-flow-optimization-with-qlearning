@@ -3,7 +3,10 @@
 
 namespace road {
 
-    namespace core { class State; enum State::Lights; }
+    namespace core {
+        struct Car;
+        class State;
+    }
 
     namespace sim {
 

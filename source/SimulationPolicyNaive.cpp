@@ -5,12 +5,12 @@
 namespace road {
     namespace sim {
 
-        void SimulationPolicyNaive::update(core::State& state) {/*
+        void SimulationPolicyNaive::update(core::State& state) {
             int chanceToGetCar = rand() % 101; // 101 so our range is [0, 100]
             int road = rand() % 2; // Value meaning is dependent on State::Lights
             core::State::Graph* g = state.getGraph();
 
-            core::Car tempCar;
+           /* core::Car tempCar;
             std::string tempName;
             size_t location;
             // move all cars up by 1

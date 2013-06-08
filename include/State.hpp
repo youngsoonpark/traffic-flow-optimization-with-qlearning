@@ -20,6 +20,7 @@ namespace road {
         {
             size_t speed;
             double badboyFactor;
+            bool noCar;
         };
 
         /**
@@ -64,6 +65,8 @@ namespace road {
                     std::string
                     > Graph;
             typedef boost::graph_traits<Graph> graph_traits;
+            typedef Graph::vertex_descriptor VertexID;
+            typedef Graph::edge_descriptor EdgeID;
 
             /**
              * @description Which lights are allowed to be green.
@@ -72,7 +75,7 @@ namespace road {
              *
              * At present, lights only work for a T-intersection (i.e. Hor, Vert).
              */
-            enum Lights { Horisontal, Vertical };
+            enum class Lights { Horisontal, Vertical };
 
                 /**
                  * @description Constructs the initial state, it doesn't load
@@ -80,7 +83,7 @@ namespace road {
                  *  takes a reference and modifies the internals, as required.
                  *  It does, however set the core state to running.
                  */
-                State(const int& maxCars);
+                State();
 
                 /**
                  * @description cleans up the internals data structures
@@ -123,7 +126,10 @@ namespace road {
                   */
                   uint8_t getMaxCars() const;
 
-                  Car noCar;
+                  /**
+                   *
+                   */
+                   bool emptySpot(const Car& car) const;
         private:
             bool m_running;      // Whether the game is running or not, we set this to true at the start.
             Lights m_lights;     // This determines what state the lights are in.
