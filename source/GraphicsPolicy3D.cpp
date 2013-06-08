@@ -241,6 +241,7 @@ GraphicsPolicy3D::GraphicsPolicy3D(core::State& state) : m_state(state) {
 	m_driver = m_device->getVideoDriver();
 	m_smgr = m_device->getSceneManager();
 	m_gui = m_device->getGUIEnvironment();
+  m_road_texture = m_driver->getTexture("data/media/road.jpg");
 	// Create Scene Manager
 	create_scene();
 	create_gui();
@@ -424,24 +425,24 @@ void GraphicsPolicy3D::sync_scene_and_state() {
     int distance;
     int offset;
     ISceneNode* node = m_smgr->addCubeSceneNode(100);
+    node->setMaterialFlag(EMF_LIGHTING, false);
+    node->setMaterialTexture(0, m_road_texture);
     // If the x values are equal.
     if (dest.x == src.x) {
       distance = std::abs(dest.y + src.y);
       offset = dest.y > src.y ? (distance/2) : -(distance/2);
       node->setScale(vector3df(1, 1, distance));
       node->setPosition(vector3df(src.x*100, 1, src.y*100 + offset*100));
-
+      node->getMaterial(0).getTextureMatrix(0).setTextureScale(10,1);
+      node->getMaterial(0).getTextureMatrix(0).setTextureRotationCenter(1.57f);
     // Else if the x values are equal.
     } else { 
       distance = std::abs(dest.x + src.x);
       offset = dest.x > src.x ? (distance/2) : -(distance/2);
       node->setScale(vector3df(distance, 1, 1));
       node->setPosition(vector3df(src.x*100 + offset*100, 1, src.y*100));
+      node->getMaterial(0).getTextureMatrix(0).setTextureScale(1,10);
     }
-    node->setMaterialFlag(EMF_LIGHTING, false);
-    //node->setMaterialTexture(0, m_driver->getTexture("./data/media/road.jpg"));
-    node->setMaterialTexture(0, m_driver->getTexture("data/media/grass.jpg"));
-    node->getMaterial(0).getTextureMatrix(0).setTextureScale(10,10);
   }
 
 }

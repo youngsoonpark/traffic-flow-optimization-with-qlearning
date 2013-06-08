@@ -36,6 +36,7 @@ class GraphicsPolicy3D {
 
 	// Graphics Data.
 	std::vector<irr::scene::IMesh*> m_cars;
+  irr::video::ITexture* m_road_texture;
   irr::core::dimension2d<irr::u32> m_resolution;
 
 	protected:
