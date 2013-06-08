@@ -3,7 +3,7 @@
 namespace road {
     namespace core {
 
-        State::State(const int& maxCars) : m_running(true), m_lights(Lights::Horisontal), m_maxCars(maxCars) {
+        State::State() : m_running(true), m_lights(Lights::Horisontal), m_maxCars(50) {
         }
 
         State::~State() {
