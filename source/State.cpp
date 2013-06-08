@@ -26,7 +26,7 @@ namespace road {
             return m_lights;
         }
 
-        State::setLights(Lights lights)
+        void State::setLights(Lights lights)
         {
             m_lights = lights;
         }

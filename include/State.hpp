@@ -122,7 +122,6 @@ namespace road {
             size_t m_tick_speed; // Determines the speed of a tick in the simulator.
             Graph m_graph;       // The map, the actual graph of the entire scene. This is critical.
         };
-
     } // End of namespace core.
 } // End of namespace road.
 
