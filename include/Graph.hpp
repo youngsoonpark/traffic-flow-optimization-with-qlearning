@@ -97,6 +97,18 @@ class Graph {
     Graph() {}
 
     /**
+     * @description returns a vertex, given its unique identifier.
+     */
+    Vertex get_vertex(std::string uid) {
+      Vertex new_vertex;
+      new_vertex.type = m_graph[uid].type;
+      new_vertex.uid = m_graph[uid].uid;
+      new_vertex.x = m_graph[uid].x;
+      new_vertex.y = m_graph[uid].y;
+      return new_vertex;
+    }
+
+    /**
      * @description add a vertex, to the graph.
      */
     void add_vertex(Vertex& to_add) {

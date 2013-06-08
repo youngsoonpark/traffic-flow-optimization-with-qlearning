@@ -32,12 +32,6 @@ struct Context {
 	ISceneNode* cursor;
 	core::State& state;
 
-  // Syncronises the scene with the new state, this is a graphics issue as we
-  // have to load our current state from the boost graph, clear the old one in
-  // the scene managers graph and push in the new one.
-  void sync_scene_with_state() {
-  }
-
 };
 
 // Enum to handle custom events
@@ -107,7 +101,7 @@ class GUIEventReceiver : public IEventReceiver {
           // Load the new graph into our state, given the path.
 					serialize.load(path, context.state);
           // Reset the previous map, loading in the new map.
-          context.sync_scene_with_state();
+          context.gfx.sync_scene_and_state();
 					}
 				break;
 
@@ -401,6 +395,31 @@ void GraphicsPolicy3D::create_gui() {
 
 void GraphicsPolicy3D::update_state() {
   
+}
+
+void GraphicsPolicy3D::sync_scene_and_state() {
+  // Retrieve the graph.
+  core::Graph* graph = m_state.getGraph();
+  // Iterate over the verticies.
+  std::list<core::Vertex> vertices = graph->get_vertices();
+  std::list<core::Vertex>::iterator it;
+  for (it = vertices.begin(); it != vertices.end(); it++) {
+      ISceneNode* node;
+      // TODO make these unique.
+      if (it->type == core::Vertex::SOURCE) {
+        node = m_smgr->addCubeSceneNode(100);
+      } else if (it->type == core::Vertex::SINK) {
+        node = m_smgr->addCubeSceneNode(100);
+      } else if (it->type == core::Vertex::INTERSECTION) {
+        node = m_smgr->addCubeSceneNode(100);
+      }
+
+      float x = it->x == 50 ? it->x*100 - 50 : it->x*100 + 50;
+      float y = it->y == 50 ? it->y*100 - 50 : it->y*100 + 50;
+      // Set the nodes position.
+      node->setPosition(vector3df(x, 50, y));      
+  }
+
 }
 
 void GraphicsPolicy3D::draw(core::State& state) {

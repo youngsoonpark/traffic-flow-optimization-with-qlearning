@@ -13,6 +13,7 @@ namespace core { class State; } // Prototype of state class.
 namespace graphics {
 
 class Context;
+class GUIEventReceiver;
 
 /**
  * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
@@ -22,6 +23,7 @@ class Context;
  */
 class GraphicsPolicy3D {
   friend class Context;
+  friend class GUIEventReceiver;
 	// Device managers and other core components
 	irr::IrrlichtDevice* m_device;
 	irr::video::IVideoDriver* m_driver;
@@ -46,6 +48,9 @@ class GraphicsPolicy3D {
 		void create_gui();
     // Draws our state, this is stored outside of the irrlicht scene manager.
     void update_state();
+    // Syncronizes irrlichts internal scene graph with our external one, called
+    // on new map loads.
+    void sync_scene_and_state();
 		// Must be included for policies to work.
 		void draw(core::State& state);
 };
