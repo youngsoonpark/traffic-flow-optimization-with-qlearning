@@ -1,5 +1,4 @@
 #include "LearnerPolicyRL.hpp"
-#include "State.hpp"
 
 #include <assert.h>
 #include <float.h>
@@ -48,6 +47,16 @@ void LearnerPolicyRL::setDiscountFactor(double new_discount_factor)
 
 void LearnerPolicyRL::action(core::State& state)
 {
+  // Check that there is one intersection on the map  
+  core::Graph *graph = state.getGraph();
+  std::list<core::Vertex> intersection_list;
+  intersection_list = graph->get_vertices(core::Vertex::INTERSECTION);
+  if (intersection_list.size() != 1) {
+    std::cout << "Intersections found: " << intersection_list.size() <<
+        ". Learning is impossible." << std::endl;
+    return;
+  }
+  
   // Determine what action to perform
   int state_index = stateIndex(state);
   int new_action = -1;
@@ -75,10 +84,10 @@ void LearnerPolicyRL::action(core::State& state)
 int LearnerPolicyRL::stateIndex(core::State& state)
 {
   int state_index = 0;
-  std::vector<uint8_t> lanes = state.identity();
+  std::vector<uint8_t> lanes = approachingCars(state);
   for (int lane = 0; lane < NUM_APPROACHING_LANES; lane++) {
-      state_index *= MAX_CAR_DISTANCE + 2;
-      state_index += lanes[lane];
+    state_index *= MAX_CAR_DISTANCE + 2;
+    state_index += lanes[lane];
   }
   state_index *= NUM_LIGHT_SETTINGS;
   state_index += static_cast<int>(state.getLights());
@@ -87,11 +96,12 @@ int LearnerPolicyRL::stateIndex(core::State& state)
 
 double LearnerPolicyRL::reward(core::State& state)
 {
+  std::vector<uint8_t> approaching_cars = approachingCars(state);
   for (int lane = 0; lane < NUM_APPROACHING_LANES; lane++) {
-        if (state.identity()[lane] == 0) {
-            // There is a car waiting in this lane
-            return -1;
-        }
+    if (approaching_cars[lane] == 0) {
+      // There is a car waiting in this lane
+      return -1;
+    }
   }
   return 0;
 }
@@ -120,6 +130,45 @@ double LearnerPolicyRL::optimalReward(int state_index)
     }
   }
   return optimal_reward;
+}
+
+std::vector<uint8_t> LearnerPolicyRL::approachingCars(core::State& state)
+{
+  core::Graph *graph = state.getGraph();
+  
+  // Find the vertex containing THE ONLY intersection
+  std::list<core::Vertex> intersection_list;
+  intersection_list = graph->get_vertices(core::Vertex::INTERSECTION);
+  
+  assert(intersection_list.size() == 1); // Can't handle more than one
+  
+  core::Vertex intersection = intersection_list.front();
+  
+  // Get the edges that go to the intersection (approachine lanes)
+  std::list<core::Edge> lanes = graph->get_edges_to(intersection);
+  assert(lanes.size() == static_cast<uint8_t>(NUM_APPROACHING_LANES));
+  
+  std::vector<uint8_t> result;
+  
+  // for each one, iterate over them in reverse to find the closest car and
+  // add it to the result
+  for (std::list<core::Edge>::iterator it = lanes.begin(); it != lanes.end(); it++) {
+    core::Edge::Container cars = it->cars;
+    int car_distance = MAX_CAR_DISTANCE;
+    int current_position = 0;
+    for (core::Edge::Container::reverse_iterator it = cars.rbegin();
+          it != cars.rend() && current_position <= MAX_CAR_DISTANCE; it++)
+    {
+      if(!it->no_car)
+      {
+        car_distance = current_position;
+        break;
+      }
+      current_position++;
+    }
+    result.push_back(car_distance);
+  }
+  return result;
 }
 
 } // End of namespace ml.

@@ -75,11 +75,6 @@ public:
   void setLights(const Lights lights);
 
   /**
-   * @return TO DO
-   */
-  std::vector<uint8_t> identity() const;
-
-  /**
    * @return returns the maximum number of allowed cars
    */
   int8_t getMaxCars() const;

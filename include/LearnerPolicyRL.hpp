@@ -1,6 +1,9 @@
 #ifndef ROAD_ML_LEARNER_POLICY_RL_H_
 #define ROAD_ML_LEARNER_POLICY_RL_H_
 
+#include "State.hpp"
+#include "Graph.hpp"
+
 namespace road
 {
 
@@ -90,6 +93,13 @@ private:
    * state, including discounted future reward.
    */
   double optimalReward(int state_index);
+  
+  /**
+   * @description Given a state, return a vector of integers indicating how
+   * far the nearest car is from the intersection in each approaching lane.
+   * @return The vector
+   */
+  std::vector<uint8_t> approachingCars(core::State& state);
 
   /**
    * The learning rate is the extent to which old information overwrites new

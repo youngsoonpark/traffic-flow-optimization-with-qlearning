@@ -38,12 +38,6 @@ void State::setLights(State::Lights lights)
   m_lights = lights;
 }
 
-std::vector<uint8_t> State::identity() const
-{
-    std::vector<uint8_t> x;
-    return x;
-}
-
 int8_t State::getMaxCars() const
 {
   return m_maxCars;
