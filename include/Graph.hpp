@@ -1,6 +1,7 @@
 #ifndef ROAD_CORE_GRAPH_H_
 #define ROAD_CORE_GRAPH_H_
 
+#include <cstdlib>
 #include <string>
 #include <list>
 #include <deque>
@@ -32,7 +33,6 @@ struct Vertex {
     type(type), uid(uid), x(x), y(y) {}
 };
 
-
 /**
  * @author Christopher Di Bella <chrisdb@cse.unsw.edu.au>
  * @description A car represents an object on the road.
@@ -43,10 +43,10 @@ struct Car {
   std::size_t speed;
   double badboy_factor;
   bool no_car;
-
+  
   // Constructs the car.
   Car(size_t speed, double badboy_factor, bool no_car) :
-    speed(speed), badboy_factor(badboy_factor), no_car(no_car) {}
+    speed(speed), badboy_factor(badboy_factor), no_car(no_car){}
 };
 
 /**
@@ -55,13 +55,15 @@ struct Car {
  *  a road, which has a speed limit, a capacity and a deque of cars.
  */
 struct Edge {
-  std::string uid;         // What we use to access.
+  typedef std::deque<Car> Container;
+  std::string uid;   // What we use to access.
   std::string src;   // Makes indexing easier.
   std::string dest;  // Makes indexing easier.
 
   std::size_t speed_limit; // Defines the speed limit for the edge.
-  std::deque<Car> cars; // Cars on the road.
-  std::int8_t actual_cars;
+  std::size_t capacity;    // Defines the maximum number of cars.
+  Container cars;          // Cars on the road.
+  std::int8_t actual_cars; // Defines the number of actual cars.
 
   // Constructor.
   Edge() {}
@@ -275,28 +277,17 @@ class Graph {
     /**
      * @description provides an interface for updating an edge if it has been changed
      */
-    void update_edge(const Vertex& from, const Vertex& to, const Edge& edge) {
-      /*
-       * Basic algorithm:
-       *
-       * FOR EACH Edge e in m_graph
-       *    IF e->from == from && e->to == to THEN
-       *        e = edge
-       *        RETURN
-       *    END IF
-       * NEXT e
-       */
-
-      /*
+    void update_edge(const Edge& edge) {
       std::pair<edge_iterator, edge_iterator> it;
-      Edge& edge;
-
-      for (it = boost::edges(m_graph); it.first != it.second; ++it.first) {
-        // Retrieve the source and destination.
-        vertex_t source = boost::source(*it.first, m_graph);
-        vertex_t destination = boost::target(*it.first, m_graph);
-        //if (*it.first)
-      }*/
+      // Iterate over the edges.
+      for (it = boost::edges(m_graph); it.first != it.second; it.first++) {
+        if (m_graph.graph()[*it.first].uid == edge.uid) {
+          m_graph.graph()[*it.first].speed_limit = edge.speed_limit;
+          m_graph.graph()[*it.first].cars.assign(edge.cars.begin(), edge.cars.end());
+          m_graph.graph()[*it.first].actual_cars = edge.actual_cars;
+          break;
+        }
+      } 
     }
 
   private:

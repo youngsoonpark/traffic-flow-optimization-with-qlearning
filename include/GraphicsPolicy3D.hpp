@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <irrlicht.h>
+#include <map>
 #include <vector>
-
 
 namespace road {
 
@@ -35,12 +35,13 @@ class GraphicsPolicy3D {
 	core::State& m_state;
 
 	// Graphics Data.
-	std::vector<irr::scene::IMesh*> m_cars;
-  irr::scene::IMesh* m_source_mesh; // Source mesh and texture.
-  irr::scene::IMesh* m_sink_mesh;   // Sink mesh and texture.
-
-  irr::video::ITexture* m_road_texture;
-  irr::core::dimension2d<irr::u32> m_resolution;
+	std::vector<irr::scene::IMesh*> m_cars; // Holds the meshes for the cars.
+  irr::scene::IMesh* m_source_mesh;       // Source mesh and texture.
+  irr::scene::IMesh* m_sink_mesh;         // Sink mesh and texture.
+  irr::video::ITexture* m_road_texture;   // Road texture.
+  irr::core::dimension2d<irr::u32> m_resolution; // Resoultion.
+  // Map of the cars.
+  std::map<std::string, std::vector<irr::scene::IMeshSceneNode*>> m_road_map;
 
 	protected:
 		// Constructs the project.

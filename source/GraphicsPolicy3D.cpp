@@ -392,18 +392,27 @@ void GraphicsPolicy3D::create_gui() {
 }
 
 void GraphicsPolicy3D::update_state() {
+  /*
   core::Graph* graph = m_state.getGraph();
   std::list<core::Edge> roads = graph->get_edges();
   std::list<core::Edge>::iterator it;
-  for (it = roads.begin(); it != roads.end(); it++) {
-    std::cout << "GraphicsPolicy3D.update_state: " << it->uid << std::endl;
-    while (!it->cars.empty()) {
-      core::Car current =  it->cars.front();
-      it->cars.pop_front();
-      std::cout << current.speed << current.no_car << std::endl;
-    }
 
-  }
+  for (it = roads.begin(); it != roads.end(); it++) {
+    // Get the vertex for the start and the end.
+    core::Vertex start = graph->get_vertex(it->src);
+    core::Vertex end = graph->get_vertex(it->dest);
+    // Get the offset.
+    int offset = 0;
+    // Iterate over the cars.
+    core::Edge::Container::iterator car;
+    for (car = it->cars.begin(); car != it->cars.end(); car++) {
+      // If the current car is a car.
+      if (!car->no_car) {
+
+      }
+      offset++;
+    }
+  }*/
 }
 
 void GraphicsPolicy3D::sync_scene_and_state() {

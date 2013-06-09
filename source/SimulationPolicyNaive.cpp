@@ -3,7 +3,6 @@
 #include "State.hpp"
 #include <cstdlib>
 #include <list>
-
 #include <iostream>
 
 namespace road {
@@ -14,7 +13,6 @@ void SimulationPolicyNaive::update(core::State& state) {
   // Debug message.
   std::cout << "SimulationPolicyNaive: Entering Simulaton" << std::endl;
   int chanceToGetCar = rand() % 101; // 101 so our range is [0, 100]
-  int rd = rand() % 2;               // Value meaning is dependent on State::Lights
   core::Graph* g = state.getGraph(); // Retrieve the graph.
 
   core::Car tempCar(1, 1.0, false);    // This is a temporary location for our car
@@ -31,15 +29,19 @@ void SimulationPolicyNaive::update(core::State& state) {
       from = g->get_edges_from(*it).back();
       // Get the only bit of source uid we can use to evaluate the sink
       tempName = it->uid.substr(sizeof("source-"), std::string::npos);
+      // If there are no cars, just continue.
+      if (from.cars.empty()) {
+        continue;
+      }
       // Get the car and then take it off the road
       tempCar = from.cars.front();
       from.cars.pop_front();
+      
       // Decrement our counter each time we don't see a real car.
       if (!tempCar.no_car) from.actual_cars--;
-
       std::cout << "SimualtionPolicyNaive: Updating the road...." << std::endl;
       // Re-add the edge to the graph (this is only a copy of it!)
-      g->update_edge(*it, intersection.back(), from);
+      g->update_edge(from);
 
       // Now find the corresponding sink
       for (vertex_iterator jt = verticiesSink.begin(); jt != verticiesSink.end(); ++jt) {
@@ -52,7 +54,7 @@ void SimulationPolicyNaive::update(core::State& state) {
               to.cars.push_back(tempCar);
               if (tempCar.no_car == false) to.actual_cars++;
               // Re-add the edge to the graph (this is only a copy of it!)
-              g->update_edge(intersection.back(), *jt, to);
+              g->update_edge(to);
               // Remove this from the list since we don't need it anymore :)
               //verticiesSink.remove(jt); <== obviously this isn't working atm; either going to find a different solution or just ignore altogether :(
               break;
@@ -72,9 +74,11 @@ void SimulationPolicyNaive::update(core::State& state) {
       std::cout << "-> SimulationPolicyNaive: Car Added Added To " << from.uid << std::endl;
       from.cars.push_back(core::Car(1, 1.0, true));
     }
+    g->update_edge(from);
   }
   std::cout << "SimulationPolicyNaive: Ending Simulation" << std::endl;
 
 }
+
 } // End of namespace sim.
 } // End of namespace road.
