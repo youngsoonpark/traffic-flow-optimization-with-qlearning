@@ -5,7 +5,7 @@ namespace road
 namespace core
 {
 
-State::State() : m_running(true), m_lights(Lights::Horisontal), m_delay(0), m_maxCars(50)
+State::State() : m_running(true), m_lights(Lights::HORIZONTAL), m_delay(0), m_maxCars(50)
 {
 }
 
