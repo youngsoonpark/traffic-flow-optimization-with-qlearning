@@ -394,7 +394,7 @@ void GraphicsPolicy3D::update_state()
           node->setMaterialFlag(EMF_LIGHTING, false);
           // Rotate it.
           if (start.y == end.y) {
-            node->setRotation(vector3df(0, 90, 0));
+            node->setRotation(vector3df(0, 270, 0));
           } else {
             node->setRotation(vector3df(0, 180, 0));
           }
