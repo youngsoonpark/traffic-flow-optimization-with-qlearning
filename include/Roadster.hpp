@@ -11,7 +11,8 @@
 #include "SimulationPolicyCellular.hpp"
 #include "SimulationPolicyNaive.hpp"
 
-namespace road {
+namespace road
+{
 
 /**
  * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
@@ -21,36 +22,37 @@ namespace road {
  * state. The roadster, then simply adapts these three policies.
  */
 template <typename GraphicsPolicy, typename SimulationPolicy, typename LearnerPolicy>
-class Roadster : private GraphicsPolicy, private SimulationPolicy, private LearnerPolicy {
-	using GraphicsPolicy::draw;        // Draw the simulation to output.
-	using SimulationPolicy::update;    // Create an update tick, using the simulation policy.
-	using LearnerPolicy::action;       // Gets fed back, the previous state, learns from that then decides an action.
-	core::State m_state;               // Defines the actual state of the simulator.
+class Roadster : private GraphicsPolicy, private SimulationPolicy, private LearnerPolicy
+{
+  using GraphicsPolicy::draw;        // Draw the simulation to output.
+  using SimulationPolicy::update;    // Create an update tick, using the simulation policy.
+  using LearnerPolicy::action;       // Gets fed back, the previous state, learns from that then decides an action.
+  core::State m_state;               // Defines the actual state of the simulator.
 
-	public:
-		/**
-		 * Constructor requires a filepath to generate a state.
-		 */
-		Roadster() : GraphicsPolicy(m_state), m_state() {
-		}
+public:
+  /**
+   * Constructor requires a filepath to generate a state.
+   */
+  Roadster() : GraphicsPolicy(m_state), m_state() {
+  }
 
-		/**
-		 * Default destructor, it makes sure that everything gets saved on exit and stuff gets
-		 * freed.
-		 */
-		~Roadster(void) {
-		}
+  /**
+   * Default destructor, it makes sure that everything gets saved on exit and stuff gets
+   * freed.
+   */
+  ~Roadster(void) {
+  }
 
-		/**
-		 * Run calls, update then draw, update blocks for the ticks specified in state.
-		 */
-		void run(void) {
-			while (m_state.isRunning()) {
-				action(m_state); // Learner is given control to modify the state.
-				update(m_state); // Update the current state.
-				draw(m_state);   // Draw the updated state.
-			}
-		}
+  /**
+   * Run calls, update then draw, update blocks for the ticks specified in state.
+   */
+  void run(void) {
+    while (m_state.isRunning()) {
+      action(m_state); // Learner is given control to modify the state.
+      update(m_state); // Update the current state.
+      draw(m_state);   // Draw the updated state.
+    }
+  }
 };
 
 // Some useful typedefs, that build some standard approaches we want to utilise.

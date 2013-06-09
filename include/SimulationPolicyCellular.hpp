@@ -1,11 +1,16 @@
 #ifndef ROAD_SIM_SIMULATION_POLICY_CELLULAR_H_
 #define ROAD_SIM_SIMULATION_POLICY_CELLULAR_H_
 
-namespace road {
+namespace road
+{
 
-namespace core { class State; }
+namespace core
+{
+class State;
+}
 
-namespace sim {
+namespace sim
+{
 
 
 /**
@@ -13,9 +18,10 @@ namespace sim {
  * @description Utilises the Nagel-Schaoesuaosuth cellular automata
  * approach.
  */
-class SimulationPolicyCellular {
-	protected:
-		void update(core::State& state);
+class SimulationPolicyCellular
+{
+protected:
+  void update(core::State& state);
 };
 
 } // End of namespace sim.

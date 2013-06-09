@@ -5,11 +5,14 @@
 #include <list>
 #include <iostream>
 
-namespace road {
-namespace sim {
+namespace road
+{
+namespace sim
+{
 typedef std::list<core::Vertex>::iterator vertex_iterator;
 
-void SimulationPolicyNaive::update(core::State& state) {
+void SimulationPolicyNaive::update(core::State& state)
+{
   // Debug message.
   std::cout << "SimulationPolicyNaive: Entering Simulaton" << std::endl;
   int chanceToGetCar = rand() % 101; // 101 so our range is [0, 100]
@@ -25,41 +28,41 @@ void SimulationPolicyNaive::update(core::State& state) {
 
   // move all cars up by 1
   for (vertex_iterator it = verticiesSource.begin(); it != verticiesSource.end(); it++) {
-      // Naive sources should only ever have one edge, so we can assume it is the back one
-      from = g->get_edges_from(*it).back();
-      // Get the only bit of source uid we can use to evaluate the sink
-      tempName = it->uid.substr(sizeof("source-"), std::string::npos);
-      // If there are no cars, just continue.
-      if (from.cars.empty()) {
-        continue;
-      }
-      // Get the car and then take it off the road
-      tempCar = from.cars.front();
-      from.cars.pop_front();
-      
-      // Decrement our counter each time we don't see a real car.
-      if (!tempCar.no_car) from.actual_cars--;
-      std::cout << "SimualtionPolicyNaive: Updating the road...." << std::endl;
-      // Re-add the edge to the graph (this is only a copy of it!)
-      g->update_edge(from);
+    // Naive sources should only ever have one edge, so we can assume it is the back one
+    from = g->get_edges_from(*it).back();
+    // Get the only bit of source uid we can use to evaluate the sink
+    tempName = it->uid.substr(sizeof("source-"), std::string::npos);
+    // If there are no cars, just continue.
+    if (from.cars.empty()) {
+      continue;
+    }
+    // Get the car and then take it off the road
+    tempCar = from.cars.front();
+    from.cars.pop_front();
 
-      // Now find the corresponding sink
-      for (vertex_iterator jt = verticiesSink.begin(); jt != verticiesSink.end(); ++jt) {
-          // We only care about the one that has the same uid as the source...
-          if (jt->uid.substr(sizeof("sink-"), std::string::npos) == tempName) {
-              // Again, Naive model, so we assume that there's only one edge leading to it
-              to = g->get_edges_to(*jt).back();
-              // Take the front car away and add the car we just took from the source
-              to.cars.pop_front();
-              to.cars.push_back(tempCar);
-              if (tempCar.no_car == false) to.actual_cars++;
-              // Re-add the edge to the graph (this is only a copy of it!)
-              g->update_edge(to);
-              // Remove this from the list since we don't need it anymore :)
-              //verticiesSink.remove(jt); <== obviously this isn't working atm; either going to find a different solution or just ignore altogether :(
-              break;
-          }
+    // Decrement our counter each time we don't see a real car.
+    if (!tempCar.no_car) from.actual_cars--;
+    std::cout << "SimualtionPolicyNaive: Updating the road...." << std::endl;
+    // Re-add the edge to the graph (this is only a copy of it!)
+    g->update_edge(from);
+
+    // Now find the corresponding sink
+    for (vertex_iterator jt = verticiesSink.begin(); jt != verticiesSink.end(); ++jt) {
+      // We only care about the one that has the same uid as the source...
+      if (jt->uid.substr(sizeof("sink-"), std::string::npos) == tempName) {
+        // Again, Naive model, so we assume that there's only one edge leading to it
+        to = g->get_edges_to(*jt).back();
+        // Take the front car away and add the car we just took from the source
+        to.cars.pop_front();
+        to.cars.push_back(tempCar);
+        if (tempCar.no_car == false) to.actual_cars++;
+        // Re-add the edge to the graph (this is only a copy of it!)
+        g->update_edge(to);
+        // Remove this from the list since we don't need it anymore :)
+        //verticiesSink.remove(jt); <== obviously this isn't working atm; either going to find a different solution or just ignore altogether :(
+        break;
       }
+    }
   }
 
   std::cout << "SimulationPolicyNaive: Adding cars to the " << verticiesSource.size()  << " road " << std::endl;

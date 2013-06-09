@@ -6,11 +6,16 @@
 #include <map>
 #include <vector>
 
-namespace road {
+namespace road
+{
 
-namespace core { class State; } // Prototype of state class.
+namespace core
+{
+class State;  // Prototype of state class.
+}
 
-namespace graphics {
+namespace graphics
+{
 
 class Context;
 class GUIEventReceiver;
@@ -21,21 +26,22 @@ class GUIEventReceiver;
  * would be in the io monad, essentially this is just a side effect! It shouldn't
  * modify the state.
  */
-class GraphicsPolicy3D {
+class GraphicsPolicy3D
+{
   friend class Context;
   friend class GUIEventReceiver;
-	// Device managers and other core components
-	irr::IrrlichtDevice* m_device;
-	irr::video::IVideoDriver* m_driver;
-	irr::scene::ISceneManager* m_smgr;
-	irr::gui::IGUIEnvironment* m_gui;
-	irr::IEventReceiver* m_receiver;
-	irr::scene::ITriangleSelector* m_selector;
+  // Device managers and other core components
+  irr::IrrlichtDevice* m_device;
+  irr::video::IVideoDriver* m_driver;
+  irr::scene::ISceneManager* m_smgr;
+  irr::gui::IGUIEnvironment* m_gui;
+  irr::IEventReceiver* m_receiver;
+  irr::scene::ITriangleSelector* m_selector;
 
-	core::State& m_state;
+  core::State& m_state;
 
-	// Graphics Data.
-	std::vector<irr::scene::IMesh*> m_cars; // Holds the meshes for the cars.
+  // Graphics Data.
+  std::vector<irr::scene::IMesh*> m_cars; // Holds the meshes for the cars.
   irr::scene::IMesh* m_source_mesh;       // Source mesh and texture.
   irr::scene::IMesh* m_sink_mesh;         // Sink mesh and texture.
   irr::video::ITexture* m_road_texture;   // Road texture.
@@ -43,20 +49,20 @@ class GraphicsPolicy3D {
   // Map of the cars.
   std::map<std::string, std::vector<irr::scene::IMeshSceneNode*>> m_road_map;
 
-	protected:
-		// Constructs the project.
-		GraphicsPolicy3D(core::State& state);
-		// Creates the scene.
-		void create_scene();
-		// Creates the graphical user interface.
-		void create_gui();
-    // Draws our state, this is stored outside of the irrlicht scene manager.
-    void update_state();
-    // Syncronizes irrlichts internal scene graph with our external one, called
-    // on new map loads.
-    void sync_scene_and_state();
-		// Must be included for policies to work.
-		void draw(core::State& state);
+protected:
+  // Constructs the project.
+  GraphicsPolicy3D(core::State& state);
+  // Creates the scene.
+  void create_scene();
+  // Creates the graphical user interface.
+  void create_gui();
+  // Draws our state, this is stored outside of the irrlicht scene manager.
+  void update_state();
+  // Syncronizes irrlichts internal scene graph with our external one, called
+  // on new map loads.
+  void sync_scene_and_state();
+  // Must be included for policies to work.
+  void draw(core::State& state);
 };
 
 } // End of namespace out.
