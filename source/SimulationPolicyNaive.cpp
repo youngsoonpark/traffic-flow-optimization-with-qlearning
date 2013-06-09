@@ -22,7 +22,6 @@ void SimulationPolicyNaive::update(core::State& state)
   auto intersections = graph->get_vertices(core::Vertex::Type::INTERSECTION);
 
   // Calculate the probablity of a car being placed.
-  int car_placement_probability = rand() % 101;
 
   // Check all edges are full. If not, push till they reach their full capacity.
   auto edges = graph->get_edges();
@@ -76,7 +75,8 @@ void SimulationPolicyNaive::update(core::State& state)
           edge_it->cars.erase((empty_car_it + 1).base());
         }
       }
-
+  
+      int car_placement_probability = rand() % 101;
       // Update the edge.
       if (car_placement_probability >= 15) {
         std::cout << "Not adding new car" << std::endl;
