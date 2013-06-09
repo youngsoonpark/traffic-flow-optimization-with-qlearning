@@ -239,7 +239,8 @@ GraphicsPolicy3D::GraphicsPolicy3D(core::State& state) : m_state(state)
   m_source_mesh = m_smgr->getMesh("data/media/buildings/houseF.obj");
   // Add the sink texture and mesh
   m_sink_mesh = m_smgr->getMesh("data/media/buildings/CPL5.3ds");
-  
+  m_intersection_node = NULL;
+
   // Create Scene Manager
   create_scene();
   create_gui();
@@ -369,6 +370,15 @@ void GraphicsPolicy3D::create_gui()
 
 void GraphicsPolicy3D::update_state()
 {
+  if (m_intersection_node != NULL) {
+    // Sets the rotatiion of the traffic lights on the intersection node.
+    if (m_state.getLights() == core::State::Lights::HORIZONTAL) {
+      m_intersection_node->setRotation(vector3df(0,90,0));
+    } else {
+      m_intersection_node->setRotation(vector3df(0,0,0));
+    }
+  }
+
   core::Graph* graph = m_state.getGraph();
   std::list<core::Edge> roads = graph->get_edges();
   std::list<core::Edge>::iterator it;
@@ -463,6 +473,7 @@ void GraphicsPolicy3D::sync_scene_and_state()
       node->setPosition(vector3df(x, 0, y));
     } else if (it->type == core::Vertex::INTERSECTION) {
       node = m_smgr->addCubeSceneNode(100);
+      m_intersection_node = node;
       node->setMaterialFlag(EMF_LIGHTING, false);
       node->setPosition(vector3df(x, -40, y));
       node->setMaterialTexture(0, m_intersection_texture);

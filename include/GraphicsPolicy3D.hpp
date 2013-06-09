@@ -41,9 +41,10 @@ class GraphicsPolicy3D
   core::State& m_state;
 
   // Graphics Data.
-  std::vector<irr::scene::IMesh*> m_cars; // Holds the meshes for the cars.
-  irr::scene::IMesh* m_source_mesh;       // Source mesh and texture.
-  irr::scene::IMesh* m_sink_mesh;         // Sink mesh and texture.
+  std::vector<irr::scene::IMesh*> m_cars;      // Holds the meshes for the cars.
+  irr::scene::IMesh* m_source_mesh;            // Source mesh and texture.
+  irr::scene::IMesh* m_sink_mesh;              // Sink mesh and texture.
+  irr::scene::ISceneNode* m_intersection_node; // Intersection Node.
   irr::video::ITexture* m_road_texture;   // Road texture.
   irr::video::ITexture* m_intersection_texture;   // Intersection texture.
   irr::core::dimension2d<irr::u32> m_resolution; // Resoultion.
