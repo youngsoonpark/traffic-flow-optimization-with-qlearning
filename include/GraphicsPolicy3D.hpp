@@ -46,8 +46,7 @@ class GraphicsPolicy3D
   irr::scene::IMesh* m_sink_mesh;         // Sink mesh and texture.
   irr::video::ITexture* m_road_texture;   // Road texture.
   irr::core::dimension2d<irr::u32> m_resolution; // Resoultion.
-  // Map of the cars.
-  std::map<std::string, std::vector<irr::scene::IMeshSceneNode*>> m_road_map;
+  std::map<std::string, std::map<int, irr::scene::IMeshSceneNode*>> m_road_map; // Map of the cars.
 
 protected:
   // Constructs the project.
