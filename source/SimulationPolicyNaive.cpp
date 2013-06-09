@@ -119,6 +119,9 @@ void SimulationPolicyNaive::update(core::State& state)
           graph->update_edge(*to_it);
           graph->update_edge(*from_it);
         }
+      } else {
+          from_it->cars.push_front(core::Car::empty_car());
+          graph->update_edge(*from_it);
       }
       // Increment the from iterator.
       from_it++;
