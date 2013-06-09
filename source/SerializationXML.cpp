@@ -81,6 +81,7 @@ void SerializationXML::load(const std::string& filepath, core::State& state) con
 
 void SerializationXML::save(const core::State& state) const
 {
+  // TODO optional.
 }
 
 } // End of namespace core.

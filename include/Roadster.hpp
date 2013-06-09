@@ -48,7 +48,7 @@ public:
    */
   void run(void) {
     while (m_state.isRunning()) {
-      action(m_state); // Learner is given control to modify the state.
+      //action(m_state); // Learner is given control to modify the state.
       update(m_state); // Update the current state.
       draw(m_state);   // Draw the updated state.
     }
