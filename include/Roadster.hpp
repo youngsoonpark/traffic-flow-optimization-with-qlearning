@@ -64,7 +64,7 @@ public:
     while (m_state.isRunning()) {
       // Calculate  before hand.
       before = null_device->getTimer()->getTime();
-      //action(m_state); // Learner is given control to modify the state.
+      action(m_state); // Learner is given control to modify the state.
       update(m_state); // Update the current state.
       draw(m_state, true);   // Draw the updated state.
       // Get a new calculation 

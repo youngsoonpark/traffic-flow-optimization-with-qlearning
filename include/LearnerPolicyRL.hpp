@@ -32,7 +32,7 @@ public:
   static const int NUM_APPROACHING_LANES = 2;
   static const int MAX_CAR_DISTANCE = 8;
   static const int MAX_DELAY = 3;
-  static const int NUM_STATES = MAX_DELAY *
+  static const int NUM_STATES = (MAX_DELAY + 1) *
                                 (MAX_CAR_DISTANCE + 2) *
                                 (MAX_CAR_DISTANCE + 2) * // two lanes
                                 NUM_LIGHT_SETTINGS;
