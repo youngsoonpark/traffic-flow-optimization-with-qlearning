@@ -1,0 +1,61 @@
+\documentclass{article}
+
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\title{Machine Learning and Data Mining Task 2: Roadster - The Learning Traffic Light Simulator}
+\author{Benjamin J. Wright, Christopher J. Di Bella, Daniel Playfair Cal}
+\date{2013, June 9, 23:59:59}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+Today’s world revolves around the ease of use. As we have become dependent on technology, there is an ever-increasing need to improve systems that support the safety of human lives, so that they become more efficient.\\
+
+Traffic lights are one such system. Current Australian traffic light systems are beginning to struggle under the sheer volume of traffic that occupies our roads. The objective of this task is to simulate a busy intersection with a learner that adjusts the lights as the roads become more dense. The advantage of simulating traffic using this learner  is that it utilises reinforcement learning and thus receives a grading for its decisions.
+
+\subsection{Well-posed learning problem}
+Before detailing the implementation and experimentation, it is important to have a formal definition for our learning problem:
+
+\begin{description}
+\item[Task \emph{T}:]
+\item[Performance measure \emph{P}:]
+\item[Experience \emph{E}:]
+\end{description}
+
+\section{Apparatus}
+This task was implemented using a perfect subset of C++11. The program also makes use of the \emph{Irrlicht Graphics Library} and the \emph{Boost Graph Library}. Both third party code libraries are properly referenced at the end of this document.
+
+The data was modelled using a combination of the coded simulator and XML files.
+
+\section{Implementation}
+The task makes use of the policy (strategy) design pattern and is split into three main sections:
+learning,
+simulating, and,
+rendering
+
+\subsection{Data model}
+The implementation for the model can be found in \verb/State.hpp/ and \verb/State.cpp/.
+
+The best way to mentally picture the model (i.e. without running the program) is to imagine a
+cartesian plane with horisontal traffic moving along the $x$-axis from $(-x, 0)$ to $(x, 0)$, and, vertical traffic moving along the $y$-axis from $(0, y)$ to $(0, -y)$, where $x, y \in \mathbb{R}$. The intersection is at the origin.\\
+
+Roadster traffic lights are dictated by a binary control system that will either allow horisontal or vertical
+traffic to flow. A bidirectional graph is used to represent the roads: verticies are used to represent the towns and cities that act as sources (where cars come from) and sinks (where cars go to); edges consist of double-ended queues (\verb/deque/) that store the \verb/Car/s.
+
+\verb/Car/ is little more than an indicator of whether or not a car exists or if there should be an empty space.
+\subsection{Learning policy}
+\subsection{Simulating policy}
+\subsection{Rendering policy}
+
+\section{Experiment}
+\subsection{Method}
+\subsection{Results}
+\subsection{Discussion}
+
+\section{Conclusion}
+
+\section{References}
+
+\end{document}
