@@ -30,7 +30,7 @@ This task was implemented using a perfect subset of C++11. The program also make
 The data was modelled using a combination of the coded simulator and XML files.
 
 \section{Implementation}
-The task makes use of the policy (strategy) design pattern and is split into three main sections:
+The task makes use of the strategy design pattern and is split into three main sections:
 learning,
 simulating, and,
 rendering
@@ -45,9 +45,21 @@ Roadster traffic lights are dictated by a binary control system that will either
 traffic to flow. A bidirectional graph is used to represent the roads: verticies are used to represent the towns and cities that act as sources (where cars come from) and sinks (where cars go to); edges consist of double-ended queues (\verb/deque/) that store the \verb/Car/s.
 
 \verb/Car/ is little more than an indicator of whether or not a car exists or if there should be an empty space.
+
 \subsection{Learning policy}
+
+
 \subsection{Simulating policy}
+The purpose of this part of the system is to show how the learner works. This task employs reinforcement learning; the system shall perform best when utilising online learning in place of active learning. The simulator provides the all the necessary data for the learner to create its own hypothesis function.\\
+
+The traffic light state is first updated according to the learner's hypothesis. Any traffic that cannot safely stop will continue to pass through the intersection (usually about three `ticks' worth of traffic). Following this, traffic is then allowed to pass. Traffic that is heading in the direction of the active traffic light state (horisontal traffic = 0; vertical traffic = 1) passes from the front of the source \verb/deque/ to the back of the sink \verb/deque/. Only the active source's front-most car (or \verb/noCar/ if it is an empty space) is actually transferred at any time step. All sinks' front-most car leave the system for good by being popped from the front of the \verb/deque/.
+
+The simulator has a forty-five percent chance to introduce a new car into each road after updating the previous cars' positions. Due to the fact that each road is given a chance to introduce a new car, the probability to introduce a new car must be low enough that it does not introduce too many cars too quickly (and thus consume too much memory), but high enough that cars will be introduced often enough for the learner to update the system.
+
 \subsection{Rendering policy}
+
+
+\subsection{Extensions}
 
 \section{Experiment}
 \subsection{Method}
