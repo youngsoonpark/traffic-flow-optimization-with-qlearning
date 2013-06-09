@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cstdint>
 #include <vector>
+#include <iomanip>
 
 namespace road
 {
@@ -61,11 +62,13 @@ void LearnerPolicyRL::action(core::State& state)
   int state_index = stateIndex(state);
   int new_action = -1;
   if (rand() % 100 <= exploration_rate * 100) {
+    std::cout << "Choosing random action" << std::endl;
     new_action = rand() % NUM_LIGHT_SETTINGS;
   } else {
     // Find the optimal action to perform
     new_action = optimalAction(state_index);
   }
+  std::cout << "Chose action " << new_action << std::endl;
 
   // Perform the action
   state.setLights(static_cast<core::State::Lights>(new_action));
@@ -101,7 +104,7 @@ int LearnerPolicyRL::stateIndex(core::State& state)
   int delay = static_cast<int>(state.getDelay());
   delay = delay > MAX_DELAY ? MAX_DELAY : delay;
   assert(0 <= delay && delay <= MAX_DELAY);
-  state_index *= MAX_DELAY;
+  state_index *= MAX_DELAY + 1;
   state_index += delay;
   
   if (state_index >= NUM_STATES) {
@@ -130,10 +133,13 @@ int LearnerPolicyRL::optimalAction(int state_index)
   // Find the optimal reward attainable
   double optimal_reward = -DBL_MAX;
   for (int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
+    std::cout << "Action " << action << " has reward " <<
+          reward_map[state_index][action] << ". ";
     if (reward_map[state_index][action] > optimal_reward) {
       optimal_reward = reward_map[state_index][action];
     }
   }
+  std::cout << std::endl;
   
   // Make a list of optimal actions
   std::list<int> optimal_actions;
