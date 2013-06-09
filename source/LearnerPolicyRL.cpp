@@ -91,6 +91,8 @@ int LearnerPolicyRL::stateIndex(core::State& state)
   }
   state_index *= NUM_LIGHT_SETTINGS;
   state_index += static_cast<int>(state.getLights());
+  state_index *= MAX_DELAY;
+  state_index += static_cast<int>(state.getDelay());
   return state_index;
 }
 

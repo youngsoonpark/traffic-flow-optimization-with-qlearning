@@ -35,7 +35,19 @@ State::Lights State::getLights() const
 
 void State::setLights(State::Lights lights)
 {
-  m_lights = lights;
+  if (m_lights == lights)
+  {
+    m_delay++;
+  }
+  else
+  {
+    m_lights = lights;
+    m_delay = 0;
+  }
+}
+
+uint8_t State::getDelay() {
+  return m_delay;
 }
 
 int8_t State::getMaxCars() const
