@@ -52,8 +52,8 @@ void LearnerPolicyRL::action(core::State& state)
   std::list<core::Vertex> intersection_list;
   intersection_list = graph->get_vertices(core::Vertex::INTERSECTION);
   if (intersection_list.size() != 1) {
-    std::cout << "Intersections found: " << intersection_list.size() <<
-        ". Learning is impossible." << std::endl;
+    /*std::cout << "Intersections found: " << intersection_list.size() <<
+        ". Learning is impossible." << std::endl;*/
     return;
   }
   
