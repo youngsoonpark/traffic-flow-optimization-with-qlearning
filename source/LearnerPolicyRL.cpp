@@ -127,16 +127,34 @@ double LearnerPolicyRL::reward(core::State& state)
 
 int LearnerPolicyRL::optimalAction(int state_index)
 {
-  // Find the optimal action to perform
+  // Find the optimal reward attainable
   double optimal_reward = -DBL_MAX;
-  int optimal_action;
   for (int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
     if (reward_map[state_index][action] > optimal_reward) {
-      optimal_action = action;
       optimal_reward = reward_map[state_index][action];
     }
   }
-  return optimal_action;
+  
+  // Make a list of optimal actions
+  std::list<int> optimal_actions;
+  for (int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
+    if (reward_map[state_index][action] == optimal_reward) {
+      optimal_actions.push_back(action);
+    }
+  }
+  
+  if (optimal_actions.size() == 1)
+  {
+    return optimal_actions.front(); // Only optimal actions
+  }
+  else if (rand() % NUM_LIGHT_SETTINGS == 1)
+  { // If both actions have equal reward, choose one randomly
+    return optimal_actions.front();
+  }
+  else
+  {
+    return optimal_actions.back();
+  }
 }
 
 double LearnerPolicyRL::optimalReward(int state_index)
