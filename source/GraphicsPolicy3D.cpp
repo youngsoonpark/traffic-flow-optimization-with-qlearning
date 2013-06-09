@@ -390,7 +390,6 @@ void GraphicsPolicy3D::create_gui()
 
 void GraphicsPolicy3D::update_state()
 {
-  /*
   core::Graph* graph = m_state.getGraph();
   std::list<core::Edge> roads = graph->get_edges();
   std::list<core::Edge>::iterator it;
@@ -406,11 +405,11 @@ void GraphicsPolicy3D::update_state()
     for (car = it->cars.begin(); car != it->cars.end(); car++) {
       // If the current car is a car.
       if (!car->no_car) {
-
+        std::cout << "Car Hash: " << car->hash << std::endl;
       }
       offset++;
     }
-  }*/
+  }
 }
 
 void GraphicsPolicy3D::sync_scene_and_state()

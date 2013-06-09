@@ -35,6 +35,9 @@ struct Vertex {
     type(type), uid(uid), x(x), y(y) {}
 };
 
+// Used for internal referenes
+static unsigned int car_count;
+
 /**
  * @author Christopher Di Bella <chrisdb@cse.unsw.edu.au>
  * @description A car represents an object on the road.
@@ -45,10 +48,13 @@ struct Car {
   std::size_t speed;
   double badboy_factor;
   bool no_car;
+  unsigned int hash;
 
   // Constructs the car.
   Car(size_t speed, double badboy_factor, bool no_car) :
-    speed(speed), badboy_factor(badboy_factor), no_car(no_car) {}
+    speed(speed), badboy_factor(badboy_factor), no_car(no_car) {
+      hash = car_count++;
+    }
 };
 
 /**
