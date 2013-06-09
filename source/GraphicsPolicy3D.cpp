@@ -235,6 +235,7 @@ GraphicsPolicy3D::GraphicsPolicy3D(core::State& state) : m_state(state)
   m_smgr = m_device->getSceneManager();
   m_gui = m_device->getGUIEnvironment();
   m_road_texture = m_driver->getTexture("data/media/road.jpg");
+  m_intersection_texture = m_driver->getTexture("data/media/intersection.jpg");
   // Add the source texture and mesh.
   m_source_mesh = m_smgr->getMesh("data/media/buildings/houseF.obj");
   // Add the sink texture and mesh
@@ -428,7 +429,7 @@ void GraphicsPolicy3D::update_state()
  
   // Iterate over the unseen hashes. 
   for (auto unseen_it = hash_unseen.begin(); unseen_it != hash_unseen.end(); unseen_it++) {
-    std::cout << *unseen_it << std::endl;
+    //std::cout << *unseen_it << std::endl;
     // Remove the scene node.
     m_road_map[*unseen_it]->remove();
     // Erase the entry.
@@ -463,7 +464,8 @@ void GraphicsPolicy3D::sync_scene_and_state()
     } else if (it->type == core::Vertex::INTERSECTION) {
       node = m_smgr->addCubeSceneNode(100);
       node->setMaterialFlag(EMF_LIGHTING, false);
-      node->setPosition(vector3df(x, 50, y));
+      node->setPosition(vector3df(x, -40, y));
+      node->setMaterialTexture(0, m_intersection_texture);
     }
   }
 
@@ -476,8 +478,8 @@ void GraphicsPolicy3D::sync_scene_and_state()
     core::Vertex dest = graph->get_vertex(edge_it->dest);
 
     // Print some debug messages.
-    std::cout << "Drawing Road From: " << src.x << ", " << src.y;
-    std::cout << " to " << dest.x << ", " << dest.y << std::endl;
+    //std::cout << "Drawing Road From: " << src.x << ", " << src.y;
+    //std::cout << " to " << dest.x << ", " << dest.y << std::endl;
 
     // Attach it to the scene.
     int distance;
