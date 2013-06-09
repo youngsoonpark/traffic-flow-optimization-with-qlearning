@@ -30,9 +30,9 @@ public:
    *
    * At present, lights only work for a T-intersection (i.e. Hor, Vert).
    */
-  enum class Lights
-  {
-    Horisontal, Vertical
+  enum Lights {
+    HORIZONTAL,
+    VERTICAL
   };
 
   /**

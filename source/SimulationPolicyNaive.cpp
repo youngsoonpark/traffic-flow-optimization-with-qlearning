@@ -57,7 +57,6 @@ void SimulationPolicyNaive::update(core::State& state)
     for (auto edge_it = edges_from_source.begin(); edge_it != edges_from_source.end(); edge_it++) {
       std::cout << "Updating Source For Edge: " << edge_it->uid << std::endl;
       
-      /*
       // Check for a traffic jam
       if (edge_it->cars.size() >= graph->get_edge_capacity(*edge_it)) {
         // Create a functor that returns whether the car exists.
@@ -76,7 +75,7 @@ void SimulationPolicyNaive::update(core::State& state)
           // Just delete the empty spot.
           edge_it->cars.erase((empty_car_it + 1).base());
         }
-      } */
+      }
 
       // Update the edge.
       if (car_placement_probability > 45) {
@@ -104,16 +103,21 @@ void SimulationPolicyNaive::update(core::State& state)
       // Cycle the from iterator, so if one is less, that is fine.
       if (from_it == edges_from_intersection.end()) from_it = edges_from_intersection.begin();
 
-      // If we have a valid place to pop from.
-      if (!to_it->cars.empty()) {
-        // Remove the last car.
-        core::Car car_to_move = to_it->cars.back();
-        to_it->cars.pop_back();
-        // Push it to the head of the other lane.
-        from_it->cars.push_front(car_to_move);
-        // Update the edges
-        graph->update_edge(*to_it);
-        graph->update_edge(*from_it);
+      // Only update in the valid direction.
+      int road_id = (char)*from_it->uid.rbegin() - '0';
+      if ( (road_id == 0 && state.getLights() == core::State::Lights::HORIZONTAL)
+          || (road_id == 1 && state.getLights() == core::State::Lights::VERTICAL)) {
+        // If we have a valid place to pop from.
+        if (!to_it->cars.empty() ) {
+          // Remove the last car.
+          core::Car car_to_move = to_it->cars.back();
+          to_it->cars.pop_back();
+          // Push it to the head of the other lane.
+          from_it->cars.push_front(car_to_move);
+          // Update the edges
+          graph->update_edge(*to_it);
+          graph->update_edge(*from_it);
+        }
       }
       // Increment the from iterator.
       from_it++;
