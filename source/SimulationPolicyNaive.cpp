@@ -15,7 +15,7 @@ void SimulationPolicyNaive::update(core::State& state)
 {
   // Retrieve the graph.
   auto graph = state.getGraph();
-  
+
   // Grab the sources, sinks and intersections.
   auto sources = graph->get_vertices(core::Vertex::Type::SOURCE);
   auto sinks = graph->get_vertices(core::Vertex::Type::SINK);
@@ -34,8 +34,8 @@ void SimulationPolicyNaive::update(core::State& state)
     }
     // Update the graph.
     graph->update_edge(*edge_it);
-  } 
-  
+  }
+
   // Update the sinks.
   for (auto sink_it = sinks.begin(); sink_it != sinks.end(); sink_it++) {
     // For each sink. Grab all the edges going to it.
@@ -43,20 +43,20 @@ void SimulationPolicyNaive::update(core::State& state)
     for (auto edge_it = edges_to_sink.begin(); edge_it != edges_to_sink.end(); edge_it++) {
       std::cout << "Updating Sink For Edge: " << edge_it->uid << std::endl;
       // For each edge going to the sink, remove the last element, if it is not empty.
-      if (!edge_it->cars.empty()) { 
+      if (!edge_it->cars.empty()) {
         edge_it->cars.pop_back();
         graph->update_edge(*edge_it);
      }
     }
   }
-  
+
   // Update the sources.
   for (auto source_it = sources.begin(); source_it != sources.end(); source_it++) {
     // Grab all the edges going from the source.
     auto edges_from_source = graph->get_edges_from(*source_it);
     for (auto edge_it = edges_from_source.begin(); edge_it != edges_from_source.end(); edge_it++) {
       std::cout << "Updating Source For Edge: " << edge_it->uid << std::endl;
-      
+
       // Check for a traffic jam
       if (edge_it->cars.size() >= graph->get_edge_capacity(*edge_it)) {
         // Create a functor that returns whether the car exists.
@@ -68,7 +68,7 @@ void SimulationPolicyNaive::update(core::State& state)
         // Find the first is_car.
         auto empty_car_it = std::find_if(edge_it->cars.rbegin(), edge_it->cars.rend(), is_car());
         // The lane is totally full.
-        if (empty_car_it == edge_it->cars.rend()) { 
+        if (empty_car_it == edge_it->cars.rend()) {
           std::cout << "Traffic Jam At: " << edge_it->uid << std::endl;
           continue;
         } else {
@@ -78,7 +78,7 @@ void SimulationPolicyNaive::update(core::State& state)
       }
 
       // Update the edge.
-      if (car_placement_probability > 45) {
+      if (car_placement_probability >= 15) {
         std::cout << "Not adding new car" << std::endl;
         edge_it->cars.push_front(core::Car::empty_car());
       } else {
