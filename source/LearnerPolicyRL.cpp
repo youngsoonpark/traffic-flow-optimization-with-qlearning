@@ -119,11 +119,9 @@ int LearnerPolicyRL::stateIndex(core::State& state)
 double LearnerPolicyRL::reward(core::State& state)
 {
   std::vector<uint8_t> approaching_cars = approachingCars(state);
-  for (int lane = 0; lane < NUM_APPROACHING_LANES; lane++) {
-    if (approaching_cars[lane] == 0) {
-      // There is a car waiting in this lane
-      return -1;
-    }
+  if (approaching_cars[1 - state.getLights()] == 0) {
+    // There is a car waiting in this lane
+    return -1;
   }
   return 0;
 }
