@@ -105,8 +105,9 @@ void SimulationPolicyNaive::update(core::State& state)
 
       // Only update in the valid direction.
       int road_id = (char)*from_it->uid.rbegin() - '0';
-      if ( (road_id == 0 && state.getLights() == core::State::Lights::HORIZONTAL)
-          || (road_id == 1 && state.getLights() == core::State::Lights::VERTICAL)) {
+      std::cout << "Intersection Open road id: " << road_id << std::endl;;
+      if ( (road_id == 2 && state.getLights() == core::State::Lights::HORIZONTAL)
+          || (road_id == 3 && state.getLights() == core::State::Lights::VERTICAL)) {
         // If we have a valid place to pop from.
         if (!to_it->cars.empty() ) {
           // Remove the last car.
