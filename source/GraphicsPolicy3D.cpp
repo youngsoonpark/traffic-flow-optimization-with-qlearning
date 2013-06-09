@@ -389,7 +389,7 @@ void GraphicsPolicy3D::update_state()
         // Store a list of the seen hashes.
         seen_hashes.insert(car->hash);
         if (m_road_map.find(car->hash) == m_road_map.end()) {
-          IMeshSceneNode* node = m_smgr->addMeshSceneNode(m_cars[rand() % 11]);
+          IMeshSceneNode* node = m_smgr->addMeshSceneNode(m_cars[car->hash % 11]);
           node->setScale(vector3df(3, 3, 3));
           node->setMaterialFlag(EMF_LIGHTING, false);
           // Rotate it.
