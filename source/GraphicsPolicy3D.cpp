@@ -228,25 +228,18 @@ GraphicsPolicy3D::GraphicsPolicy3D(core::State& state) : m_state(state)
   // Retrieve resolution
   IrrlichtDevice* null_device = createDevice(EDT_NULL);
   m_resolution = null_device->getVideoModeList()->getDesktopResolution();
-
-  /*SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
-  params.AntiAlias = true;
-  params.DriverType = EDT_OPENGL;
-  params.WindowSize = resolution;
-  m_device = createDeviceEx(params);*/
+  // Create the device.
   m_device = createDevice(EDT_OPENGL, m_resolution, 16, false, false, false, 0);
   m_device->setWindowCaption(L"Roadster Simulation");
   m_driver = m_device->getVideoDriver();
   m_smgr = m_device->getSceneManager();
   m_gui = m_device->getGUIEnvironment();
   m_road_texture = m_driver->getTexture("data/media/road.jpg");
-
   // Add the source texture and mesh.
   m_source_mesh = m_smgr->getMesh("data/media/buildings/houseF.obj");
   // Add the sink texture and mesh
   m_sink_mesh = m_smgr->getMesh("data/media/buildings/CPL5.3ds");
   
-
   // Create Scene Manager
   create_scene();
   create_gui();
@@ -294,24 +287,6 @@ void GraphicsPolicy3D::create_scene()
   // Add a triangle selector
   m_selector = m_smgr->createOctreeTriangleSelector(node->getMesh(), node, 128);
   node->setTriangleSelector(m_selector);
-
-
-  // Add some water, for fun.
-  /*
-        mesh = m_smgr->addHillPlaneMesh( "myHill",
-        dimension2d<f32>(20,20),
-        dimension2d<u32>(100,100), 0, 0,
-        dimension2d<f32>(0,0),
-        dimension2d<f32>(100,100));
-
-
-        node = m_smgr->addWaterSurfaceSceneNode(mesh->getMesh(0), 3.0f, 300.0f, 30.0f);
-  node->setMaterialTexture(0, m_driver->getTexture("data/media/stones.jpg"));
-        node->setMaterialTexture(1, m_driver->getTexture("data/media/water.jpg"));
-        node->setMaterialType(video::EMT_REFLECTION_2_LAYER);
-        node->setMaterialFlag(EMF_LIGHTING, false);
-  node->setPosition(vector3df(-50,-15,0));
-  */
 }
 
 void GraphicsPolicy3D::create_gui()
@@ -407,14 +382,12 @@ void GraphicsPolicy3D::update_state()
     int offset = 0;
     // Iterate over the cars.
     core::Edge::Container::iterator car;
-    int i = 0;
     for (car = it->cars.begin(); car != it->cars.end(); car++) {
       //std::cout << "Road: " << it->uid;
       // If the current car is a car.
       if (!car->no_car) {
         // Store a list of the seen hashes.
         seen_hashes.insert(car->hash);
-        
         if (m_road_map.find(car->hash) == m_road_map.end()) {
           IMeshSceneNode* node = m_smgr->addMeshSceneNode(m_cars[rand() % 11]);
           node->setScale(vector3df(3, 3, 3));
@@ -430,28 +403,14 @@ void GraphicsPolicy3D::update_state()
         
         // Update the nodes position. 
         if (start.x == end.x) {
-          int y = end.y < start.y ? start.y - offset * 100 : start.y + offset * 100;
-          // Create tweening.
-          //ISceneNodeAnimator* anim = m_smgr->createFlyStraightAnimator(m_road_map[car->hash]->getPosition(),
-          //                            vector3df(start.x + 50, 20,y), 25, true);
-          //m_road_map[car->hash]->addAnimator(anim); 
-          //anim->drop();
-          m_road_map[car->hash]->setPosition(vector3df(start.x + 50, 20, y)); 
+          int y = end.y < start.y ? start.y*100 - offset * 100 : start.y*100 + offset * 100;
+          m_road_map[car->hash]->setPosition(vector3df(start.x*100 + 50, 20, y)); 
         } else {
-          int x = end.x < start.x ? start.x - offset * 100 : start.x + offset * 100;
-          // Create tweening.
-          //ISceneNodeAnimator* anim = m_smgr->createFlyStraightAnimator(m_road_map[car->hash]->getPosition(),
-          //                            vector3df(x, 20,start.y + 50), 25, true);
-          //m_road_map[car->hash]->addAnimator(anim); 
-          //anim->drop();
-          m_road_map[car->hash]->setPosition(vector3df(x, 20, start.y + 50));
+          int x = end.x < start.x ? start.x*100 - offset * 100 : start.x*100 + offset * 100;
+          m_road_map[car->hash]->setPosition(vector3df(x, 20, start.y*100 + 50));
         }
-        //std::cout << " Car " << i << ": " << car->hash << std::endl;
-      } else {
-        //std::cout << " Car " << i << ": Empty" << std::endl;
       }
-      i++;
-      offset++;
+      ++offset;
     }
   }
   // Get a set off all the sceen hashes.
