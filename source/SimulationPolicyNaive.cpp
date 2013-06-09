@@ -27,7 +27,9 @@ void SimulationPolicyNaive::update(core::State& state)
   // Check all edges are full. If not, push till they reach their full capacity.
   auto edges = graph->get_edges();
   for (auto edge_it = edges.begin(); edge_it != edges.end(); edge_it++) {
-    while (edge_it->cars.size() < graph->get_edge_capacity(*edge_it)) {
+    auto capacity = graph->get_edge_capacity(*edge_it);
+    std::cout << "Edge " << edge_it->uid << " C: " << capacity << std::endl;
+    while (edge_it->cars.size() < capacity) {
       edge_it->cars.push_back(core::Car::empty_car());
     }
     // Update the graph.
@@ -39,6 +41,7 @@ void SimulationPolicyNaive::update(core::State& state)
     // For each sink. Grab all the edges going to it.
     auto edges_to_sink = graph->get_edges_to(*sink_it);
     for (auto edge_it = edges_to_sink.begin(); edge_it != edges_to_sink.end(); edge_it++) {
+      std::cout << "Updating Sink For Edge: " << edge_it->uid << std::endl;
       // For each edge going to the sink, remove the last element, if it is not empty.
       if (!edge_it->cars.empty()) { 
         edge_it->cars.pop_back();
@@ -52,6 +55,7 @@ void SimulationPolicyNaive::update(core::State& state)
     // Grab all the edges going from the source.
     auto edges_from_source = graph->get_edges_from(*source_it);
     for (auto edge_it = edges_from_source.begin(); edge_it != edges_from_source.end(); edge_it++) {
+      std::cout << "Updating Source For Edge: " << edge_it->uid << std::endl;
       if (car_placement_probability > 45) {
         edge_it->cars.push_front(core::Car::empty_car());
       } else {
@@ -85,6 +89,8 @@ void SimulationPolicyNaive::update(core::State& state)
         graph->update_edge(*to_it);
         graph->update_edge(*from_it);
       }
+      // Increment the from iterator.
+      from_it++;
     }
   }
 }
