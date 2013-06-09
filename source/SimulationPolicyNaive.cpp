@@ -56,6 +56,29 @@ void SimulationPolicyNaive::update(core::State& state)
     auto edges_from_source = graph->get_edges_from(*source_it);
     for (auto edge_it = edges_from_source.begin(); edge_it != edges_from_source.end(); edge_it++) {
       std::cout << "Updating Source For Edge: " << edge_it->uid << std::endl;
+      
+      /*
+      // Check for a traffic jam
+      if (edge_it->cars.size() >= graph->get_edge_capacity(*edge_it)) {
+        // Create a functor that returns whether the car exists.
+        struct is_car {
+          bool operator()(const core::Car& car) {
+            return car.no_car;
+          }
+        };
+        // Find the first is_car.
+        auto empty_car_it = std::find_if(edge_it->cars.rbegin(), edge_it->cars.rend(), is_car());
+        // The lane is totally full.
+        if (empty_car_it == edge_it->cars.rend()) { 
+          std::cout << "Traffic Jam At: " << edge_it->uid << std::endl;
+          continue;
+        } else {
+          // Just delete the empty spot.
+          edge_it->cars.erase((empty_car_it + 1).base());
+        }
+      } */
+
+      // Update the edge.
       if (car_placement_probability > 45) {
         edge_it->cars.push_front(core::Car::empty_car());
       } else {
