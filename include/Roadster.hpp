@@ -11,6 +11,15 @@
 #include "SimulationPolicyCellular.hpp"
 #include "SimulationPolicyNaive.hpp"
 
+#include <irrlicht.h>
+
+using namespace irr;
+using namespace irr::core;
+using namespace scene;
+using namespace video;
+using namespace io;
+using namespace gui;
+
 namespace road
 {
 
@@ -47,10 +56,24 @@ public:
    * Run calls, update then draw, update blocks for the ticks specified in state.
    */
   void run(void) {
+    // Create a null device to get time.
+    IrrlichtDevice* null_device = createDevice(EDT_NULL);
+    u32 before;
+    u32 now;
+
     while (m_state.isRunning()) {
-      action(m_state); // Learner is given control to modify the state.
+      // Calculate  before hand.
+      before = null_device->getTimer()->getTime();
+      //action(m_state); // Learner is given control to modify the state.
       update(m_state); // Update the current state.
-      draw(m_state);   // Draw the updated state.
+      draw(m_state, true);   // Draw the updated state.
+      // Get a new calculation 
+      now = null_device->getTimer()->getTime() - before;
+      // Sleep for a bit.
+      if (now < 0.1) {
+        // Don't bother updating, just busy wait on the drawing.
+        draw(m_state, false); // Draw the updated state.
+      } 
     }
   }
 };

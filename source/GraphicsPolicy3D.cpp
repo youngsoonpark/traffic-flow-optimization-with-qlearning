@@ -4,10 +4,12 @@
 #include "RTSCamera.hpp"
 #include "SerializationXML.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
 #include <math.h>
+#include <set>
 
 using namespace irr;
 using namespace irr::core;
@@ -283,10 +285,10 @@ void GraphicsPolicy3D::create_scene()
   node->getMaterial(0).getTextureMatrix(0).setTextureScale(10,10);
   node->setPosition(vector3df(0 ,-10, 0));
   node->setMaterialFlag(EMF_LIGHTING, false);
-  node->setMaterialFlag(EMF_ANTI_ALIASING, true);
+  /*node->setMaterialFlag(EMF_ANTI_ALIASING, true);
   node->setMaterialFlag(EMF_BILINEAR_FILTER, true);
   node->setMaterialFlag(EMF_TRILINEAR_FILTER, true);
-  node->setMaterialFlag(EMF_ANTI_ALIASING, true);
+  node->setMaterialFlag(EMF_ANTI_ALIASING, true);*/
   node->setScale(vector3df(1000,1, 1000));
 
   // Add a triangle selector
@@ -395,6 +397,7 @@ void GraphicsPolicy3D::update_state()
   core::Graph* graph = m_state.getGraph();
   std::list<core::Edge> roads = graph->get_edges();
   std::list<core::Edge>::iterator it;
+  std::set<unsigned int> seen_hashes; // Stores the hashs that we have seen so far.
 
   for (it = roads.begin(); it != roads.end(); it++) {
     // Get the vertex for the start and the end.
@@ -409,7 +412,10 @@ void GraphicsPolicy3D::update_state()
       //std::cout << "Road: " << it->uid;
       // If the current car is a car.
       if (!car->no_car) {
-        if (m_road_map[it->uid].find(car->hash) == m_road_map[it->uid].end()) {
+        // Store a list of the seen hashes.
+        seen_hashes.insert(car->hash);
+        
+        if (m_road_map.find(car->hash) == m_road_map.end()) {
           IMeshSceneNode* node = m_smgr->addMeshSceneNode(m_cars[rand() % 11]);
           node->setScale(vector3df(3, 3, 3));
           node->setMaterialFlag(EMF_LIGHTING, false);
@@ -419,26 +425,26 @@ void GraphicsPolicy3D::update_state()
           } else {
             node->setRotation(vector3df(0, 180, 0));
           }
-          m_road_map[it->uid][car->hash] = node;
+          m_road_map[car->hash] = node;
         }
         
         // Update the nodes position. 
         if (start.x == end.x) {
           int y = end.y < start.y ? start.y - offset * 100 : start.y + offset * 100;
           // Create tweening.
-          //ISceneNodeAnimator* anim = m_smgr->createFlyStraightAnimator(m_road_map[it->uid][car->hash]->getPosition(),
+          //ISceneNodeAnimator* anim = m_smgr->createFlyStraightAnimator(m_road_map[car->hash]->getPosition(),
           //                            vector3df(start.x + 50, 20,y), 25, true);
-          //m_road_map[it->uid][car->hash]->addAnimator(anim); 
+          //m_road_map[car->hash]->addAnimator(anim); 
           //anim->drop();
-          m_road_map[it->uid][car->hash]->setPosition(vector3df(start.x + 50, 20, y)); 
+          m_road_map[car->hash]->setPosition(vector3df(start.x + 50, 20, y)); 
         } else {
           int x = end.x < start.x ? start.x - offset * 100 : start.x + offset * 100;
           // Create tweening.
-          //ISceneNodeAnimator* anim = m_smgr->createFlyStraightAnimator(m_road_map[it->uid][car->hash]->getPosition(),
+          //ISceneNodeAnimator* anim = m_smgr->createFlyStraightAnimator(m_road_map[car->hash]->getPosition(),
           //                            vector3df(x, 20,start.y + 50), 25, true);
-          //m_road_map[it->uid][car->hash]->addAnimator(anim); 
+          //m_road_map[car->hash]->addAnimator(anim); 
           //anim->drop();
-          m_road_map[it->uid][car->hash]->setPosition(vector3df(x, 20, start.y + 50));
+          m_road_map[car->hash]->setPosition(vector3df(x, 20, start.y + 50));
         }
         //std::cout << " Car " << i << ": " << car->hash << std::endl;
       } else {
@@ -448,14 +454,27 @@ void GraphicsPolicy3D::update_state()
       offset++;
     }
   }
-  // Clean up the dead cars.
-  /*
-  std::vector<int> map_current;
-  for (auto road = roads.begin(); road != roads.end(); road++) {
-    // Iterate the map operator.
-    for (auto map_it = m_road_map.begin(); map_it != m_road_map.end(); map_it++) {
-    } 
-  }*/
+  // Get a set off all the sceen hashes.
+  std::set<unsigned int> all_hashes;
+  for (auto hash_it = m_road_map.begin(); hash_it != m_road_map.end(); hash_it++) {
+      all_hashes.insert(hash_it->first);
+  }
+  
+  // Retrieve a list of unseen hashes.
+  std::size_t size = std::max(all_hashes.size(), seen_hashes.size());
+  std::vector<unsigned int> hash_unseen(size); // Hashes not in the system.
+  auto diff_it = std::set_difference(all_hashes.begin(), all_hashes.end(), seen_hashes.begin(),
+                                     seen_hashes.end(), hash_unseen.begin());
+  hash_unseen.resize(diff_it - hash_unseen.begin());
+ 
+  // Iterate over the unseen hashes. 
+  for (auto unseen_it = hash_unseen.begin(); unseen_it != hash_unseen.end(); unseen_it++) {
+    std::cout << *unseen_it << std::endl;
+    // Remove the scene node.
+    m_road_map[*unseen_it]->remove();
+    // Erase the entry.
+    m_road_map.erase(*unseen_it);
+  }
 }
 
 void GraphicsPolicy3D::sync_scene_and_state()
@@ -528,15 +547,18 @@ void GraphicsPolicy3D::sync_scene_and_state()
 
 }
 
-void GraphicsPolicy3D::draw(core::State& state)
+void GraphicsPolicy3D::draw(core::State& state, bool state_change)
 {
   // Check if someone closed the window, if so close the state.
   if (!m_device->run()) {
     state.setRunning(false);
     return;
   }
-  
-  update_state();
+ 
+  if (state_change) { 
+    update_state();
+  }
+
   u32 before = m_device->getTimer()->getTime();
   // Render the scene.
   m_driver->beginScene(true, true, SColor(255, 100, 101, 140));

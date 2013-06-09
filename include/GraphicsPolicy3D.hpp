@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <irrlicht.h>
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 namespace road
@@ -46,7 +46,7 @@ class GraphicsPolicy3D
   irr::scene::IMesh* m_sink_mesh;         // Sink mesh and texture.
   irr::video::ITexture* m_road_texture;   // Road texture.
   irr::core::dimension2d<irr::u32> m_resolution; // Resoultion.
-  std::map<std::string, std::map<int, irr::scene::IMeshSceneNode*>> m_road_map; // Map of the cars.
+  std::unordered_map<int, irr::scene::IMeshSceneNode*> m_road_map; // Map of the cars.
 
 
 protected:
@@ -62,7 +62,7 @@ protected:
   // on new map loads.
   void sync_scene_and_state();
   // Must be included for policies to work.
-  void draw(core::State& state);
+  void draw(core::State& state, bool state_change);
 };
 
 } // End of namespace out.
