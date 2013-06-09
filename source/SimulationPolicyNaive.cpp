@@ -61,7 +61,7 @@ void SimulationPolicyNaive::update(core::State& state) {
   }
 
   std::cout << "SimulationPolicyNaive: Adding cars to the " << verticiesSource.size()  << " road " << std::endl;
-  for (vertex_iterator it = verticiesSource.begin(); it != verticiesSource.end(); ++it++) {
+  for (vertex_iterator it = verticiesSource.begin(); it != verticiesSource.end(); ++it) {
     // Retrieve the edge attached to the source.
     from = g->get_edges_from(*it).back();
     // Randmly add a car to the state.
