@@ -85,14 +85,25 @@ int LearnerPolicyRL::stateIndex(core::State& state)
 {
   int state_index = 0;
   std::vector<uint8_t> lanes = approachingCars(state);
+  assert(lanes.size() == (unsigned int) NUM_APPROACHING_LANES);
+  
   for (int lane = 0; lane < NUM_APPROACHING_LANES; lane++) {
+    assert(0 <= lanes[lane] && lanes[lane] < MAX_CAR_DISTANCE + 2);
     state_index *= MAX_CAR_DISTANCE + 2;
-    state_index += lanes[lane];
+    state_index += static_cast<int>(lanes[lane]);
   }
+  
+  int light_state = static_cast<int>(state.getLights());
+  assert(0 <= light_state && light_state < 2);
   state_index *= NUM_LIGHT_SETTINGS;
-  state_index += static_cast<int>(state.getLights());
+  state_index += light_state;
+  
+  int delay = static_cast<int>(state.getDelay());
+  delay = delay > MAX_DELAY ? MAX_DELAY : delay;
+  assert(0 <= delay && delay <= MAX_DELAY);
   state_index *= MAX_DELAY;
-  state_index += static_cast<int>(state.getDelay());
+  state_index += delay;
+  
   if (state_index >= NUM_STATES) {
     std::cout << "Error in LearnerPolicyRL::stateIndex(core::State& state): " <<
                 "state_index == " << state_index << " >= NUM_STATES == " <<
@@ -162,7 +173,7 @@ std::vector<uint8_t> LearnerPolicyRL::approachingCars(core::State& state)
   // add it to the result
   for (std::list<core::Edge>::iterator it = lanes.begin(); it != lanes.end(); it++) {
     core::Edge::Container cars = it->cars;
-    int car_distance = MAX_CAR_DISTANCE;
+    int car_distance = MAX_CAR_DISTANCE + 1;
     int current_position = 0;
     for (core::Edge::Container::reverse_iterator it = cars.rbegin();
           it != cars.rend() && current_position <= MAX_CAR_DISTANCE; it++)
