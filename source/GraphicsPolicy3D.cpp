@@ -402,11 +402,16 @@ void GraphicsPolicy3D::update_state()
     int offset = 0;
     // Iterate over the cars.
     core::Edge::Container::iterator car;
+    int i = 0;
     for (car = it->cars.begin(); car != it->cars.end(); car++) {
+      std::cout << "Road: " << it->uid;
       // If the current car is a car.
       if (!car->no_car) {
-        std::cout << "Car Hash: " << car->hash << std::endl;
+        std::cout << " Car " << i << ": " << car->hash << std::endl;
+      } else {
+        std::cout << " Car " << i << ": Empty" << std::endl;
       }
+      i++;
       offset++;
     }
   }
