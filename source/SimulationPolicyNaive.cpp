@@ -90,6 +90,7 @@ void SimulationPolicyNaive::update(core::State& state)
 
   // Update the intersections.
   for (auto inter_it = intersections.begin(); inter_it != intersections.end(); inter_it++) {
+    std::cout << "Updating Edge: " << inter_it->uid << std::endl;
     // Grab the roads going to the intersection.
     auto edges_to_intersection = graph->get_edges_to(*inter_it);
     // Grab the roads coming from the intersection.

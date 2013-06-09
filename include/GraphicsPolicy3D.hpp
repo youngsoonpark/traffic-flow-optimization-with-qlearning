@@ -48,6 +48,7 @@ class GraphicsPolicy3D
   irr::core::dimension2d<irr::u32> m_resolution; // Resoultion.
   std::map<std::string, std::map<int, irr::scene::IMeshSceneNode*>> m_road_map; // Map of the cars.
 
+
 protected:
   // Constructs the project.
   GraphicsPolicy3D(core::State& state);

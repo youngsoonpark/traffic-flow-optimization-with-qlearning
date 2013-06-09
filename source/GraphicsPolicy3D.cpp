@@ -243,6 +243,7 @@ GraphicsPolicy3D::GraphicsPolicy3D(core::State& state) : m_state(state)
   m_source_mesh = m_smgr->getMesh("data/media/buildings/houseF.obj");
   // Add the sink texture and mesh
   m_sink_mesh = m_smgr->getMesh("data/media/buildings/CPL5.3ds");
+  
 
   // Create Scene Manager
   create_scene();
@@ -405,39 +406,56 @@ void GraphicsPolicy3D::update_state()
     core::Edge::Container::iterator car;
     int i = 0;
     for (car = it->cars.begin(); car != it->cars.end(); car++) {
-      std::cout << "Road: " << it->uid;
+      //std::cout << "Road: " << it->uid;
       // If the current car is a car.
       if (!car->no_car) {
         if (m_road_map[it->uid].find(car->hash) == m_road_map[it->uid].end()) {
-          m_road_map[it->uid][car->hash] = m_smgr->addMeshSceneNode(m_cars[rand() % 11]);
-          m_road_map[it->uid][car->hash]->setScale(vector3df(3, 3, 3));
-          m_road_map[it->uid][car->hash]->setMaterialFlag(EMF_LIGHTING, false);
+          IMeshSceneNode* node = m_smgr->addMeshSceneNode(m_cars[rand() % 11]);
+          node->setScale(vector3df(3, 3, 3));
+          node->setMaterialFlag(EMF_LIGHTING, false);
           // Rotate it.
           if (start.y == end.y) {
-            m_road_map[it->uid][car->hash]->setRotation(vector3df(0, 90, 0));
+            node->setRotation(vector3df(0, 90, 0));
           } else {
-            m_road_map[it->uid][car->hash]->setRotation(vector3df(0, 180, 0));
+            node->setRotation(vector3df(0, 180, 0));
           }
-
+          m_road_map[it->uid][car->hash] = node;
         }
         
         // Update the nodes position. 
         if (start.x == end.x) {
           int y = end.y < start.y ? start.y - offset * 100 : start.y + offset * 100;
+          // Create tweening.
+          //ISceneNodeAnimator* anim = m_smgr->createFlyStraightAnimator(m_road_map[it->uid][car->hash]->getPosition(),
+          //                            vector3df(start.x + 50, 20,y), 25, true);
+          //m_road_map[it->uid][car->hash]->addAnimator(anim); 
+          //anim->drop();
           m_road_map[it->uid][car->hash]->setPosition(vector3df(start.x + 50, 20, y)); 
         } else {
           int x = end.x < start.x ? start.x - offset * 100 : start.x + offset * 100;
+          // Create tweening.
+          //ISceneNodeAnimator* anim = m_smgr->createFlyStraightAnimator(m_road_map[it->uid][car->hash]->getPosition(),
+          //                            vector3df(x, 20,start.y + 50), 25, true);
+          //m_road_map[it->uid][car->hash]->addAnimator(anim); 
+          //anim->drop();
           m_road_map[it->uid][car->hash]->setPosition(vector3df(x, 20, start.y + 50));
         }
-
-        std::cout << " Car " << i << ": " << car->hash << std::endl;
+        //std::cout << " Car " << i << ": " << car->hash << std::endl;
       } else {
-        std::cout << " Car " << i << ": Empty" << std::endl;
+        //std::cout << " Car " << i << ": Empty" << std::endl;
       }
       i++;
       offset++;
     }
   }
+  // Clean up the dead cars.
+  /*
+  std::vector<int> map_current;
+  for (auto road = roads.begin(); road != roads.end(); road++) {
+    // Iterate the map operator.
+    for (auto map_it = m_road_map.begin(); map_it != m_road_map.end(); map_it++) {
+    } 
+  }*/
 }
 
 void GraphicsPolicy3D::sync_scene_and_state()
@@ -517,7 +535,9 @@ void GraphicsPolicy3D::draw(core::State& state)
     state.setRunning(false);
     return;
   }
-
+  
+  update_state();
+  u32 before = m_device->getTimer()->getTime();
   // Render the scene.
   m_driver->beginScene(true, true, SColor(255, 100, 101, 140));
 
@@ -529,10 +549,15 @@ void GraphicsPolicy3D::draw(core::State& state)
 
   // Runs all the required updates on our state in relation to it specifically
   // modifying graphical components. It doesn't actually modify the state.
-  update_state();
   m_smgr->drawAll();
   m_gui->drawAll();
   m_driver->endScene();
+
+  u32 total = m_device->getTimer()->getTime() - before;
+  if (total < 25) {
+    m_device->sleep(25 - total);
+  }
+
 }
 
 } // End of namespace graphics.
