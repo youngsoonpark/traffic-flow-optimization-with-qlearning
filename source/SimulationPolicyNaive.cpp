@@ -9,9 +9,8 @@ namespace road
 {
 namespace sim
 {
-typedef std::list<core::Vertex>::iterator vertex_iterator;
 
-void SimulationPolicyNaive::update(core::State& state)
+  void SimulationPolicyNaive::update(core::State& state)
 {
   // Debug message.
   std::cout << "SimulationPolicyNaive: Entering Simulaton" << std::endl;
@@ -20,14 +19,15 @@ void SimulationPolicyNaive::update(core::State& state)
 
   core::Car tempCar(1, 1.0, false);    // This is a temporary location for our car
   std::string tempName;                // This is the source's uid that makes it different from all other sources
-  std::list<core::Vertex> verticiesSource = g->get_vertices(core::Vertex::Type::SOURCE);
-  std::list<core::Vertex> verticiesSink = g->get_vertices(core::Vertex::Type::SINK);
-  std::list<core::Vertex> intersection = g->get_vertices(core::Vertex::Type::INTERSECTION);
+  
+  auto verts_source = g->get_vertices(core::Vertex::Type::SOURCE);
+  auto verts_sinks = g->get_vertices(core::Vertex::Type::SINK);
+  auto intersection = g->get_vertices(core::Vertex::Type::INTERSECTION);
   // Edges from and to.
   core::Edge from, to;
 
   // move all cars up by 1
-  for (vertex_iterator it = verticiesSource.begin(); it != verticiesSource.end(); it++) {
+  for (auto it = verts_source.begin(); it != verts_source.end(); it++) {
     // Naive sources should only ever have one edge, so we can assume it is the back one
     from = g->get_edges_from(*it).back();
     // Get the only bit of source uid we can use to evaluate the sink
@@ -47,7 +47,7 @@ void SimulationPolicyNaive::update(core::State& state)
     g->update_edge(from);
 
     // Now find the corresponding sink
-    for (vertex_iterator jt = verticiesSink.begin(); jt != verticiesSink.end(); ++jt) {
+    for (auto jt = verts_sinks.begin(); jt != verts_sinks.end(); ++jt) {
       // We only care about the one that has the same uid as the source...
       if (jt->uid.substr(sizeof("sink-"), std::string::npos) == tempName) {
         // Again, Naive model, so we assume that there's only one edge leading to it
@@ -59,14 +59,14 @@ void SimulationPolicyNaive::update(core::State& state)
         // Re-add the edge to the graph (this is only a copy of it!)
         g->update_edge(to);
         // Remove this from the list since we don't need it anymore :)
-        //verticiesSink.remove(jt); <== obviously this isn't working atm; either going to find a different solution or just ignore altogether :(
+        //verts_sinks.remove(jt); <== obviously this isn't working atm; either going to find a different solution or just ignore altogether :(
         break;
       }
     }
   }
 
-  std::cout << "SimulationPolicyNaive: Adding cars to the " << verticiesSource.size()  << " road " << std::endl;
-  for (vertex_iterator it = verticiesSource.begin(); it != verticiesSource.end(); ++it) {
+  std::cout << "SimulationPolicyNaive: Adding cars to the " << verts_source.size()  << " road " << std::endl;
+  for (auto it = verts_source.begin(); it != verts_source.end(); ++it) {
     // Retrieve the edge attached to the source.
     from = g->get_edges_from(*it).back();
     // Randmly add a car to the state.
