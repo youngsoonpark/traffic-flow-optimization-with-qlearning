@@ -10,78 +10,83 @@ namespace road
 namespace sim
 {
 
-  void SimulationPolicyNaive::update(core::State& state)
+
+void SimulationPolicyNaive::update(core::State& state)
 {
-  // Debug message.
-  std::cout << "SimulationPolicyNaive: Entering Simulaton" << std::endl;
-  int chanceToGetCar = rand() % 101; // 101 so our range is [0, 100]
-  core::Graph* graph = state.getGraph(); // Retrieve the graph.
-
-  core::Car tmp_car(1, 1.0, false);    // This is a temporary location for our car
-  std::string tmp_uid;                // This is the source's uid that makes source_it different from all other sources
+  // Retrieve the graph.
+  auto graph = state.getGraph();
   
-  auto verts_source = graph->get_vertices(core::Vertex::Type::SOURCE);
-  auto verts_sinks = graph->get_vertices(core::Vertex::Type::SINK);
-  auto intersection = graph->get_vertices(core::Vertex::Type::INTERSECTION);
+  // Grab the sources, sinks and intersections.
+  auto sources = graph->get_vertices(core::Vertex::Type::SOURCE);
+  auto sinks = graph->get_vertices(core::Vertex::Type::SINK);
+  auto intersections = graph->get_vertices(core::Vertex::Type::INTERSECTION);
 
-  // Edges from and to.
-  core::Edge from, to;
+  // Calculate the probablity of a car being placed.
+  int car_placement_probability = rand() % 101;
 
-  // move all cars up by 1
-  for (auto source_it = verts_source.begin(); source_it != verts_source.end(); source_it++) {
-    // Naive sources should only ever have one edge, so we can assume source_it is the back one
-    from = graph->get_edges_from(*source_it).back();
-    // Get the only bsource_it of source uid we can use to evaluate the sink
-    tmp_uid = source_it->uid.substr(sizeof("source-"), std::string::npos);
-    // If there are no cars, just continue.
-    if (from.cars.empty()) {
-      continue;
+  // Check all edges are full. If not, push till they reach their full capacity.
+  auto edges = graph->get_edges();
+  for (auto edge_it = edges.begin(); edge_it != edges.end(); edge_it++) {
+    while (edge_it->cars.size() < graph->get_edge_capacity(*edge_it)) {
+      edge_it->cars.push_back(core::Car::empty_car());
     }
-    // Get the car and then take source_it off the road
-    tmp_car = from.cars.front();
-    from.cars.pop_front();
+    // Update the graph.
+    graph->update_edge(*edge_it);
+  } 
+  
+  // Update the sinks.
+  for (auto sink_it = sinks.begin(); sink_it != sinks.end(); sink_it++) {
+    // For each sink. Grab all the edges going to it.
+    auto edges_to_sink = graph->get_edges_to(*sink_it);
+    for (auto edge_it = edges_to_sink.begin(); edge_it != edges_to_sink.end(); edge_it++) {
+      // For each edge going to the sink, remove the last element, if it is not empty.
+      if (!edge_it->cars.empty()) { 
+        edge_it->cars.pop_back();
+        graph->update_edge(*edge_it);
+     }
+    }
+  }
+  
+  // Update the sources.
+  for (auto source_it = sources.begin(); source_it != sources.end(); source_it++) {
+    // Grab all the edges going from the source.
+    auto edges_from_source = graph->get_edges_from(*source_it);
+    for (auto edge_it = edges_from_source.begin(); edge_it != edges_from_source.end(); edge_it++) {
+      if (car_placement_probability > 45) {
+        edge_it->cars.push_front(core::Car::empty_car());
+      } else {
+        edge_it->cars.push_front(core::Car(1, 0, true));
+      }
+      graph->update_edge(*edge_it);
+    }
+  }
 
-    // Decrement our counter each time we don't see a real car.
-    if (!tmp_car.no_car) from.actual_cars--;
-    std::cout << "SimualtionPolicyNaive: Updating the road...." << std::endl;
-    // Re-add the edge to the graph (this is only a copy of source_it!)
-    graph->update_edge(from);
+  // Update the intersections.
+  for (auto inter_it = intersections.begin(); inter_it != intersections.end(); inter_it++) {
+    // Grab the roads going to the intersection.
+    auto edges_to_intersection = graph->get_edges_to(*inter_it);
+    // Grab the roads coming from the intersection.
+    auto edges_from_intersection = graph->get_edges_from(*inter_it);
+    // Map intersections coming in to intersections going out.
+    // Iterate over all the edges coming too and attach them to edges going out.
+    auto from_it = edges_from_intersection.begin();
+    for (auto to_it = edges_to_intersection.begin(); to_it != edges_to_intersection.end(); to_it++) {
+      // Cycle the from iterator, so if one is less, that is fine.
+      if (from_it == edges_from_intersection.end()) from_it = edges_from_intersection.begin();
 
-    // Now find the corresponding sink
-    for (auto sink_source_it = verts_sinks.begin(); sink_source_it != verts_sinks.end(); ++sink_source_it) {
-      // We only care about the one that has the same uid as the source...
-      if (sink_source_it->uid.substr(sizeof("sink-"), std::string::npos) == tmp_uid) {
-        // Again, Naive model, so we assume that there's only one edge leading to source_it
-        to = graph->get_edges_to(*sink_source_it).back();
-        // Take the front car away and add the car we just took from the source
-        to.cars.pop_front();
-        to.cars.push_back(tmp_car);
-        if (tmp_car.no_car == false) to.actual_cars++;
-        // Re-add the edge to the graph (this is only a copy of source_it!)
-        graph->update_edge(to);
-        // Remove this from the list since we don't need source_it anymore :)
-        //verts_sinks.remove(sink_source_it); <== obviously this isn't working atm; esource_ither going to find a different solution or just ignore altogether :(
-        break;
+      // If we have a valid place to pop from.
+      if (!to_it->cars.empty()) {
+        // Remove the last car.
+        core::Car car_to_move = to_it->cars.back();
+        to_it->cars.pop_back();
+        // Push it to the head of the other lane.
+        from_it->cars.push_front(car_to_move);
+        // Update the edges
+        graph->update_edge(*to_it);
+        graph->update_edge(*from_it);
       }
     }
   }
-
-  std::cout << "SimulationPolicyNaive: Adding cars to the " << verts_source.size()  << " road " << std::endl;
-  for (auto source_it = verts_source.begin(); source_it != verts_source.end(); ++source_it) {
-    // Retrieve the edge attached to the source.
-    from = graph->get_edges_from(*source_it).back();
-    // Randmly add a car to the state.
-    if (chanceToGetCar < 45) {
-      std::cout << " -> SimulationPolicyNaive: Car Not Added To " << from.uid << std::endl;
-      from.cars.push_back(core::Car(1, 1.0, false));
-    } else {
-      std::cout << "-> SimulationPolicyNaive: Car Added Added To " << from.uid << std::endl;
-      from.cars.push_back(core::Car(1, 1.0, true));
-    }
-    graph->update_edge(from);
-  }
-  std::cout << "SimulationPolicyNaive: Ending Simulation" << std::endl;
-
 }
 
 } // End of namespace sim.

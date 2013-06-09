@@ -168,6 +168,17 @@ void Graph::update_edge(const Edge& edge) {
   }
 }
 
+std::size_t Graph::get_edge_capacity(const Edge& edge) {
+  std::size_t capacity = 0;
+  // Retrieve the vertexes
+  Vertex start = get_vertex(edge.src);
+  Vertex end = get_vertex(edge.dest);
+  // Calculate the capacity
+  capacity = start.x == end.x ? std::abs(start.y - end.y) : std::abs(start.x - end.y);
+  return capacity;
+}
+
+
 } // End of namespace core.
 } // End of namespace graph.
 

@@ -53,8 +53,13 @@ struct Car {
   // Constructs the car.
   Car(size_t speed, double badboy_factor, bool no_car) :
     speed(speed), badboy_factor(badboy_factor), no_car(no_car) {
-      hash = car_count++;
-    }
+      hash = car_count++; // Reference counter / hash
+  }
+  // Named constructor pattern.
+  static Car empty_car() {
+    return Car(1, 0, false);
+  }
+
 };
 
 /**
@@ -158,6 +163,11 @@ public:
    * @description provides an interface for updating an edge if it has been changed
    */
   void update_edge(const Edge& edge);
+
+  /**
+   * @description retrieves the capacity of an edge.
+   */
+ std::size_t get_edge_capacity(const Edge& edge);
 
 private:
   graph_t m_graph; // Graph member function.
