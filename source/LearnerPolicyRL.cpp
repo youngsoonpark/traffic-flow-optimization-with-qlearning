@@ -93,6 +93,12 @@ int LearnerPolicyRL::stateIndex(core::State& state)
   state_index += static_cast<int>(state.getLights());
   state_index *= MAX_DELAY;
   state_index += static_cast<int>(state.getDelay());
+  if (state_index > NUM_STATES) {
+    std::cout << "Error in LearnerPolicyRL::stateIndex(core::State& state): " <<
+                "state_index == " << state_index << " > NUM_STATES == " <<
+                NUM_STATES << std::endl;
+    assert(false);
+  }
   return state_index;
 }
 
