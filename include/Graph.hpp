@@ -57,7 +57,7 @@ struct Car {
   }
   // Named constructor pattern.
   static Car empty_car() {
-    return Car(1, 0, false);
+    return Car(1, 0, true);
   }
 
 };

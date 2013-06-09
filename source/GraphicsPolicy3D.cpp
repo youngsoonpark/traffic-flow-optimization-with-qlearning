@@ -36,7 +36,6 @@ struct Context {
   ITriangleSelector* selector;
   ISceneNode* cursor;
   core::State& state;
-
 };
 
 // Enum to handle custom events

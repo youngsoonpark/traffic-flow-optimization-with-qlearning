@@ -80,9 +80,11 @@ void SimulationPolicyNaive::update(core::State& state)
 
       // Update the edge.
       if (car_placement_probability > 45) {
+        std::cout << "Not adding new car" << std::endl;
         edge_it->cars.push_front(core::Car::empty_car());
       } else {
-        edge_it->cars.push_front(core::Car(1, 0, true));
+        std::cout << "Not adding new car" << std::endl;
+        edge_it->cars.push_front(core::Car(1, 0, false));
       }
       graph->update_edge(*edge_it);
     }
