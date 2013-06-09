@@ -392,7 +392,18 @@ void GraphicsPolicy3D::create_gui() {
 }
 
 void GraphicsPolicy3D::update_state() {
-  
+  core::Graph* graph = m_state.getGraph();
+  std::list<core::Edge> roads = graph->get_edges();
+  std::list<core::Edge>::iterator it;
+  for (it = roads.begin(); it != roads.end(); it++) {
+    std::cout << "GraphicsPolicy3D.update_state: " << it->uid << std::endl;
+    while (!it->cars.empty()) {
+      core::Car current =  it->cars.front();
+      it->cars.pop_front();
+      std::cout << current.speed << current.no_car << std::endl;
+    }
+
+  }
 }
 
 void GraphicsPolicy3D::sync_scene_and_state() {

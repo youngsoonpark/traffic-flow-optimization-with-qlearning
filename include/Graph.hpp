@@ -287,6 +287,7 @@ class Graph {
        * NEXT e
        */
 
+      /*
       std::pair<edge_iterator, edge_iterator> it;
       Edge& edge;
 
@@ -295,7 +296,7 @@ class Graph {
         vertex_t source = boost::source(*it.first, m_graph);
         vertex_t destination = boost::target(*it.first, m_graph);
         //if (*it.first)
-      }
+      }*/
     }
 
   private:
