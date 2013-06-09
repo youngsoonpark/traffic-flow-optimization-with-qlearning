@@ -411,8 +411,13 @@ void GraphicsPolicy3D::update_state()
         if (m_road_map[it->uid].find(car->hash) == m_road_map[it->uid].end()) {
           m_road_map[it->uid][car->hash] = m_smgr->addMeshSceneNode(m_cars[rand() % 11]);
           m_road_map[it->uid][car->hash]->setScale(vector3df(3, 3, 3));
-          m_road_map[it->uid][car->hash]->setScale(vector3df(3, 3, 3));
           m_road_map[it->uid][car->hash]->setMaterialFlag(EMF_LIGHTING, false);
+          // Rotate it.
+          if (start.y == end.y) {
+            m_road_map[it->uid][car->hash]->setRotation(vector3df(0, 90, 0));
+          } else {
+            m_road_map[it->uid][car->hash]->setRotation(vector3df(0, 180, 0));
+          }
 
         }
         
@@ -422,7 +427,7 @@ void GraphicsPolicy3D::update_state()
           m_road_map[it->uid][car->hash]->setPosition(vector3df(start.x + 50, 20, y)); 
         } else {
           int x = end.x < start.x ? start.x - offset * 100 : start.x + offset * 100;
-          m_road_map[it->uid][car->hash]->setPosition(vector3df(x, 20, start.y + 50)); 
+          m_road_map[it->uid][car->hash]->setPosition(vector3df(x, 20, start.y + 50));
         }
 
         std::cout << " Car " << i << ": " << car->hash << std::endl;
