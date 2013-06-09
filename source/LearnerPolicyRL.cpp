@@ -105,10 +105,11 @@ int LearnerPolicyRL::stateIndex(core::State& state)
   state_index += delay;
   
   if (state_index >= NUM_STATES) {
+    state_index = 0;
     std::cout << "Error in LearnerPolicyRL::stateIndex(core::State& state): " <<
                 "state_index == " << state_index << " >= NUM_STATES == " <<
                 NUM_STATES << std::endl;
-    assert(false);
+    //assert(false);
   }
   return state_index;
 }
