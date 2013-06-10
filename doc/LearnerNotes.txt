@@ -1,0 +1,35 @@
+I just need to know what you did, how you made it work and anything cool you might have done
+
+
+
+
+
+LEARNER
+Learning is done with the q-learning algorithm.
+for each state, the optimal action is note stored explicitly but calculated whenever needed by finding the action yielding the maximum expected reward for each state. This is simpler and not much slower since there are only ever 2 possible actions (horizontal/vertical) and not that many more in bigger intersections anyway.
+
+the traffic lights problem is a continuing task (i.e. no end state), so a discount factor is applied to expected future rewards when calculating the action-value function
+
+in order to avoid failure to explore some states, an exploration rate is used (a probability at each action of choosing an action randomly rather than choosing one with the highest possible reward)
+
+the problem is non-deterministic (since the cars arriving at the intersection is unpredictable, and the learner only knows some of the informationa about it anyway). Therefore, a learning rate is used, meaning that only some of the action-value function is updated after each action
+
+the discount factor, learning rate, and exploration rate are set at 0.9, 0.1, and 0.1 by default but can be changed at any time including when the learner is running.
+
+The basic implementation involves an array of rewards for each state/action pair
+
+the array is allocated on the stack with enough space for all possible states within defined maximum values for the number of lanes approaching an intersection, number of light values, etc
+it doesn't mattter thatn some states don't get used in some circumstances because they don't affect the learning process (no action can lead to them), and the memory used is small (hundreds or thousands of doubles), because of the simplicity of the state and therefore small number of states, and small number of actions.
+
+states internally are represented as an integer 0 <= state_index < NUM_STATES. A state is a combination of the light setting, delay since the last change (max 3), and the distance to the closest car in each lane (max 8, 9 = >8). Important to note that a state for the learner is a subset of the real state of the simulator. These values are adjustable. I'm thinking of including the queue length in the state, see below.
+
+Initially the reward function used was -1 if there was a car waiting at a red light, 0 otherwise. Using minus the sum of the number of cars queued at each red light turned out to work better, especially when one road was more busy than the other (probably since it was able to recognise that a larger queue was worse than a smaller one. This also mroe closely mirros the performance masure
+
+performance measure is the total time spent by any car waiting at a light (easy for naive but for cellular it gets mroe interesting)
+
+
+
+
+Results: learner was able to learn (with the queue length reward) how to efficiently control the lights in the naive model, inclding with almsot 100% capacity and varying saturation of each road. 45/45, 90/5, 70/25 all worked fine.
+
+I think wiht the simple reward it eventually worked it out too, but after longer. These are obviously subjective measures atm
