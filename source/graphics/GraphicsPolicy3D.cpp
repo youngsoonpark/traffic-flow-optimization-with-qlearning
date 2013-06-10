@@ -410,7 +410,7 @@ void GraphicsPolicy3D::update_state()
     for (car = it->cars.rbegin(); car != it->cars.rend(); car++) {
       //std::cout << "Road " << it->uid << " Car " << car->hash << std::endl;
       //std::cout << "Road: " << it->uid;
-      
+
       // Store a list of the seen hashes.
       seen_hashes.insert(car->hash);
       if (m_road_map.find(car->hash) == m_road_map.end()) {
@@ -425,11 +425,11 @@ void GraphicsPolicy3D::update_state()
         }
         m_road_map[car->hash] = node;
       }
-      
-      // Update the nodes position. 
+
+      // Update the nodes position.
       if (start.x == end.x) {
         int y = end.y < start.y ? start.y*100 - (50 - car->position) * 100 : start.y*100 + (50 - car->position) * 100;
-        m_road_map[car->hash]->setPosition(vector3df(start.x*100 + 50, 20, y)); 
+        m_road_map[car->hash]->setPosition(vector3df(start.x*100 + 50, 20, y));
       } else {
         int x = end.x < start.x ? start.x*100 - (50 - car->position) * 100 : start.x*100 + (50 - car->position) * 100;
         m_road_map[car->hash]->setPosition(vector3df(x, 20, start.y*100 + 50));
@@ -441,15 +441,15 @@ void GraphicsPolicy3D::update_state()
   for (auto hash_it = m_road_map.begin(); hash_it != m_road_map.end(); hash_it++) {
       all_hashes.insert(hash_it->first);
   }
-  
+
   // Retrieve a list of unseen hashes.
   std::size_t size = std::max(all_hashes.size(), seen_hashes.size());
   std::vector<unsigned int> hash_unseen(size); // Hashes not in the system.
   auto diff_it = std::set_difference(all_hashes.begin(), all_hashes.end(), seen_hashes.begin(),
                                      seen_hashes.end(), hash_unseen.begin());
   hash_unseen.resize(diff_it - hash_unseen.begin());
- 
-  // Iterate over the unseen hashes. 
+
+  // Iterate over the unseen hashes.
   for (auto unseen_it = hash_unseen.begin(); unseen_it != hash_unseen.end(); unseen_it++) {
     //std::cout << *unseen_it << std::endl;
     // Remove the scene node.
@@ -538,8 +538,8 @@ void GraphicsPolicy3D::draw(core::State& state, bool state_change)
     state.setRunning(false);
     return;
   }
- 
-  if (state_change) { 
+
+  if (state_change) {
     update_state();
   }
 
