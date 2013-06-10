@@ -38,8 +38,6 @@ void Graph::add_edge(std::string src, std::string dest, Edge& edge) {
   m_graph.graph()[new_edge].cars = edge.cars;
   m_graph.graph()[new_edge].actual_cars = edge.actual_cars;
   m_graph.graph()[new_edge].capacity = get_edge_capacity(m_graph.graph()[new_edge]);
-  std::cout << "Edge capacity: " << m_graph.graph()[new_edge].capacity << std::endl;
-  std::cout << "Edge capacity address: " << &m_graph.graph()[new_edge].capacity << std::endl;
 }
 
 void Graph::add_edge(Vertex& src, Vertex& dest, Edge& edge) {
@@ -100,6 +98,7 @@ std::list<Edge> Graph::get_edges() {
     to_add.actual_cars = m_graph.graph()[*it.first].actual_cars;
     to_add.src = m_graph.graph()[source].uid;
     to_add.dest = m_graph.graph()[destination].uid;
+    to_add.capacity = m_graph.graph()[*it.first].capacity;
     // Push the edge back.
     edges.push_back(to_add);
   }

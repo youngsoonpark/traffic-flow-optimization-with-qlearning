@@ -147,8 +147,6 @@ void SimulationPolicyNaive::update(core::State& state)
         std::cout << ", first car position == " << edge_it->cars.front().position;
         std::cout << std::endl;
         
-        std::cout << "Edge capacity address: " << &edge_it->capacity << std::endl;
-        
         std::cout << "Traffic Jam At: " << edge_it->uid << std::endl;
       }
     }
