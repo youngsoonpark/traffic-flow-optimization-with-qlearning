@@ -411,10 +411,10 @@ void GraphicsPolicy3D::update_state()
       
       // Update the nodes position. 
       if (start.x == end.x) {
-        int y = end.y < start.y ? start.y*100 - car->position * 100 : start.y*100 + car->position * 100;
+        int y = end.y < start.y ? start.y*100 - (50 - car->position) * 100 : start.y*100 + (50 - car->position) * 100;
         m_road_map[car->hash]->setPosition(vector3df(start.x*100 + 50, 20, y)); 
       } else {
-        int x = end.x < start.x ? start.x*100 - car->position * 100 : start.x*100 + car->position * 100;
+        int x = end.x < start.x ? start.x*100 - (50 - car->position) * 100 : start.x*100 + (50 - car->position) * 100;
         m_road_map[car->hash]->setPosition(vector3df(x, 20, start.y*100 + 50));
       }
     }

@@ -26,14 +26,14 @@ void SimulationPolicyNaive::update(core::State& state)
     // For each sink. Grab all the edges going to it.
     auto edges_to_sink = graph->get_edges_to(*sink_it);
     for (auto edge_it = edges_to_sink.begin(); edge_it != edges_to_sink.end(); edge_it++) {
-      std::cout << "Sinking Edge: " << edge_it->uid << std::endl;
+      //std::cout << "Sinking Edge: " << edge_it->uid << std::endl;
       
       // If there is a car in the last position, remove it
       if (!edge_it->cars.empty()) {
-        if (edge_it->cars.end()->position == 0)
+        //std::cout << "front car position: " << edge_it->cars.back().position << std::endl;
+        if (edge_it->cars.back().position == 0)
         {
           edge_it->cars.pop_back();
-          graph->update_edge(*edge_it);
         }
       }
       
@@ -47,6 +47,7 @@ void SimulationPolicyNaive::update(core::State& state)
         }
         prev_car_pos = car_it->position;
       }
+      graph->update_edge(*edge_it);
     }
   }
 
@@ -54,7 +55,7 @@ void SimulationPolicyNaive::update(core::State& state)
 
   // Update the intersections.
   for (auto inter_it = intersections.begin(); inter_it != intersections.end(); inter_it++) {
-    std::cout << "Updating Edge: " << inter_it->uid << std::endl;
+    //std::cout << "Updating Edge: " << inter_it->uid << std::endl;
     // Grab the roads going to the intersection.
     auto edges_to_intersection = graph->get_edges_to(*inter_it);
     
@@ -64,27 +65,28 @@ void SimulationPolicyNaive::update(core::State& state)
     // Map intersections coming in to intersections going out.
     
     // Iterate over all the edges coming too and attach them to edges going out.
-    auto from_it = edges_from_intersection.begin();
+    auto to_it = edges_from_intersection.begin();
     
-    for (auto to_it = edges_to_intersection.begin(); to_it != edges_to_intersection.end(); to_it++) {
+    for (auto from_it = edges_to_intersection.begin(); from_it != edges_to_intersection.end(); from_it++) {
     
       // Cycle the from iterator, so if one is less, that is fine.
-      if (from_it == edges_from_intersection.end()) from_it = edges_from_intersection.begin();
+      if (to_it == edges_from_intersection.end()) to_it = edges_from_intersection.begin();
 
       // Only update in the valid direction.
       int road_id = (char)*from_it->uid.rbegin() - '0';
-      std::cout << "Intersection Open road id: " << road_id << std::endl;;
-      if ( (road_id == 2 && state.getLights() == core::State::Lights::HORIZONTAL)
-          || (road_id == 3 && state.getLights() == core::State::Lights::VERTICAL)) {
+      if ( (road_id == 0 && state.getLights() == core::State::Lights::HORIZONTAL)
+          || (road_id == 1 && state.getLights() == core::State::Lights::VERTICAL)) {
+        //std::cout << "Intersection Open road id: " << road_id << std::endl;
         
         // Check that the destination road has room for another car
-        if (to_it->cars.empty() || to_it->cars.front().position < to_it->capacity)
+        if (to_it->cars.empty() || to_it->cars.front().position < to_it->capacity - 1)
         {
           // Check if there is a car waiting to go through the lights
           if (!from_it->cars.empty() && from_it->cars.back().position == 0)
           {
             // Remove the last car.
             core::Car car_to_move = from_it->cars.back();
+            car_to_move.position = to_it->capacity - 1;
             from_it->cars.pop_back();
             // Push it to the head of the other lane.
             to_it->cars.push_front(car_to_move);
@@ -94,8 +96,12 @@ void SimulationPolicyNaive::update(core::State& state)
           }
         }
       }
+      else
+      {
+        //std::cout << "Intersection Closed road id: " << road_id << std::endl;
+      }
       // Increment the from iterator.
-      from_it++;
+      to_it++;
     }
   }
 
@@ -104,7 +110,7 @@ void SimulationPolicyNaive::update(core::State& state)
     // For each intersection. Grab all the edges going to it.
     auto edges_to_inter = graph->get_edges_to(*inter_it);
     for (auto edge_it = edges_to_inter.begin(); edge_it != edges_to_inter.end(); edge_it++) {
-      std::cout << "Updating Intersection For Edge: " << edge_it->uid << std::endl;
+      //std::cout << "Updating Intersection For Edge: " << edge_it->uid << std::endl;
       
       // Go through the cars in the road backwards, moving them forward if possible
       int prev_car_pos = -1;
@@ -112,10 +118,14 @@ void SimulationPolicyNaive::update(core::State& state)
       {
         if (car_it->position > static_cast<unsigned int>(prev_car_pos + 1)) // There is room to move forward
         {
+          /*std::cout << "Moving car " << car_it->hash << " forward from position " <<
+          car_it->position;*/
           car_it->position--;
+          //std::cout << " to position " << car_it->position << std::endl;
         }
         prev_car_pos = car_it->position;
       }
+      graph->update_edge(*edge_it);
     }
   }
 
@@ -124,30 +134,30 @@ void SimulationPolicyNaive::update(core::State& state)
     // Grab all the edges going from the source.
     auto edges_from_source = graph->get_edges_from(*source_it);
     for (auto edge_it = edges_from_source.begin(); edge_it != edges_from_source.end(); edge_it++) {
-      std::cout << "Updating Source For Edge: " << edge_it->uid << std::endl;
+      //std::cout << "Updating Source For Edge: " << edge_it->uid << std::endl;
       
       // Check if it is possible to push a car
-      if (edge_it->cars.empty() || edge_it->cars.front().position < edge_it->capacity)
+      if (edge_it->cars.empty() || edge_it->cars.front().position < edge_it->capacity - 1)
       {
         int car_placement_probability = rand() % 101;
         // Update the edge.
         if ((source_it == sources.begin() && car_placement_probability >= 70) ||
-            (source_it != sources.begin() && car_placement_probability >= 25)) {
-          std::cout << "Not adding new car" << std::endl;
+            (source_it != sources.begin() && car_placement_probability >= 20)) {
+          //std::cout << "Not adding new car" << std::endl;
         } else {
-          std::cout << "Adding new car" << std::endl;
-          edge_it->cars.push_front(core::Car(1, 0, edge_it->capacity));
+          //std::cout << "Adding new car" << std::endl;
+          edge_it->cars.push_front(core::Car(1, 0, edge_it->capacity - 1));
           graph->update_edge(*edge_it);
         }
       }
       else // It is impossible to push a car
       {
-        std::cout << "cars size == " << edge_it->cars.size();
-        std::cout << ", road capacity == " << edge_it->capacity;
-        std::cout << ", first car position == " << edge_it->cars.front().position;
-        std::cout << std::endl;
+        //std::cout << "cars size == " << edge_it->cars.size();
+        //std::cout << ", road capacity == " << edge_it->capacity;
+        //std::cout << ", first car position == " << edge_it->cars.front().position;
+        //std::cout << std::endl;
         
-        std::cout << "Traffic Jam At: " << edge_it->uid << std::endl;
+        //std::cout << "Traffic Jam At: " << edge_it->uid << std::endl;
       }
     }
   }
