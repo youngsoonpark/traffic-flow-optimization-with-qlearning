@@ -90,7 +90,7 @@ int LearnerPolicyRL::stateIndex(core::State& state)
   std::vector<uint8_t> lanes = approachingCars(state);
   assert(lanes.size() <= (unsigned int) MAX_APPROACHING_LANES);
   
-  for (int lane = 0; lane < lanes.size(); lane++) {
+  for (unsigned int lane = 0; lane < lanes.size(); lane++) {
     assert(0 <= lanes[lane] && lanes[lane] < MAX_CAR_DISTANCE + 2);
     state_index *= MAX_CAR_DISTANCE + 2;
     state_index += static_cast<int>(lanes[lane]);
@@ -202,19 +202,7 @@ std::vector<uint8_t> LearnerPolicyRL::approachingCars(core::State& state)
   // add it to the result
   for (std::list<core::Edge>::iterator it = lanes.begin(); it != lanes.end(); it++) {
     core::Edge::Container cars = it->cars;
-    int car_distance = MAX_CAR_DISTANCE + 1;
-    int current_position = 0;
-    for (core::Edge::Container::reverse_iterator it = cars.rbegin();
-          it != cars.rend() && current_position <= MAX_CAR_DISTANCE; it++)
-    {
-      if(!it->no_car)
-      {
-        car_distance = current_position;
-        break;
-      }
-      current_position++;
-    }
-    result.push_back(car_distance);
+    result.push_back(cars.end()->position);
   }
   return result;
 }
@@ -242,10 +230,11 @@ std::vector<uint8_t> LearnerPolicyRL::queueLengths(core::State& state)
   for (std::list<core::Edge>::iterator it = lanes.begin(); it != lanes.end(); it++) {
     core::Edge::Container cars = it->cars;
     int queue_length = 0;
+    int prev_pos = -1;
     for (core::Edge::Container::reverse_iterator it = cars.rbegin();
           it != cars.rend() && queue_length <= MAX_CAR_DISTANCE; it++)
     {
-      if(!it->no_car)
+      if(it->position == static_cast<unsigned int>(prev_pos + 1))
       {
         queue_length++;
       }

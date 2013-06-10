@@ -47,17 +47,13 @@ static unsigned int car_count;
 struct Car {
   std::size_t speed;
   double badboy_factor;
-  bool no_car;
+  unsigned int position; // position in the road, 0 is the next car to be popped
   unsigned int hash;
 
   // Constructs the car.
-  Car(size_t speed, double badboy_factor, bool no_car) :
-    speed(speed), badboy_factor(badboy_factor), no_car(no_car) {
+  Car(size_t speed, double badboy_factor, unsigned int position) :
+    speed(speed), badboy_factor(badboy_factor), position(position) {
       hash = car_count++; // Reference counter / hash
-  }
-  // Named constructor pattern.
-  static Car empty_car() {
-    return Car(1, 0, true);
   }
 
 };
@@ -167,7 +163,7 @@ public:
   /**
    * @description retrieves the capacity of an edge.
    */
- std::size_t get_edge_capacity(const Edge& edge);
+  std::size_t get_edge_capacity(const Edge& edge);
 
 private:
   graph_t m_graph; // Graph member function.

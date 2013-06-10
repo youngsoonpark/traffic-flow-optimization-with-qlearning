@@ -388,40 +388,35 @@ void GraphicsPolicy3D::update_state()
     // Get the vertex for the start and the end.
     core::Vertex start = graph->get_vertex(it->src);
     core::Vertex end = graph->get_vertex(it->dest);
-    // Get the offset.
-    int offset = 0;
     // Iterate over the cars.
-    core::Edge::Container::iterator car;
-    for (car = it->cars.begin(); car != it->cars.end(); car++) {
+    core::Edge::Container::reverse_iterator car;
+    for (car = it->cars.rbegin(); car != it->cars.rend(); car++) {
       //std::cout << "Road " << it->uid << " Car " << car->hash << std::endl;
       //std::cout << "Road: " << it->uid;
-      // If the current car is a car.
-      if (!car->no_car) {
-        // Store a list of the seen hashes.
-        seen_hashes.insert(car->hash);
-        if (m_road_map.find(car->hash) == m_road_map.end()) {
-          IMeshSceneNode* node = m_smgr->addMeshSceneNode(m_cars[car->hash % 11]);
-          node->setScale(vector3df(3, 3, 3));
-          node->setMaterialFlag(EMF_LIGHTING, false);
-          // Rotate it.
-          if (start.y == end.y) {
-            node->setRotation(vector3df(0, 270, 0));
-          } else {
-            node->setRotation(vector3df(0, 180, 0));
-          }
-          m_road_map[car->hash] = node;
-        }
-        
-        // Update the nodes position. 
-        if (start.x == end.x) {
-          int y = end.y < start.y ? start.y*100 - offset * 100 : start.y*100 + offset * 100;
-          m_road_map[car->hash]->setPosition(vector3df(start.x*100 + 50, 20, y)); 
+      
+      // Store a list of the seen hashes.
+      seen_hashes.insert(car->hash);
+      if (m_road_map.find(car->hash) == m_road_map.end()) {
+        IMeshSceneNode* node = m_smgr->addMeshSceneNode(m_cars[car->hash % 11]);
+        node->setScale(vector3df(3, 3, 3));
+        node->setMaterialFlag(EMF_LIGHTING, false);
+        // Rotate it.
+        if (start.y == end.y) {
+          node->setRotation(vector3df(0, 270, 0));
         } else {
-          int x = end.x < start.x ? start.x*100 - offset * 100 : start.x*100 + offset * 100;
-          m_road_map[car->hash]->setPosition(vector3df(x, 20, start.y*100 + 50));
+          node->setRotation(vector3df(0, 180, 0));
         }
+        m_road_map[car->hash] = node;
       }
-      ++offset;
+      
+      // Update the nodes position. 
+      if (start.x == end.x) {
+        int y = end.y < start.y ? start.y*100 - car->position * 100 : start.y*100 + car->position * 100;
+        m_road_map[car->hash]->setPosition(vector3df(start.x*100 + 50, 20, y)); 
+      } else {
+        int x = end.x < start.x ? start.x*100 - car->position * 100 : start.x*100 + car->position * 100;
+        m_road_map[car->hash]->setPosition(vector3df(x, 20, start.y*100 + 50));
+      }
     }
   }
   // Get a set off all the sceen hashes.
