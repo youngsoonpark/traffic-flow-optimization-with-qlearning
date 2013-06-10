@@ -31,6 +31,8 @@ class GraphicsPolicy3D
   friend class Context;
   friend class GUIEventReceiver;
 
+  static const int NUM_CAR_TYPES = 11;
+
   // Device managers and other core components
   irr::IrrlichtDevice* m_device;
   irr::video::IVideoDriver* m_driver;

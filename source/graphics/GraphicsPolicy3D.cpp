@@ -65,7 +65,7 @@ void GraphicsPolicy3D::create_scene()
   m_smgr->addSkyDomeSceneNode(m_driver->getTexture("data/media/skydome.jpg"), 16, 8, 0.95f, 2.0f);
   // Add cars
   IMeshSceneNode* node;
-  for (int i = 1; i <= 11; i++) {
+  for (int i = 1; i <= NUM_CAR_TYPES; i++) {
     std::stringstream ss;
     ss << "data/media/cars/" << i << ".lwo";
     std::string filepath = ss.str();
