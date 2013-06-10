@@ -16,9 +16,9 @@ LearnerPolicyRL::LearnerPolicyRL(): learning_rate(DEFAULT_LEARNING_RATE),
   discount_factor(DEFAULT_DISCOUNT_FACTOR),
   exploration_rate(DEFAULT_EXPLORATION_RATE)
 {
-  for (int state = 0; state < NUM_STATES; state++) {
+  for (unsigned int state = 0; state < NUM_STATES; state++) {
     //optimal_actions[state] = -1;
-    for (int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
+    for (unsigned int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
       reward_map[state][action] = 0;
     }
   }
@@ -86,22 +86,22 @@ void LearnerPolicyRL::action(core::State& state)
 
 int LearnerPolicyRL::stateIndex(core::State& state)
 {
-  int state_index = 0;
+  unsigned int state_index = 0;
   std::vector<uint8_t> lanes = approachingCars(state);
   assert(lanes.size() <= (unsigned int) MAX_APPROACHING_LANES);
   
   for (unsigned int lane = 0; lane < lanes.size(); lane++) {
     assert(0 <= lanes[lane] && lanes[lane] < MAX_CAR_DISTANCE + 2);
     state_index *= MAX_CAR_DISTANCE + 2;
-    state_index += static_cast<int>(lanes[lane]);
+    state_index += lanes[lane];
   }
   
-  int light_state = static_cast<int>(state.getLights());
+  unsigned int light_state = state.getLights();
   assert(0 <= light_state && light_state < 2);
   state_index *= NUM_LIGHT_SETTINGS;
   state_index += light_state;
   
-  int delay = static_cast<int>(state.getDelay());
+  unsigned int delay = state.getDelay();
   delay = delay > MAX_DELAY ? MAX_DELAY : delay;
   assert(0 <= delay && delay <= MAX_DELAY);
   state_index *= MAX_DELAY + 1;
@@ -137,7 +137,7 @@ int LearnerPolicyRL::optimalAction(int state_index)
 {
   // Find the optimal reward attainable
   double optimal_reward = -DBL_MAX;
-  for (int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
+  for (unsigned int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
     std::cout << "Action " << action << " has reward " <<
           reward_map[state_index][action] << ". ";
     if (reward_map[state_index][action] > optimal_reward) {
@@ -148,7 +148,7 @@ int LearnerPolicyRL::optimalAction(int state_index)
   
   // Make a list of optimal actions
   std::list<int> optimal_actions;
-  for (int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
+  for (unsigned int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
     if (reward_map[state_index][action] == optimal_reward) {
       optimal_actions.push_back(action);
     }
@@ -172,7 +172,7 @@ double LearnerPolicyRL::optimalReward(int state_index)
 {
   // Find the optimal action to perform
   double optimal_reward = -DBL_MAX;
-  for (int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
+  for (unsigned int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
     if (reward_map[state_index][action] > optimal_reward) {
       optimal_reward = reward_map[state_index][action];
     }
@@ -202,7 +202,14 @@ std::vector<uint8_t> LearnerPolicyRL::approachingCars(core::State& state)
   // add it to the result
   for (std::list<core::Edge>::iterator it = lanes.begin(); it != lanes.end(); it++) {
     core::Edge::Container cars = it->cars;
-    result.push_back(cars.end()->position);
+    if (cars.end()->position <= MAX_CAR_DISTANCE)
+    {
+      result.push_back(cars.end()->position);
+    }
+    else
+    {
+      result.push_back(MAX_CAR_DISTANCE + 1);
+    }
   }
   return result;
 }
@@ -229,7 +236,7 @@ std::vector<uint8_t> LearnerPolicyRL::queueLengths(core::State& state)
   // add it to the result
   for (std::list<core::Edge>::iterator it = lanes.begin(); it != lanes.end(); it++) {
     core::Edge::Container cars = it->cars;
-    int queue_length = 0;
+    unsigned int queue_length = 0;
     int prev_pos = -1;
     for (core::Edge::Container::reverse_iterator it = cars.rbegin();
           it != cars.rend() && queue_length <= MAX_CAR_DISTANCE; it++)

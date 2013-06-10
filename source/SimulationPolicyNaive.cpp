@@ -26,7 +26,7 @@ void SimulationPolicyNaive::update(core::State& state)
     // For each sink. Grab all the edges going to it.
     auto edges_to_sink = graph->get_edges_to(*sink_it);
     for (auto edge_it = edges_to_sink.begin(); edge_it != edges_to_sink.end(); edge_it++) {
-      std::cout << "Updating Sink For Edge: " << edge_it->uid << std::endl;
+      std::cout << "Sinking Edge: " << edge_it->uid << std::endl;
       
       // If there is a car in the last position, remove it
       if (!edge_it->cars.empty()) {
@@ -142,6 +142,13 @@ void SimulationPolicyNaive::update(core::State& state)
       }
       else // It is impossible to push a car
       {
+        std::cout << "cars size == " << edge_it->cars.size();
+        std::cout << ", road capacity == " << edge_it->capacity;
+        std::cout << ", first car position == " << edge_it->cars.front().position;
+        std::cout << std::endl;
+        
+        std::cout << "Edge capacity address: " << &edge_it->capacity << std::endl;
+        
         std::cout << "Traffic Jam At: " << edge_it->uid << std::endl;
       }
     }
