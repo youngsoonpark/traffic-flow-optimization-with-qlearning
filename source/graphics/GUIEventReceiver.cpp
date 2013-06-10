@@ -46,13 +46,33 @@ bool GUIEventReceiver::OnEvent(const SEvent& event) {
         point.Z = floor(point.Z/100)*100 + 50;
         // Set the cursor to the new position.
         context.cursor->setPosition(point);
+        point.X = floor((point.X - 50)/100);;
+        point.Z = floor((point.Z - 50)/100);
 
         switch (context.gfx.m_selected_tool) {
           case GraphicsPolicy3D::TOOL_ADD_SOURCE:
+          {
+            std::cout << "Adding a new source" << std::endl;
+            core::Vertex source_vert(core::Vertex::SOURCE, "source-", point.X, point.Z);
+            context.state.getGraph()->add_vertex(source_vert);
+            context.gfx.sync_scene_and_state();
+          }
           break;
           case GraphicsPolicy3D::TOOL_ADD_SINK:
+          {
+            std::cout << "Adding a new sink" << std::endl;
+            core::Vertex sink_vert(core::Vertex::SINK, "sink-", point.X, point.Z);
+            context.state.getGraph()->add_vertex(sink_vert);
+            context.gfx.sync_scene_and_state();
+          }
           break;
           case GraphicsPolicy3D::TOOL_ADD_INTERSECTION:
+          {
+            std::cout << "Adding a new intersection" << std::endl;
+            core::Vertex inter_vert(core::Vertex::INTERSECTION, "intersection-", point.X, point.Z);
+            context.state.getGraph()->add_vertex(inter_vert);
+            context.gfx.sync_scene_and_state();
+          }
           break;
           case GraphicsPolicy3D::TOOL_ADD_ROAD:
           break;

@@ -265,7 +265,9 @@ void GraphicsPolicy3D::sync_scene_and_state()
   std::list<core::Vertex> vertices = graph->get_vertices();
   std::list<core::Vertex>::iterator it;
   for (it = vertices.begin(); it != vertices.end(); it++) {
-    IMeshSceneNode* node;;
+    // We don't have to update it.
+    if (it->mesh_node != NULL) continue;
+    IMeshSceneNode* node;
 
     float x = it->x == GRID_OFFSET ? it->x * GRID_SZ - GRID_OFFSET : it->x * GRID_SZ + GRID_OFFSET;
     float y = it->y == GRID_OFFSET ? it->y * GRID_SZ - GRID_OFFSET : it->y * GRID_SZ + GRID_OFFSET;
@@ -288,12 +290,16 @@ void GraphicsPolicy3D::sync_scene_and_state()
       node->setPosition(vector3df(x, -40, y));
       node->setMaterialTexture(0, m_intersection_texture);
     }
+    it->mesh_node = node;
   }
 
   // Iterate over the edges.
   std::list<core::Edge> edges = graph->get_edges();
   std::list<core::Edge>::iterator edge_it;
   for (edge_it = edges.begin(); edge_it != edges.end(); edge_it++) {
+    // We don't have to update it.
+    if (edge_it->mesh_node != NULL) continue;
+
     // Retrieve the source and dest vertexes.
     core::Vertex src = graph->get_vertex(edge_it->src);
     core::Vertex dest = graph->get_vertex(edge_it->dest);
@@ -325,6 +331,8 @@ void GraphicsPolicy3D::sync_scene_and_state()
       node->setPosition(vector3df(src.x*GRID_SZ + offset*GRID_SZ, -5, src.y*GRID_SZ + GRID_OFFSET));
       node->getMaterial(0).getTextureMatrix(0).setTextureScale(1,10);
     }
+
+    edge_it->mesh_node = node;
   }
 
 }

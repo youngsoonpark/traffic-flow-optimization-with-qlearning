@@ -8,6 +8,7 @@
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/labeled_graph.hpp>
+#include <irrlicht.h>
 
 namespace road
 {
@@ -29,10 +30,11 @@ struct Vertex {
   std::string uid; // Custom uid, which is useful for serialization.
   int x; // Defines an x position.
   int y; // defines a y position.
+  irr::scene::IMeshSceneNode* mesh_node; // For graphics.
 
-  Vertex() {}
+  Vertex() : mesh_node(NULL) {}
   Vertex(Type type, std::string uid, int x, int y) :
-    type(type), uid(uid), x(x), y(y) {}
+    type(type), uid(uid), x(x), y(y), mesh_node(NULL) {}
 };
 
 // Used for internal referenes
@@ -73,11 +75,13 @@ struct Edge {
   std::size_t capacity;    // Defines the maximum number of cars.
   Container cars;          // Cars on the road.
   std::int8_t actual_cars; // Defines the number of actual cars.
+  
+  irr::scene::ISceneNode* mesh_node; // For graphics.
 
   // Constructor.
-  Edge() {}
+  Edge() : mesh_node(NULL) {}
   Edge(std::string uid, std::size_t speed_limit)
-    : uid(uid), speed_limit(speed_limit) {}
+    : uid(uid), speed_limit(speed_limit) , mesh_node(NULL) {}
 };
 
 
