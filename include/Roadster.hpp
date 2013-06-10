@@ -5,6 +5,7 @@
 
 // Import the core state.
 #include "core/State.hpp"
+
 // Include the valid policies.
 #include "graphics/GraphicsPolicy3D.hpp"
 #include "ml/LearnerPolicyRL.hpp"
@@ -62,18 +63,22 @@ public:
     u32 now;
 
     while (m_state.isRunning()) {
-      // Calculate  before hand.
-      before = null_device->getTimer()->getTime();
-      action(m_state); // Learner is given control to modify the state.
-      update(m_state); // Update the current state.
-      draw(m_state, true);   // Draw the updated state.
-      // Get a new calculation 
-      now = null_device->getTimer()->getTime() - before;
-      // Sleep for a bit.
-      if (now < 0.1) {
-        // Don't bother updating, just busy wait on the drawing.
-        draw(m_state, false); // Draw the updated state.
-      } 
+      if (!m_state.isPaused()) {
+        // Calculate  before hand.
+        before = null_device->getTimer()->getTime();
+        action(m_state); // Learner is given control to modify the state.
+        update(m_state); // Update the current state.
+        draw(m_state, true);   // Draw the updated state.
+        // Get a new calculation 
+        now = null_device->getTimer()->getTime() - before;
+        // Sleep for a bit.
+        if (now < 0.1) {
+          // Don't bother updating, just busy wait on the drawing.
+          draw(m_state, false); // Draw the updated state.
+        } 
+      } else {
+        draw(m_state, false); // Just draw the state.
+      }
     }
   }
 };

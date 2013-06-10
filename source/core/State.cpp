@@ -5,7 +5,7 @@ namespace road
 namespace core
 {
 
-State::State() : m_running(true), m_lights(Lights::HORIZONTAL), m_delay(0), m_maxCars(50)
+State::State() : m_running(true), m_paused(false), m_lights(Lights::HORIZONTAL), m_delay(0), m_maxCars(50)
 {
 }
 
@@ -21,6 +21,14 @@ bool State::isRunning()
 void State::setRunning(bool running)
 {
   m_running = running;
+}
+
+bool State::isPaused() {
+  return m_paused;
+}
+
+void State::setPaused(bool paused) {
+  m_paused = paused;
 }
 
 Graph* State::getGraph()

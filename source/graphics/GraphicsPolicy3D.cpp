@@ -1,4 +1,5 @@
 #include "graphics/GraphicsPolicy3D.hpp"
+#include "graphics/GUIEventReceiver.hpp"
 #include "core/State.hpp"
 #include "graphics/RTSCamera.hpp"
 #include "io/SerializationXML.hpp"
@@ -21,219 +22,6 @@ namespace road
 {
 namespace graphics
 {
-
-// Define the context that the receiver can see, this is partially limited.
-struct Context {
-  // Construct the context.
-  Context(GraphicsPolicy3D& gfx, IrrlichtDevice* device, ITriangleSelector* selector,
-          ISceneNode* cursor, core::State& state) :
-    gfx(gfx), device(device), selector(selector), cursor(cursor), state(state) {}
-
-  // The public attributes.
-  GraphicsPolicy3D& gfx;
-  IrrlichtDevice* device;
-  ITriangleSelector* selector;
-  ISceneNode* cursor;
-  core::State& state;
-};
-
-// Enum to handle custom events
-enum {
-  GUI_ID_LOAD_MAP = 101,
-  GUI_ID_SAVE_MAP,
-  GUI_ID_QUIT,
-  GUI_ID_ADD_SOURCE,
-  GUI_ID_ADD_SINK,
-  GUI_ID_ADD_INTERSECTION,
-  GUI_ID_ADD_ROAD,
-  GUI_ID_REMOVE_NODE,
-  GUI_ID_MOVE_TOOL,
-  GUI_ID_EDITOR_PANEL,
-  GUI_ID_SIMULATOR_STATE,
-  GUI_ID_LEARNER_STATE,
-  GUI_ID_RUN,
-  GUI_ID_PAUSE,
-  GUI_ID_SIMULATION_PANEL,
-  GUI_ID_ABOUT,
-  GUI_ID_LICENSE,
-  GUI_ID_RESET_CAMERA
-};
-
-// Define the custom event handler for the graphical user interface.
-class GUIEventReceiver : public IEventReceiver
-{
-  Context context; // Define the context, that the receiver.
-
-public:
-  GUIEventReceiver(Context context) : context(context) {}
-
-  virtual bool OnEvent(const SEvent& event) {
-    if (event.EventType == EET_MOUSE_INPUT_EVENT) {
-      // Cast a ray.
-      if (event.MouseInput.isLeftPressed()) {
-        // Retrieve the collision manager.
-        ISceneCollisionManager* col_mgr = context.device->getSceneManager()->getSceneCollisionManager();
-        // Grab the ray to cast.
-        line3d<f32> ray = col_mgr->getRayFromScreenCoordinates(context.device->getCursorControl()->getPosition());
-        // Define some structures we need.
-        vector3df point;
-        triangle3df hit_triangle;
-        const ISceneNode* node = 0;
-        // Find the hit triangle
-        col_mgr->getCollisionPoint(ray, context.selector, point, hit_triangle, node);
-        if (point.X && point.Y && point.Z) {
-          // Print it out.
-          point.X = floor(point.X/100)*100 + 50;
-          point.Z = floor(point.Z/100)*100 + 50;
-          // Set the cursor to the new position.
-          context.cursor->setPosition(point);
-        }
-      }
-    }
-    if (event.EventType == EET_GUI_EVENT) {
-      s32 id = event.GUIEvent.Caller->getID();
-      IGUIEnvironment* gui = context.device->getGUIEnvironment();
-      switch(event.GUIEvent.EventType) {
-        // Case where the user requests a file to be opened.
-      case EGET_FILE_SELECTED: {
-        // If a file has been selected from the dialog, retrieve the caller.
-        IGUIFileOpenDialog* dialog = (IGUIFileOpenDialog*)event.GUIEvent.Caller;
-        std::cout << stringc(dialog->getFileName()).c_str() << std::endl;
-        // Retrieve the file path.
-        std::string path(stringc(dialog->getFileName()).c_str());
-        std::cout << path << std::endl;
-        // Pass it to the seriazization class.
-        road::io::SerializationXML serialize;
-        // Load the new graph into our state, given the path.
-        serialize.load(path, context.state);
-        // Reset the previous map, loading in the new map.
-        context.gfx.sync_scene_and_state();
-      }
-      break;
-
-      // Used in the tooltip, to quickly load key features.
-      case EGET_BUTTON_CLICKED:
-        switch(id) {
-          // Load in a new map.
-        case GUI_ID_LOAD_MAP:
-          gui->addFileOpenDialog(L"Please choose a file.", true, 0, -1);
-          return true;
-          break;
-          // Loads the editor panel, that takes the selected element and lets you modify it.
-        case GUI_ID_EDITOR_PANEL:
-          return true;
-          break;
-          // Resets the camera, if it gets too lost.
-        case GUI_ID_RESET_CAMERA: {
-          context.device->getSceneManager()->getActiveCamera()->setPosition(vector3df(0, 400, -800));
-        }
-        return true;
-        break;
-        default:
-          break;
-        }
-
-        break;
-
-      case EGET_MENU_ITEM_SELECTED: {
-        IGUIContextMenu* menu = ((IGUIContextMenu*)event.GUIEvent.Caller);
-        id = menu->getItemCommandId(menu->getSelectedItem());
-        std::cout << id << std::endl;
-        switch (id) {
-        case GUI_ID_LOAD_MAP:
-          gui->addFileOpenDialog(L"Please choose a file.", true, 0, -1);
-          return true;
-          break;
-
-        case GUI_ID_SAVE_MAP:
-          break;
-
-        case GUI_ID_QUIT:
-          context.device->closeDevice();
-          break;
-
-        case GUI_ID_ADD_SOURCE:
-          context.gfx.m_selected_tool = GraphicsPolicy3D::TOOL_ADD_SOURCE;
-          break;
-
-        case GUI_ID_ADD_SINK:
-          context.gfx.m_selected_tool = GraphicsPolicy3D::TOOL_ADD_SINK;
-          break;
-
-        case GUI_ID_ADD_INTERSECTION:
-          context.gfx.m_selected_tool = GraphicsPolicy3D::TOOL_ADD_INTERSECTION;
-          break;
-
-        case GUI_ID_ADD_ROAD:
-          context.gfx.m_selected_tool = GraphicsPolicy3D::TOOL_ADD_ROAD;
-          break;
-
-        case GUI_ID_REMOVE_NODE:
-          context.gfx.m_selected_tool = GraphicsPolicy3D::TOOL_DELETE;
-          break;
-        case GUI_ID_MOVE_TOOL:
-          context.gfx.m_selected_tool = GraphicsPolicy3D::TOOL_NONE;
-          break;
-
-        case GUI_ID_EDITOR_PANEL: {
-          IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 800), false, L"Editor Panel");
-        }
-        break;
-
-        case GUI_ID_SIMULATOR_STATE: {
-          IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 800), false, L"Simulation State");
-        }
-        break;
-
-        case GUI_ID_LEARNER_STATE: {
-          IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 800), false, L"Learner State");
-        }
-        break;
-
-        case GUI_ID_RUN:
-          break;
-
-        case GUI_ID_PAUSE:
-          break;
-
-        case GUI_ID_SIMULATION_PANEL: {
-          IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 800), false, L"Simulation Panel");
-        }
-        break;
-
-        case GUI_ID_ABOUT: {
-          IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 400), false, L"About Roadster");
-          gui->addStaticText(L"Roadster is a traffic simulator that utilises machine learning to "
-                             "produce a very efficient traffic light controller. The controller is "
-                             "attempting to minimise the global weighting time of vehicles in the system. "
-                             "To achieve this we had to build a fairly realistic traffic simulator that worked "
-                             "on Manhattan style grid like roads.\n"
-                             "Graphics and Simulator by: Benjamin James Wright <bwright@cse.unsw.edu.au",
-                             rect<s32>(10,35,290,290), false, true, window);
-        }
-        break;
-
-        case GUI_ID_LICENSE: {
-          IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 400), false, L"Roadster Licence");
-          gui->addStaticText(L"Roadster is licensed under the Irrlicht License, you can find a copy of it "
-                             "here: http://irrlicht.sourceforge.net/license/",
-                             rect<s32>(10,35,290,290), false, true, window);
-        }
-        break;
-
-        default:
-          break;
-        }
-      }
-      break;
-      default:
-        break;
-      }
-    }
-    return false;
-  }
-};
-
 
 GraphicsPolicy3D::GraphicsPolicy3D(core::State& state) : m_state(state)
 {
@@ -277,7 +65,7 @@ void GraphicsPolicy3D::create_scene()
   m_smgr->addSkyDomeSceneNode(m_driver->getTexture("data/media/skydome.jpg"), 16, 8, 0.95f, 2.0f);
   // Add cars
   IMeshSceneNode* node;
-  for (int i = 1; i <= 11; i++) {
+  for (int i = 1; i <= NUM_CAR_TYPES; i++) {
     std::stringstream ss;
     ss << "data/media/cars/" << i << ".lwo";
     std::string filepath = ss.str();
@@ -324,50 +112,50 @@ void GraphicsPolicy3D::create_gui()
 
   // Define the file submenu.
   IGUIContextMenu* submenu = menu->getSubMenu(0);
-  submenu->addItem(L"Load Map", GUI_ID_LOAD_MAP);
-  submenu->addItem(L"Save Map", GUI_ID_SAVE_MAP);
+  submenu->addItem(L"Load Map", GUIEventReceiver::GUI_ID_LOAD_MAP);
+  submenu->addItem(L"Save Map", GUIEventReceiver::GUI_ID_SAVE_MAP);
   submenu->addSeparator();
-  submenu->addItem(L"Quit", GUI_ID_QUIT);
+  submenu->addItem(L"Quit", GUIEventReceiver::GUI_ID_QUIT);
 
   // Define the edit submenu.
   submenu = menu->getSubMenu(1);
-  submenu->addItem(L"Add Source",       GUI_ID_ADD_SOURCE);
-  submenu->addItem(L"Add Sink",         GUI_ID_ADD_SINK);
-  submenu->addItem(L"Add Intersection", GUI_ID_ADD_INTERSECTION);
-  submenu->addItem(L"Add Road",         GUI_ID_ADD_ROAD);
-  submenu->addItem(L"Delete Node",      GUI_ID_REMOVE_NODE);
-  submenu->addItem(L"Move Tool",        GUI_ID_MOVE_TOOL);
+  submenu->addItem(L"Add Source",       GUIEventReceiver::GUI_ID_ADD_SOURCE);
+  submenu->addItem(L"Add Sink",         GUIEventReceiver::GUI_ID_ADD_SINK);
+  submenu->addItem(L"Add Intersection", GUIEventReceiver::GUI_ID_ADD_INTERSECTION);
+  submenu->addItem(L"Add Road",         GUIEventReceiver::GUI_ID_ADD_ROAD);
+  submenu->addItem(L"Delete Node",      GUIEventReceiver::GUI_ID_REMOVE_NODE);
+  submenu->addItem(L"Move Tool",        GUIEventReceiver::GUI_ID_MOVE_TOOL);
   submenu->addSeparator();
-  submenu->addItem(L"Open Editor Panel", GUI_ID_EDITOR_PANEL);
+  submenu->addItem(L"Open Editor Panel", GUIEventReceiver::GUI_ID_EDITOR_PANEL);
 
   // Define the simulation submenu.
   submenu = menu->getSubMenu(2);
-  submenu->addItem(L"Simulation State", GUI_ID_SIMULATOR_STATE);
-  submenu->addItem(L"Learner State",    GUI_ID_LEARNER_STATE);
+  submenu->addItem(L"Simulation State", GUIEventReceiver::GUI_ID_SIMULATOR_STATE);
+  submenu->addItem(L"Learner State",    GUIEventReceiver::GUI_ID_LEARNER_STATE);
 
   // Define the simulation submenu.
   submenu = menu->getSubMenu(3);
-  submenu->addItem(L"Run", GUI_ID_RUN);
-  submenu->addItem(L"Pause", GUI_ID_PAUSE);
+  submenu->addItem(L"Run", GUIEventReceiver::GUI_ID_RUN);
+  submenu->addItem(L"Pause", GUIEventReceiver::GUI_ID_PAUSE);
   submenu->addSeparator();
-  submenu->addItem(L"Open Simulation Panel", GUI_ID_SIMULATION_PANEL);
+  submenu->addItem(L"Open Simulation Panel", GUIEventReceiver::GUI_ID_SIMULATION_PANEL);
 
   // Define the help submenu.
   submenu = menu->getSubMenu(4);
-  submenu->addItem(L"About ", GUI_ID_ABOUT);
-  submenu->addItem(L"Licence ", GUI_ID_LICENSE);
+  submenu->addItem(L"About ", GUIEventReceiver::GUI_ID_ABOUT);
+  submenu->addItem(L"Licence ", GUIEventReceiver::GUI_ID_LICENSE);
 
 
   // Create the toolbar.
   IGUIToolBar* bar = m_gui->addToolBar();
   ITexture* image = m_driver->getTexture("data/media/open.png");
-  bar->addButton(GUI_ID_LOAD_MAP, 0, L"Open a model",image, 0, false, true);
+  bar->addButton(GUIEventReceiver::GUI_ID_LOAD_MAP, 0, L"Open a model",image, 0, false, true);
 
   image = m_driver->getTexture("data/media/tools.png");
-  bar->addButton(GUI_ID_EDITOR_PANEL, 0, L"Open Toolset",image, 0, false, true);
+  bar->addButton(GUIEventReceiver::GUI_ID_EDITOR_PANEL, 0, L"Open Toolset",image, 0, false, true);
 
   image = m_driver->getTexture("data/media/help.png");
-  bar->addButton(GUI_ID_RESET_CAMERA, 0, L"Open Help", image, 0, false, true);
+  bar->addButton(GUIEventReceiver::GUI_ID_RESET_CAMERA, 0, L"Open Help", image, 0, false, true);
 
   // Remove alpha, make it look cleaner.
   for (s32 i=0; i < EGDC_COUNT; ++i) {
