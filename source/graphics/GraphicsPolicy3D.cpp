@@ -216,11 +216,11 @@ void GraphicsPolicy3D::update_state()
 
       // Update the nodes position.
       if (start.x == end.x) {
-        int y = end.y < start.y ? start.y*100 - (50 - car->position) * 100 : start.y*100 + (50 - car->position) * 100;
-        m_road_map[car->hash]->setPosition(vector3df(start.x*100 + 50, 20, y));
+        int y = end.y < start.y ? start.y*GRID_SZ - (50 - car->position) * 100 : start.y*GRID_SZ + (50 - car->position) * 100;
+        m_road_map[car->hash]->setPosition(vector3df(start.x*GRID_SZ + 50, 20, y));
       } else {
-        int x = end.x < start.x ? start.x*100 - (50 - car->position) * 100 : start.x*100 + (50 - car->position) * 100;
-        m_road_map[car->hash]->setPosition(vector3df(x, 20, start.y*100 + 50));
+        int x = end.x < start.x ? start.x*GRID_SZ - (50 - car->position) * 100 : start.x*GRID_SZ + (50 - car->position) * 100;
+        m_road_map[car->hash]->setPosition(vector3df(x, 20, start.y*GRID_SZ + 50));
       }
     }
   }
@@ -257,8 +257,8 @@ void GraphicsPolicy3D::sync_scene_and_state()
   for (it = vertices.begin(); it != vertices.end(); it++) {
     IMeshSceneNode* node;;
 
-    float x = it->x == 50 ? it->x*100 - 50 : it->x*100 + 50;
-    float y = it->y == 50 ? it->y*100 - 50 : it->y*100 + 50;
+    float x = it->x == 50 ? it->x*GRID_SZ - 50 : it->x*GRID_SZ + 50;
+    float y = it->y == 50 ? it->y*GRID_SZ - 50 : it->y*GRID_SZ + 50;
 
     if (it->type == core::Vertex::SOURCE) {
       node = m_smgr->addMeshSceneNode(m_source_mesh);
@@ -304,7 +304,7 @@ void GraphicsPolicy3D::sync_scene_and_state()
       distance = std::abs(dest.y + src.y);
       offset = dest.y > src.y ? (distance/2) : -(distance/2);
       node->setScale(vector3df(1, 0.1, distance));
-      node->setPosition(vector3df(src.x*100 + 50, -5, src.y*100 + offset*100));
+      node->setPosition(vector3df(src.x * GRID_SZ + 50, -5, src.y*GRID_SZ + offset*GRID_SZ));
       node->getMaterial(0).getTextureMatrix(0).setTextureScale(10,1);
       node->getMaterial(0).getTextureMatrix(0).setTextureRotationCenter(1.57f);
       // Else if the x values are equal.
@@ -312,7 +312,7 @@ void GraphicsPolicy3D::sync_scene_and_state()
       distance = std::abs(dest.x + src.x);
       offset = dest.x > src.x ? (distance/2) : -(distance/2);
       node->setScale(vector3df(distance, 0.1, 1));
-      node->setPosition(vector3df(src.x*100 + offset*100, -5, src.y*100 + 50));
+      node->setPosition(vector3df(src.x*GRID_SZ + offset*GRID_SZ, -5, src.y*GRID_SZ + 50));
       node->getMaterial(0).getTextureMatrix(0).setTextureScale(1,10);
     }
   }

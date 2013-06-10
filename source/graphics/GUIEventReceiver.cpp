@@ -46,6 +46,21 @@ bool GUIEventReceiver::OnEvent(const SEvent& event) {
         point.Z = floor(point.Z/100)*100 + 50;
         // Set the cursor to the new position.
         context.cursor->setPosition(point);
+
+        switch (context.gfx.m_selected_tool) {
+          case GraphicsPolicy3D::TOOL_ADD_SOURCE:
+          break;
+          case GraphicsPolicy3D::TOOL_ADD_SINK:
+          break;
+          case GraphicsPolicy3D::TOOL_ADD_INTERSECTION:
+          break;
+          case GraphicsPolicy3D::TOOL_ADD_ROAD:
+          break;
+          case GraphicsPolicy3D::TOOL_DELETE:
+          break;
+          case GraphicsPolicy3D::TOOL_NONE:
+          break;
+        }
       }
     }
   }

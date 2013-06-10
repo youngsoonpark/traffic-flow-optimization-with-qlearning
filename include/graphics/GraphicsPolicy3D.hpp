@@ -32,6 +32,7 @@ class GraphicsPolicy3D
   friend class GUIEventReceiver;
 
   static const int NUM_CAR_TYPES = 11;
+  static const int GRID_SZ = 100;
 
   // Device managers and other core components
   irr::IrrlichtDevice* m_device;
