@@ -67,8 +67,9 @@ void SerializationXML::load(const std::string& filepath, core::State& state) con
       // Add edges to the graph
       // Add the road to the graph.
       core::Edge edge(uid, 100);
-      edge.capacity = g->get_edge_capacity(edge);
       g->add_edge(source, destination, edge);
+      edge.capacity = g->get_edge_capacity(edge);
+      g->update_edge(edge);
       // Debug statement.
       std::cout << "SerializationXML.load Road: " << source << " to " << destination << std::endl;
     }
