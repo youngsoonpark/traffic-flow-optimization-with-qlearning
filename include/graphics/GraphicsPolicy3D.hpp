@@ -33,6 +33,7 @@ class GraphicsPolicy3D
 
   static const int NUM_CAR_TYPES = 11;
   static const int GRID_SZ = 100;
+  static const int GRID_OFFSET = 50;
 
   // Device managers and other core components
   irr::IrrlichtDevice* m_device;
