@@ -103,6 +103,10 @@ public:
   typedef typename graph_traits::vertex_iterator vertex_iterator;
   typedef typename graph_traits::edge_iterator edge_iterator;
 
+  // Defines an edge and vertex container.
+  typedef std::list<Edge> EdgeContainer;
+  typedef std::list<Vertex> VertexContainer;
+
   /**
    * @description Constructs the default graph.
    */
@@ -127,33 +131,33 @@ public:
   /**
    * @description retrieves all the verticies
    */
-  std::list<Vertex> get_vertices();
+  VertexContainer get_vertices();
 
   /**
    * @description retrieves all the verticies of a given type.
    **/
-  std::list<Vertex> get_vertices(typename Vertex::Type type);
+  VertexContainer get_vertices(typename Vertex::Type type);
 
   /**
    * @description retrieves all the edges in the graph.
    */
-  std::list<Edge> get_edges();
+  EdgeContainer get_edges();
 
   /**
    * @description get all the edges attached to a vertex, in both ways. This is pretty
    *  inefficient but for what we are simulating it ismore that sufficient.
    */
-  std::list<Edge> get_edges(Vertex& vertex);
+  EdgeContainer get_edges(Vertex& vertex);
 
   /**
    * @description retrieves all the edges that come from the vertex.
    */
-  std::list<Edge> get_edges_from(Vertex& vertex);
+  EdgeContainer get_edges_from(Vertex& vertex);
 
   /**
    * @description retrievs all the edges that come to the vertex.
    */
-  std::list<Edge> get_edges_to(Vertex vertex);
+  EdgeContainer get_edges_to(Vertex vertex);
 
   /**
    * @description provides an interface for updating an edge if it has been changed

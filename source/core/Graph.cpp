@@ -45,8 +45,8 @@ void Graph::add_edge(Vertex& src, Vertex& dest, Edge& edge) {
   add_edge(src.uid, dest.uid, edge);
 }
 
-std::list<Vertex> Graph::get_vertices() {
-  std::list<Vertex> vertices;
+Graph::VertexContainer Graph::get_vertices() {
+  Graph::VertexContainer vertices;
   std::pair<vertex_iterator, vertex_iterator> it;
 
   for (it = boost::vertices(m_graph); it.first != it.second; it.first++) {
@@ -63,7 +63,7 @@ std::list<Vertex> Graph::get_vertices() {
   return vertices;
 }
 
-std::list<Vertex> Graph::get_vertices(typename Vertex::Type type) {
+Graph::VertexContainer Graph::get_vertices(typename Vertex::Type type) {
   // Define a nested predicate functor.
   struct is_type {
     typename Vertex::Type type;
@@ -73,15 +73,15 @@ std::list<Vertex> Graph::get_vertices(typename Vertex::Type type) {
     }
   };
   // Retrieve the list of verticies.
-  std::list<Vertex> vertices = get_vertices();
+  Graph::VertexContainer vertices = get_vertices();
   // Remove the ones we don't want.
   vertices.remove_if(is_type(type));
   // Return the list.
   return vertices;
 }
 
-std::list<Edge> Graph::get_edges() {
-  std::list<Edge> edges;
+Graph::EdgeContainer Graph::get_edges() {
+  Graph::EdgeContainer edges;
   std::pair<edge_iterator, edge_iterator> it;
   // Iterate over the edges.
   for (it = boost::edges(m_graph); it.first != it.second; it.first++) {
@@ -106,7 +106,7 @@ std::list<Edge> Graph::get_edges() {
   return edges;
 }
 
-std::list<Edge> Graph::get_edges(Vertex& vertex) {
+Graph::EdgeContainer Graph::get_edges(Vertex& vertex) {
   // Create the predicate functor, todo make efficent.
   struct has_vertex {
     Vertex& vertex;
@@ -116,14 +116,14 @@ std::list<Edge> Graph::get_edges(Vertex& vertex) {
     }
   };
   // Retrieve the edges.
-  std::list<Edge> edges = get_edges();
+  Graph::EdgeContainer edges = get_edges();
   // Remove the components of the edge we don't.
   edges.remove_if(has_vertex(vertex));
   // Rteturn the edge.
   return edges;
 }
 
-std::list<Edge> Graph::get_edges_from(Vertex& vertex) {
+Graph::EdgeContainer Graph::get_edges_from(Vertex& vertex) {
   // Create the predicate functor, todo make efficient.
   struct has_vertex {
     Vertex& vertex;
@@ -133,14 +133,14 @@ std::list<Edge> Graph::get_edges_from(Vertex& vertex) {
     }
   };
   // Retrieve the edges.
-  std::list<Edge> edges = get_edges();
+  Graph::EdgeContainer edges = get_edges();
   // Remove the components of the edge we don't.
   edges.remove_if(has_vertex(vertex));
   // Rteturn the edge.
   return edges;
 }
 
-std::list<Edge> Graph::get_edges_to(Vertex vertex) {
+Graph::EdgeContainer Graph::get_edges_to(Vertex vertex) {
   // Create the predicate functor, todo make efficient.
   struct has_vertex {
     Vertex& vertex;
@@ -150,7 +150,7 @@ std::list<Edge> Graph::get_edges_to(Vertex vertex) {
     }
   };
   // Retrieve the edges.
-  std::list<Edge> edges = get_edges();
+  Graph::EdgeContainer edges = get_edges();
   // Remove the components of the edge we don't.
   edges.remove_if(has_vertex(vertex));
   // Rteturn the edge.
