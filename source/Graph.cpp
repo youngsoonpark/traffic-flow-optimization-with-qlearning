@@ -37,6 +37,7 @@ void Graph::add_edge(std::string src, std::string dest, Edge& edge) {
   m_graph.graph()[new_edge].dest = dest;
   m_graph.graph()[new_edge].cars = edge.cars;
   m_graph.graph()[new_edge].actual_cars = edge.actual_cars;
+  m_graph.graph()[new_edge].capacity = get_edge_capacity(m_graph.graph()[new_edge]);
 }
 
 void Graph::add_edge(Vertex& src, Vertex& dest, Edge& edge) {
