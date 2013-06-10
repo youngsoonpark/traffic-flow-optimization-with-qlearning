@@ -202,14 +202,20 @@ std::vector<uint8_t> LearnerPolicyRL::approachingCars(core::State& state)
   // add it to the result
   for (std::list<core::Edge>::iterator it = lanes.begin(); it != lanes.end(); it++) {
     core::Edge::Container cars = it->cars;
-    if (cars.end()->position <= MAX_CAR_DISTANCE)
+    if (cars.empty())
     {
-      result.push_back(cars.end()->position);
+      result.push_back(MAX_CAR_DISTANCE + 1);
+    }
+    else if (cars.back().position <= MAX_CAR_DISTANCE)
+    {
+      result.push_back(cars.back().position);
     }
     else
     {
       result.push_back(MAX_CAR_DISTANCE + 1);
     }
+    std::cout << "Closest car on road " << result.size() - 1 << ": " <<
+      static_cast<int>(result[result.size() - 1]) << std::endl;
   }
   return result;
 }
@@ -244,6 +250,7 @@ std::vector<uint8_t> LearnerPolicyRL::queueLengths(core::State& state)
       if(it->position == static_cast<unsigned int>(prev_pos + 1))
       {
         queue_length++;
+        prev_pos++;
       }
       else
       {
@@ -251,6 +258,8 @@ std::vector<uint8_t> LearnerPolicyRL::queueLengths(core::State& state)
       }
     }
     result.push_back(queue_length);
+    std::cout << "Queue length on road " << result.size() - 1 << ": " <<
+      static_cast<int>(result[result.size() - 1]) << std::endl;
   }
   return result;
 }
