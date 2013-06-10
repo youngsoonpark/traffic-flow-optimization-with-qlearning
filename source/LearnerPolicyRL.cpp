@@ -117,7 +117,7 @@ int LearnerPolicyRL::stateIndex(core::State& state)
   return state_index;
 }
 
-double LearnerPolicyRL::reward(core::State& state)
+/*double LearnerPolicyRL::reward(core::State& state)
 {
   std::vector<uint8_t> approaching_cars = approachingCars(state);
   if (approaching_cars[1 - state.getLights()] == 0) {
@@ -125,6 +125,12 @@ double LearnerPolicyRL::reward(core::State& state)
     return -1;
   }
   return 0;
+}*/
+
+double LearnerPolicyRL::reward(core::State& state)
+{
+  std::vector<uint8_t> queue_lengths = queueLengths(state);
+  return - queue_lengths[1 - state.getLights()];
 }
 
 int LearnerPolicyRL::optimalAction(int state_index)
@@ -209,6 +215,46 @@ std::vector<uint8_t> LearnerPolicyRL::approachingCars(core::State& state)
       current_position++;
     }
     result.push_back(car_distance);
+  }
+  return result;
+}
+
+std::vector<uint8_t> LearnerPolicyRL::queueLengths(core::State& state)
+{
+  core::Graph *graph = state.getGraph();
+  
+  // Find the vertex containing THE ONLY intersection
+  std::list<core::Vertex> intersection_list;
+  intersection_list = graph->get_vertices(core::Vertex::INTERSECTION);
+  
+  assert(intersection_list.size() == 1); // Can't handle more than one
+  
+  core::Vertex intersection = intersection_list.front();
+  
+  // Get the edges that go to the intersection (approachine lanes)
+  std::list<core::Edge> lanes = graph->get_edges_to(intersection);
+  assert(lanes.size() == static_cast<uint8_t>(NUM_APPROACHING_LANES));
+  
+  std::vector<uint8_t> result;
+  
+  // for each one, iterate over them in reverse to find the closest car and
+  // add it to the result
+  for (std::list<core::Edge>::iterator it = lanes.begin(); it != lanes.end(); it++) {
+    core::Edge::Container cars = it->cars;
+    int queue_length = 0;
+    for (core::Edge::Container::reverse_iterator it = cars.rbegin();
+          it != cars.rend() && queue_length <= MAX_CAR_DISTANCE; it++)
+    {
+      if(!it->no_car)
+      {
+        queue_length++;
+      }
+      else
+      {
+        break;
+      }
+    }
+    result.push_back(queue_length);
   }
   return result;
 }

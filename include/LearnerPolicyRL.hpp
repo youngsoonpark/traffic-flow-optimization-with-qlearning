@@ -102,6 +102,12 @@ private:
    * @return The vector
    */
   std::vector<uint8_t> approachingCars(core::State& state);
+  
+  /**
+   * @description Given a state, return a vector of integers representing how
+   * many cars there are waiting at each lane approaching thee intersection
+   */
+  std::vector<uint8_t> queueLengths(core::State& state);
 
   /**
    * The learning rate is the extent to which old information overwrites new
