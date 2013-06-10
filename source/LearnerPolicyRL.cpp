@@ -88,9 +88,9 @@ int LearnerPolicyRL::stateIndex(core::State& state)
 {
   int state_index = 0;
   std::vector<uint8_t> lanes = approachingCars(state);
-  assert(lanes.size() == (unsigned int) NUM_APPROACHING_LANES);
+  assert(lanes.size() <= (unsigned int) MAX_APPROACHING_LANES);
   
-  for (int lane = 0; lane < NUM_APPROACHING_LANES; lane++) {
+  for (int lane = 0; lane < lanes.size(); lane++) {
     assert(0 <= lanes[lane] && lanes[lane] < MAX_CAR_DISTANCE + 2);
     state_index *= MAX_CAR_DISTANCE + 2;
     state_index += static_cast<int>(lanes[lane]);
@@ -194,7 +194,7 @@ std::vector<uint8_t> LearnerPolicyRL::approachingCars(core::State& state)
   
   // Get the edges that go to the intersection (approachine lanes)
   std::list<core::Edge> lanes = graph->get_edges_to(intersection);
-  assert(lanes.size() == static_cast<uint8_t>(NUM_APPROACHING_LANES));
+  assert(lanes.size() <= static_cast<uint8_t>(MAX_APPROACHING_LANES));
   
   std::vector<uint8_t> result;
   
@@ -233,7 +233,7 @@ std::vector<uint8_t> LearnerPolicyRL::queueLengths(core::State& state)
   
   // Get the edges that go to the intersection (approachine lanes)
   std::list<core::Edge> lanes = graph->get_edges_to(intersection);
-  assert(lanes.size() == static_cast<uint8_t>(NUM_APPROACHING_LANES));
+  assert(lanes.size() <= static_cast<uint8_t>(MAX_APPROACHING_LANES));
   
   std::vector<uint8_t> result;
   
