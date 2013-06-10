@@ -78,7 +78,8 @@ void SimulationPolicyNaive::update(core::State& state)
   
       int car_placement_probability = rand() % 101;
       // Update the edge.
-      if (car_placement_probability >= 15) {
+      if ((source_it == sources.begin() && car_placement_probability >= 70) ||
+          (source_it != sources.begin() && car_placement_probability >= 25)) {
         std::cout << "Not adding new car" << std::endl;
         edge_it->cars.push_front(core::Car::empty_car());
       } else {
