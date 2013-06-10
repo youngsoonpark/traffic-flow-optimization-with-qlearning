@@ -4,12 +4,12 @@
 #include  <string>
 
 // Import the core state.
-#include "State.hpp"
+#include "core/State.hpp"
 // Include the valid policies.
-#include "GraphicsPolicy3D.hpp"
-#include "LearnerPolicyRL.hpp"
-#include "SimulationPolicyCellular.hpp"
-#include "SimulationPolicyNaive.hpp"
+#include "graphics/GraphicsPolicy3D.hpp"
+#include "ml/LearnerPolicyRL.hpp"
+#include "sim/SimulationPolicyCellular.hpp"
+#include "sim/SimulationPolicyNaive.hpp"
 
 #include <irrlicht.h>
 
