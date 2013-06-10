@@ -33,6 +33,7 @@ public:
   enum Lights {
     HORIZONTAL,
     VERTICAL
+  
   };
 
   /**
@@ -58,6 +59,15 @@ public:
    * @param what to set the running state to.
    */
   void setRunning(bool running);
+
+  /**
+   * @return returns true if the state is paused.
+   */
+  bool isPaused();
+  /**
+   * @param sets if the state is paused.
+   */
+  void setPaused(bool paused);
 
   /**
    * @return returns the adjacency list, with everything we need.
@@ -86,6 +96,7 @@ public:
   int8_t getMaxCars() const;
 private:
   bool m_running;      // Whether the game is running or not, we set this to true at the start.
+  bool m_paused;       // True if the game is paused, else false.
   Lights m_lights;     // This determines what state the lights are in.
   size_t m_tick_speed; // Determines the speed of a tick in the simulator.
   Graph m_graph;       // The map, the actual graph of the entire scene. This is critical.

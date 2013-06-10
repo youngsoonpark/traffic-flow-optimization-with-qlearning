@@ -30,6 +30,7 @@ class GraphicsPolicy3D
 {
   friend class Context;
   friend class GUIEventReceiver;
+
   // Device managers and other core components
   irr::IrrlichtDevice* m_device;
   irr::video::IVideoDriver* m_driver;
@@ -41,13 +42,13 @@ class GraphicsPolicy3D
   core::State& m_state;
 
   // Graphics Data.
-  std::vector<irr::scene::IMesh*> m_cars;      // Holds the meshes for the cars.
-  irr::scene::IMesh* m_source_mesh;            // Source mesh and texture.
-  irr::scene::IMesh* m_sink_mesh;              // Sink mesh and texture.
-  irr::scene::ISceneNode* m_intersection_node; // Intersection Node.
-  irr::video::ITexture* m_road_texture;   // Road texture.
-  irr::video::ITexture* m_intersection_texture;   // Intersection texture.
-  irr::core::dimension2d<irr::u32> m_resolution; // Resoultion.
+  std::vector<irr::scene::IMesh*> m_cars;                          // Holds the meshes for the cars.
+  irr::scene::IMesh* m_source_mesh;                                // Source mesh and texture.
+  irr::scene::IMesh* m_sink_mesh;                                  // Sink mesh and texture.
+  irr::scene::ISceneNode* m_intersection_node;                     // Intersection Node.
+  irr::video::ITexture* m_road_texture;                            // Road texture.
+  irr::video::ITexture* m_intersection_texture;                    // Intersection texture.
+  irr::core::dimension2d<irr::u32> m_resolution;                   // Resoultion.
   std::unordered_map<int, irr::scene::IMeshSceneNode*> m_road_map; // Map of the cars.
 
   // Editor Data.

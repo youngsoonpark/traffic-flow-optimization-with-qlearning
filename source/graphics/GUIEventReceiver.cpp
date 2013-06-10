@@ -150,9 +150,11 @@ bool GUIEventReceiver::OnEvent(const SEvent& event) {
       break;
 
       case GUI_ID_RUN:
+        context.state.setPaused(false);
         break;
 
       case GUI_ID_PAUSE:
+        context.state.setPaused(true);
         break;
 
       case GUI_ID_SIMULATION_PANEL: {
