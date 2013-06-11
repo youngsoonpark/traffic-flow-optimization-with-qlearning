@@ -1,10 +1,10 @@
 
 CPP=g++
-INCLUDES= -I../include -I../lib/irrlicht/include
+INCLUDES= -I../include -I/usr/include/irrlicht
 
 CFLAGS = ${INCLUDES} -g -Wall -O2 -pipe -std=c++0x 
 
-LDFLAGS = -L../lib/irrlicht/
+LDFLAGS = -L/usr/lib/
 LDLIBS = -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -ljpeg -lpng
 
 SRC := $(shell echo **/*.cpp main.cpp)
