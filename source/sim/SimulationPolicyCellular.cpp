@@ -72,11 +72,11 @@ namespace road
             const int roadLength = state.getMaxCars;
             core::Graph* graph = state.getGraph();
 
-            VertexList sources = graph->get_vertices(core::Vertex::Type::SOURCE);
-            VertexList sinks = graph->get_vertices(core::Vertex::Type::SINK);
-            VertexList intersections = graph->get_vertices(core::Vertex::Type::INTERSECTION);
+            core::Graph::VertexContainer sources = graph->get_vertices(core::Vertex::Type::SOURCE);
+            core::Graph::VertexContainer sinks = graph->get_vertices(core::Vertex::Type::SINK);
+            core::Graph::VertexContainer intersections = graph->get_vertices(core::Vertex::Type::INTERSECTION);
 
-            EdgeList roads;
+            core::Graph::EdgeContainer roads;
 
             for (auto it = sinks.begin(); it != sinks.end(); ++it)
             {
