@@ -1,0 +1,126 @@
+10
+
+dir
+4535
+svn://svn.code.sf.net/p/irrlicht/code/trunk
+svn://svn.code.sf.net/p/irrlicht/code
+
+
+
+2013-06-04T14:42:20.273443Z
+4534
+hybrid
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+dfc29bdd-3216-0410-991c-e03cc46cb475
+
+media
+dir
+
+source
+dir
+
+tools
+dir
+
+tests
+dir
+
+include
+dir
+
+doc
+dir
+
+lib
+dir
+
+changes.txt
+file
+
+
+
+
+2013-06-07T14:22:34.000000Z
+17622128b6eff7509e5904ba3280aa59
+2013-03-27T13:43:52.769126Z
+4485
+hybrid
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+241424
+
+scripts
+dir
+
+bin
+dir
+
+readme.txt
+file
+
+
+
+
+2013-06-07T14:22:34.000000Z
+743a178a17cd192a913ce9aec18910eb
+2013-04-05T12:14:04.520487Z
+4498
+hybrid
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+11357
+
+examples
+dir
+

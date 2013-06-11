@@ -1,0 +1,14 @@
+K 10
+svn:ignore
+V 8
+doctemp
+
+K 13
+svn:mergeinfo
+V 224
+/branches/releases/1.4:1528-1537
+/branches/releases/1.5:2682-2716,2936-3074
+/branches/releases/1.6:2948-3170
+/branches/releases/1.7:3090-3846,3876-3997,4001-4056,4072-4084,4090-4187,4210-4377
+/branches/releases/1.8:4345-4509
+END
