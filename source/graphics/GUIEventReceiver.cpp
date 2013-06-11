@@ -22,8 +22,26 @@ using namespace io;
 namespace road {
 namespace graphics {
 
+bool node_exists(int x, int y, core::Graph* graph) {
+  auto nodes = graph->get_vertices();
+  for (auto it = nodes.begin(); it != nodes.end(); it++) {
+    if (it->x == x && it->y == y) return true;
+  }
+  return false;
+}
+
+std::string node_uid(int x, int y, core::Graph* graph) {
+  auto nodes = graph->get_vertices();
+  for (auto it = nodes.begin(); it != nodes.end(); it++) {
+    if (it->x == x && it->y == y) return it->uid;
+  }
+  std::string empty("");
+  return empty;
+}
+
 GUIEventReceiver::GUIEventReceiver(Context context)
-  : context(context) {
+  : context(context), source_counter(0), sink_counter(0), intersection_counter(0),
+    road_counter(0), road_point_previous(0,-10,0) {
 }
 
 bool GUIEventReceiver::OnEvent(const SEvent& event) {
@@ -46,35 +64,71 @@ bool GUIEventReceiver::OnEvent(const SEvent& event) {
         point.Z = floor(point.Z/100)*100 + 50;
         // Set the cursor to the new position.
         context.cursor->setPosition(point);
-        point.X = floor((point.X - 50)/100);;
+        point.X = floor((point.X - 50)/100);
         point.Z = floor((point.Z - 50)/100);
 
         switch (context.gfx.m_selected_tool) {
           case GraphicsPolicy3D::TOOL_ADD_SOURCE:
           {
-            std::cout << "Adding a new source" << std::endl;
-            core::Vertex source_vert(core::Vertex::SOURCE, "source-", point.X, point.Z);
-            context.state.getGraph()->add_vertex(source_vert);
-            context.gfx.sync_scene_and_state();
+            if (!node_exists(point.X, point.Z, context.state.getGraph())) {
+              std::ostringstream ss;
+              ss << "source-" << source_counter++;
+              std::cout << ss.str() << " at " << point.X << "," << point.Z << std::endl;
+              core::Vertex source_vert(core::Vertex::SOURCE, ss.str(), point.X, point.Z);
+              context.state.getGraph()->add_vertex(source_vert);
+              context.gfx.sync_scene_and_state();
+            }
           }
           break;
           case GraphicsPolicy3D::TOOL_ADD_SINK:
           {
-            std::cout << "Adding a new sink" << std::endl;
-            core::Vertex sink_vert(core::Vertex::SINK, "sink-", point.X, point.Z);
-            context.state.getGraph()->add_vertex(sink_vert);
-            context.gfx.sync_scene_and_state();
+            if (!node_exists(point.X, point.Z, context.state.getGraph())) {
+              std::ostringstream ss;
+              ss << "sink-" << sink_counter++;
+              std::cout << ss.str() << " at " << point.X << "," << point.Z << std::endl;
+              core::Vertex sink_vert(core::Vertex::SINK, ss.str(), point.X, point.Z);
+              context.state.getGraph()->add_vertex(sink_vert);
+              context.gfx.sync_scene_and_state();
+            }
           }
           break;
           case GraphicsPolicy3D::TOOL_ADD_INTERSECTION:
           {
-            std::cout << "Adding a new intersection" << std::endl;
-            core::Vertex inter_vert(core::Vertex::INTERSECTION, "intersection-", point.X, point.Z);
-            context.state.getGraph()->add_vertex(inter_vert);
-            context.gfx.sync_scene_and_state();
+            if (!node_exists(point.X, point.Z, context.state.getGraph())) {
+              std::ostringstream ss;
+              ss << "intersection-" << intersection_counter++;
+              std::cout << ss.str() << " at " << point.X << "," << point.Z << std::endl;
+              core::Vertex inter_vert(core::Vertex::INTERSECTION, ss.str(), point.X, point.Z);
+              context.state.getGraph()->add_vertex(inter_vert);
+              context.gfx.sync_scene_and_state();
+            }
           }
           break;
           case GraphicsPolicy3D::TOOL_ADD_ROAD:
+          {
+            // If a node exists, and our y value is insane.
+            if (road_point_previous.Y == -10 && node_exists(point.X, point.Z, context.state.getGraph())) {
+              road_point_previous.X = point.X;
+              road_point_previous.Z = point.Z;
+              road_point_previous.Y = 0;
+              std::cout << "Setting Starting Location To " << node_uid(point.X, point.Z, context.state.getGraph()) << std::endl;
+            // We have a prevously selected location.
+            } else if (road_point_previous.Y == 0 && (point.X != road_point_previous.X || point.Z != road_point_previous.Z) && 
+                       node_exists(point.X, point.Z, context.state.getGraph())) {
+              std::cout << "Setting End Location To " << node_uid(point.X, point.Z, context.state.getGraph()) << std::endl;
+              // Create a new road.
+              std::ostringstream ss;
+              ss << "road-" << road_counter++;
+              core::Edge road_edge(ss.str(), 50);
+              std::string src = node_uid(road_point_previous.X, road_point_previous.Z, context.state.getGraph());
+              std::string dest = node_uid(point.X, point.Z, context.state.getGraph());
+              std::cout << ss.str() << " from " << src << " to " <<  dest << std::endl;
+              context.state.getGraph()->add_edge(src, dest, road_edge);
+              // Reset Y.
+              road_point_previous.Y = -10;
+              context.gfx.sync_scene_and_state();
+            }
+          }
           break;
           case GraphicsPolicy3D::TOOL_DELETE:
           break;
