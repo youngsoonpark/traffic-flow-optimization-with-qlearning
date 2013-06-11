@@ -20,6 +20,7 @@ the parent folder).
 
 cd source && make
 
-Finally you can run the application.
+Finally you can run the application. Note that the application must be run in
+its own directory.
 
 ./Roadster
