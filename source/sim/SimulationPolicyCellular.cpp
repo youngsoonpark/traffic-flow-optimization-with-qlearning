@@ -57,7 +57,7 @@ namespace road
 
             bool operator()(const core::Car& car)
             {
-                return (car.position == pos && pos < roadLength);
+                return (car.position == pos && pos > 0);
             }
         };
 
@@ -78,9 +78,9 @@ namespace road
 
             core::Graph::EdgeContainer roads;
 
-            for (auto it = sinks.begin(); it != sinks.end(); ++it)
+            for (auto it = sources.begin(); it != sources.end(); ++it)
             {
-                roads = graph->get_edges_to(*it);
+                roads = graph->get_edges_from(*it);
 
                for (auto roadIt = roads.begin(); roadIt != roads.end(); ++roadIt)
                {
@@ -88,13 +88,17 @@ namespace road
 
                     for (auto carRevIt = roadIt->cars.rbegin(); carRevIt != roadIt->cars.rend(); ++carRevIt)
                     {
-                        // TO DO: Acceleration
+                        // Acceleration
+                        if (carRevIt->speed < roadIt->speed_limit)
+                        {
+                            ++(carRevIt->speed);
+                        }
 
                         // Deceleration phase
-                        /*auto carIt =
+                        auto carIt = (carRevIt + 1).base();
                         while (true)
                         {
-                            if (std::count_if(carIt, roadIt->cars.end(), carAtPos(carIt->position + carIt->speed, roadLength)) > 0)
+                            if (std::count_if(carIt, roadIt->cars.end(), carAtPos(carIt->position - carIt->speed, roadLength)) > 0)
                             {
                                 --(carIt->speed);
                             }
@@ -102,35 +106,35 @@ namespace road
                             {
                                 break;
                             }
-                        }*/
+                        }
 
                         // TO DO: Random slowing
 
                         // Update position
-                        carRevIt->position += carRevIt->speed;
+                        carRevIt->position -= carRevIt->speed;
 
                         // Check if off road and give permission to remove if it is
-                        if (carRevIt->position >= roadLength)
+                        if (carRevIt->position < 0)
                         {
                             ++toPop;
                         }
                     }
-/*
+
                     while (!roadIt->cars.empty() && toPop != 0)
                     {
                         roadIt->cars.pop_back();
                         --toPop;
                     }
 
-                    graph->update_edge(*roadIt);*/
+                    graph->update_edge(*roadIt);
                 }
             }
 
             // Update the sources.
-            for (auto source_it = sinks.begin(); source_it != sinks.end(); source_it++)
+            for (auto source_it = sources.begin(); source_it != sources.end(); source_it++)
             {
                 // Grab all the edges going from the source.
-                auto edges_from_source = graph->get_edges_to(*source_it);
+                auto edges_from_source = graph->get_edges_from(*source_it);
                 for (auto edge_it = edges_from_source.begin(); edge_it != edges_from_source.end(); edge_it++)
                 {
                     //std::cout << "Updating Source For Edge: " << edge_it->uid << std::endl;
@@ -140,7 +144,7 @@ namespace road
                     {
                         int car_placement_probability = rand() % 101;
                         // Update the edge.
-                        if ((source_it == sinks.begin() && car_placement_probability >= 70) || (source_it != sinks.begin() && car_placement_probability >= 20))
+                        if ((source_it == sources.begin() && car_placement_probability >= 70) || (source_it != sources.begin() && car_placement_probability >= 20))
                         {
                             //std::cout << "Not adding new car" << std::endl;
                         }
