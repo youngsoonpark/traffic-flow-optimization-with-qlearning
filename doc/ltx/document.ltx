@@ -103,16 +103,20 @@ sink via an internal resource manager.
 
 \section{Experiment}
 \subsection{Method}
-Using the Naive simulation policy, the reinforcement learner was tested against a dumb learner that alternates states every ten cycles.
+Using the Naive simulation policy, the reinforcement learner was tested against a `dumb' learner that alternates states every ten cycles.
 Traffic was modelled so that one road had a seventy percent saturation of cars, while the other road had a twenty percent saturation.
 The average queue lengths are the total number of cars queued at either intersection at each cycle, averaged across sets of 25 consecutive cycles.
 
 \subsection{Results}
 The results show the learner progressively reducing the average queue length
 and responding better and faster to increasing in the queue length as time goes
-on.
+on.\\
 
-\includegraphics[scale=0.5]{d1-table.png}
+Due to the sheer size of the tables generated, it was not feasable to provide
+results in this document. Instead, several CSV and ODS files accompany this document,
+where the data is better suited.
+
+Files prefixed with `DL' refer to the dumb learner; files prefixed with `RL' refer to the reinforcement leanrer.
 
 \subsection{Discussion}
 
