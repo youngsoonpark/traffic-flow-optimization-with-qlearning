@@ -194,7 +194,7 @@ void GraphicsPolicy3D::update_state()
     // Iterate over the cars.
     core::Edge::Container::reverse_iterator car;
     for (car = it->cars.rbegin(); car != it->cars.rend(); car++) {
-      std::cout << "Road " << it->uid << " Car " << car->hash << std::endl;
+      //std::cout << "Road " << it->uid << " Car " << car->hash << std::endl;
       //std::cout << "Road: " << it->uid;
 
       // Store a list of the seen hashes.
