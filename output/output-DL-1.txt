@@ -1,0 +1,64 @@
+Below is the output for one test run with the naive simulation policy and the
+dumb learner. One road had a 70% saturation of cars while the other had
+a 20% saturation of cars. The average queue lengths are the total number of cars
+queued at either intersection at each cycle, averaged across sets of 25
+consecutive cycles.
+
+The results show the queue length initially increasing and then remaning
+slightly below 50. This is because the dumb learner has a static light change
+time and is not able to adjust to the higher number of cars on one road. Hence,
+the busier road is remains full or almost full.
+
+
+
+
+
+
+
+
+Learner::Performance metrics: Total cycles: 85. Average queue length for last 25 cycles: 16.
+Learner::Performance metrics: Total cycles: 110. Average queue length for last 25 cycles: 26.
+Learner::Performance metrics: Total cycles: 135. Average queue length for last 25 cycles: 39.
+Learner::Performance metrics: Total cycles: 160. Average queue length for last 25 cycles: 46.
+Learner::Performance metrics: Total cycles: 185. Average queue length for last 25 cycles: 48.
+Learner::Performance metrics: Total cycles: 210. Average queue length for last 25 cycles: 46.
+Learner::Performance metrics: Total cycles: 235. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 260. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 285. Average queue length for last 25 cycles: 51.
+Learner::Performance metrics: Total cycles: 310. Average queue length for last 25 cycles: 46.
+Learner::Performance metrics: Total cycles: 335. Average queue length for last 25 cycles: 50.
+Learner::Performance metrics: Total cycles: 360. Average queue length for last 25 cycles: 49.
+Learner::Performance metrics: Total cycles: 385. Average queue length for last 25 cycles: 45.
+Learner::Performance metrics: Total cycles: 410. Average queue length for last 25 cycles: 45.
+Learner::Performance metrics: Total cycles: 435. Average queue length for last 25 cycles: 49.
+Learner::Performance metrics: Total cycles: 460. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 485. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 510. Average queue length for last 25 cycles: 46.
+Learner::Performance metrics: Total cycles: 535. Average queue length for last 25 cycles: 46.
+Learner::Performance metrics: Total cycles: 560. Average queue length for last 25 cycles: 48.
+Learner::Performance metrics: Total cycles: 585. Average queue length for last 25 cycles: 48.
+Learner::Performance metrics: Total cycles: 610. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 635. Average queue length for last 25 cycles: 48.
+Learner::Performance metrics: Total cycles: 660. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 685. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 710. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 735. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 760. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 785. Average queue length for last 25 cycles: 49.
+Learner::Performance metrics: Total cycles: 810. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 835. Average queue length for last 25 cycles: 48.
+Learner::Performance metrics: Total cycles: 860. Average queue length for last 25 cycles: 46.
+Learner::Performance metrics: Total cycles: 885. Average queue length for last 25 cycles: 51.
+Learner::Performance metrics: Total cycles: 910. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 935. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 960. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 985. Average queue length for last 25 cycles: 48.
+Learner::Performance metrics: Total cycles: 1010. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 1035. Average queue length for last 25 cycles: 45.
+Learner::Performance metrics: Total cycles: 1060. Average queue length for last 25 cycles: 47.
+Learner::Performance metrics: Total cycles: 1085. Average queue length for last 25 cycles: 53.
+Learner::Performance metrics: Total cycles: 1110. Average queue length for last 25 cycles: 49.
+Learner::Performance metrics: Total cycles: 1135. Average queue length for last 25 cycles: 48.
+Learner::Performance metrics: Total cycles: 1160. Average queue length for last 25 cycles: 49.
+Learner::Performance metrics: Total cycles: 1185. Average queue length for last 25 cycles: 49.
+Learner::Performance metrics: Total cycles: 1210. Average queue length for last 25 cycles: 48.
