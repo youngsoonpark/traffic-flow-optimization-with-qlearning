@@ -189,7 +189,6 @@ int LearnerPolicyRL::optimalAction(int state_index)
       optimal_reward = reward_map[state_index][action];
     }
   }
-  std::cout << std::endl;
   
   // Make a list of optimal actions
   std::list<int> optimal_actions;
