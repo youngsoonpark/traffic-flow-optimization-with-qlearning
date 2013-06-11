@@ -1,0 +1,15 @@
+<source name="source-0" x="-10" y="13" />
+<source name="source-1" x="11" y="-15" />
+<source name="source-2" x="-29" y="-1" />
+<sink name="sink-0" x="11" y="13" />
+<sink name="sink-1" x="-10" y="-15" />
+<sink name="sink-2" x="32" y="-1" />
+<intersection name="intersection-0" x="-10" y="-1" />
+<intersection name="intersection-1" x="11" y="-1" />
+<road name="road-0" from="source-2" to="intersection-0" />
+<road name="road-1" from="source-0" to="intersection-0" />
+<road name="road-2" from="intersection-0" to="sink-1" />
+<road name="road-3" from="intersection-0" to="intersection-1" />
+<road name="road-4" from="intersection-1" to="sink-2" />
+<road name="road-5" from="source-1" to="intersection-1" />
+<road name="road-6" from="intersection-1" to="sink-0" />
