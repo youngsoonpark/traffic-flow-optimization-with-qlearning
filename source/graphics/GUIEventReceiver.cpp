@@ -198,8 +198,13 @@ bool GUIEventReceiver::OnEvent(const SEvent& event) {
         break;
 
       case GUI_ID_SAVE_MAP:
-        road::io::SerializationXML serialize;
-        serialize.save(context.state);
+        {
+          road::io::SerializationXML serialize;
+          serialize.save(context.state);
+          IGUIWindow* window = gui->addWindow(rect<s32>(100, 100, 400, 200), false, L"Save Complete");
+          gui->addStaticText(L"Serialization Complete: Saved to output.xml",
+                             rect<s32>(10,35,290,290), false, true, window);
+        }
         break;
 
       case GUI_ID_QUIT:

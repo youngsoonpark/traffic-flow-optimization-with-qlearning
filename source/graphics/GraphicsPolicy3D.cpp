@@ -41,8 +41,9 @@ GraphicsPolicy3D::GraphicsPolicy3D(core::State& state) : m_state(state)
   // Add the sink texture and mesh
   m_sink_mesh = m_smgr->getMesh("data/media/buildings/CPL5.3ds");
   m_intersection_node = NULL;
-
   m_selected_tool = TOOL_NONE;
+  // Remove the logging
+  m_device->getLogger()->setLogLevel(ELL_ERROR);
 
   // Create Scene Manager
   create_scene();
@@ -123,10 +124,7 @@ void GraphicsPolicy3D::create_gui()
   submenu->addItem(L"Add Sink",         GUIEventReceiver::GUI_ID_ADD_SINK);
   submenu->addItem(L"Add Intersection", GUIEventReceiver::GUI_ID_ADD_INTERSECTION);
   submenu->addItem(L"Add Road",         GUIEventReceiver::GUI_ID_ADD_ROAD);
-  submenu->addItem(L"Delete Node",      GUIEventReceiver::GUI_ID_REMOVE_NODE);
   submenu->addItem(L"Move Tool",        GUIEventReceiver::GUI_ID_MOVE_TOOL);
-  submenu->addSeparator();
-  submenu->addItem(L"Open Editor Panel", GUIEventReceiver::GUI_ID_EDITOR_PANEL);
 
   // Define the simulation submenu.
   submenu = menu->getSubMenu(2);
