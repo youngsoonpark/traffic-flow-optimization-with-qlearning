@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 
 using namespace irr;
 using namespace core;
@@ -79,9 +80,36 @@ void SerializationXML::load(const std::string& filepath, core::State& state) con
   null_device->drop();
 }
 
-void SerializationXML::save(const core::State& state) const
+void SerializationXML::save(core::State& state)
 {
-  // TODO optional.
+  auto graph = state.getGraph();
+  // Grab everything we need.
+  auto sources = graph->get_vertices(core::Vertex::SOURCE);
+  auto sinks = graph->get_vertices(core::Vertex::SINK);
+  auto intersections = graph->get_vertices(core::Vertex::INTERSECTION);
+  auto roads = graph->get_edges();
+
+  // Open the file.
+  std::ofstream file;
+  file.open("output.xml");
+
+  for (auto it = sources.begin(); it != sources.end(); it++) {
+    file << "<source name=\"" << it->uid << "\" x=\"" << it->x << "\" y=\"" << it->y << "\" />\n";
+  }
+
+  for (auto it = sinks.begin(); it != sinks.end(); it++) {
+    file << "<sink name=\"" << it->uid << "\" x=\"" << it->x << "\" y=\"" << it->y << "\" />\n";
+  }
+
+  for (auto it = intersections.begin(); it != intersections.end(); it++) {
+    file << "<intersection name=\"" << it->uid << "\" x=\"" << it->x << "\" y=\"" << it->y << "\" />\n";
+  }
+
+  for (auto it = roads.begin(); it != roads.end(); it++) {
+    file << "<road name=\"" << it->uid << "\" from=\"" << it->src << "\" to=\"" << it->dest << "\" />\n";
+  }
+
+  file.close();
 }
 
 } // End of namespace core.

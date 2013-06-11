@@ -26,7 +26,7 @@ struct SerializationXML {
   /**
    * Takes a state and saves it to the specified file. Which is stored in the state.
    */
-  void save(const core::State& state) const;
+  void save(core::State& state);
 };
 
 } // End of namespace io.

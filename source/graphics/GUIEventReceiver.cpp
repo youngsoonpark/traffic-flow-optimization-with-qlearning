@@ -194,6 +194,8 @@ bool GUIEventReceiver::OnEvent(const SEvent& event) {
         break;
 
       case GUI_ID_SAVE_MAP:
+        road::io::SerializationXML serialize;
+        serialize.save(context.state);
         break;
 
       case GUI_ID_QUIT:
