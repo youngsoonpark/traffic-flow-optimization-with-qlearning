@@ -1,6 +1,6 @@
 
 CPP=g++
-INCLUDES=-I../include -I/usr/local/include  -I/usr/include/irrlicht
+INCLUDES=-I../include -I/usr/include/irrlicht
 
 CFLAGS = ${INCLUDES} -g -Wall -O2 -pipe -std=c++0x 
 

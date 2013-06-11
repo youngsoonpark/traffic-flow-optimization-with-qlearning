@@ -188,8 +188,6 @@ std::vector<uint8_t> LearnerPolicyRL::approachingCars(core::State& state)
   std::list<core::Vertex> intersection_list;
   intersection_list = graph->get_vertices(core::Vertex::INTERSECTION);
   
-  assert(intersection_list.size() == 1); // Can't handle more than one
-  
   core::Vertex intersection = intersection_list.front();
   
   // Get the edges that go to the intersection (approachine lanes)
