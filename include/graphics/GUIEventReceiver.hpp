@@ -31,6 +31,12 @@ struct Context {
 // Define the custom event handler for the graphical user interface.
 class GUIEventReceiver : public irr::IEventReceiver {
   Context context; // Define the context, that the receiver.
+  int source_counter;
+  int sink_counter;
+  int intersection_counter;
+  int road_counter;
+  irr::core::vector3df road_point_previous;
+
 public:
   GUIEventReceiver(Context context);
   virtual bool OnEvent(const irr::SEvent& event);

@@ -309,26 +309,36 @@ void GraphicsPolicy3D::sync_scene_and_state()
     //std::cout << " to " << dest.x << ", " << dest.y << std::endl;
 
     // Attach it to the scene.
-    int distance;
-    int offset;
+    float distance;
+    float offset;
     ISceneNode* node = m_smgr->addCubeSceneNode(100);
 
     node->setMaterialFlag(EMF_LIGHTING, false);
     node->setMaterialTexture(0, m_road_texture);
     // If the x values are equal.
     if (dest.x == src.x) {
-      distance = std::abs(dest.y + src.y);
+      if ((dest.y < 0 && src.y > 0) || (dest.y > 0 && src.y < 0)) {
+        distance = std::abs(dest.y - src.y);
+      } else {
+        distance = std::abs(std::abs(dest.y) - std::abs(src.y));
+      }
+      std::cout << "Setting distance " << distance << std::endl;
       offset = dest.y > src.y ? (distance/2) : -(distance/2);
       node->setScale(vector3df(1, 0.1, distance));
-      node->setPosition(vector3df(src.x * GRID_SZ + GRID_OFFSET, -5, src.y*GRID_SZ + offset*GRID_SZ));
+      node->setPosition(vector3df(src.x * GRID_SZ + GRID_OFFSET, -5, src.y * GRID_SZ + offset * GRID_SZ));
       node->getMaterial(0).getTextureMatrix(0).setTextureScale(10,1);
       node->getMaterial(0).getTextureMatrix(0).setTextureRotationCenter(1.57f);
       // Else if the x values are equal.
     } else {
-      distance = std::abs(dest.x + src.x);
+      if ((dest.x < 0 && src.x > 0) || (dest.x > 0 && src.x < 0)) {
+        distance = std::abs(dest.x - src.x);
+      } else {
+        distance = std::abs(std::abs(dest.x) - std::abs(src.x));
+      }
+      std::cout << "Setting distance " << distance << std::endl;
       offset = dest.x > src.x ? (distance/2) : -(distance/2);
       node->setScale(vector3df(distance, 0.1, 1));
-      node->setPosition(vector3df(src.x*GRID_SZ + offset*GRID_SZ, -5, src.y*GRID_SZ + GRID_OFFSET));
+      node->setPosition(vector3df(src.x * GRID_SZ + offset * GRID_SZ, -5, src.y*GRID_SZ + GRID_OFFSET));
       node->getMaterial(0).getTextureMatrix(0).setTextureScale(1,10);
     }
 
