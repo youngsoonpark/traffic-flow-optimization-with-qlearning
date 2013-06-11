@@ -31,10 +31,11 @@ struct Vertex {
   int x; // Defines an x position.
   int y; // defines a y position.
   irr::scene::IMeshSceneNode* mesh_node; // For graphics.
+  irr::scene::ITextSceneNode* text_node; // For graphics.
 
-  Vertex() : mesh_node(NULL) {}
+  Vertex() : mesh_node(NULL), text_node(NULL) {}
   Vertex(Type type, std::string uid, int x, int y) :
-    type(type), uid(uid), x(x), y(y), mesh_node(NULL) {}
+    type(type), uid(uid), x(x), y(y), mesh_node(NULL), text_node(NULL) {}
 };
 
 // Used for internal referenes
@@ -77,11 +78,12 @@ struct Edge {
   std::int8_t actual_cars; // Defines the number of actual cars.
   
   irr::scene::ISceneNode* mesh_node; // For graphics.
+  irr::scene::ITextSceneNode* text_node; // For graphics.
 
   // Constructor.
-  Edge() : mesh_node(NULL) {}
+  Edge() : mesh_node(NULL), text_node(NULL)  {}
   Edge(std::string uid, std::size_t speed_limit)
-    : uid(uid), speed_limit(speed_limit) , mesh_node(NULL) {}
+    : uid(uid), speed_limit(speed_limit) , mesh_node(NULL), text_node(NULL) {}
 };
 
 

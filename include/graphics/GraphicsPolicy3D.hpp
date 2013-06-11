@@ -42,6 +42,7 @@ class GraphicsPolicy3D
   irr::gui::IGUIEnvironment* m_gui;
   irr::IEventReceiver* m_receiver;
   irr::scene::ITriangleSelector* m_selector;
+  irr::gui::IGUIFont* m_font;
 
   core::State& m_state;
 

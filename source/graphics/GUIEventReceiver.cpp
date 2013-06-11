@@ -70,6 +70,7 @@ bool GUIEventReceiver::OnEvent(const SEvent& event) {
         switch (context.gfx.m_selected_tool) {
           case GraphicsPolicy3D::TOOL_ADD_SOURCE:
           {
+            context.state.setPaused(true);
             if (!node_exists(point.X, point.Z, context.state.getGraph())) {
               std::ostringstream ss;
               ss << "source-" << source_counter++;
@@ -82,6 +83,7 @@ bool GUIEventReceiver::OnEvent(const SEvent& event) {
           break;
           case GraphicsPolicy3D::TOOL_ADD_SINK:
           {
+            context.state.setPaused(true);
             if (!node_exists(point.X, point.Z, context.state.getGraph())) {
               std::ostringstream ss;
               ss << "sink-" << sink_counter++;
@@ -94,6 +96,7 @@ bool GUIEventReceiver::OnEvent(const SEvent& event) {
           break;
           case GraphicsPolicy3D::TOOL_ADD_INTERSECTION:
           {
+            context.state.setPaused(true);
             if (!node_exists(point.X, point.Z, context.state.getGraph())) {
               std::ostringstream ss;
               ss << "intersection-" << intersection_counter++;
@@ -106,6 +109,7 @@ bool GUIEventReceiver::OnEvent(const SEvent& event) {
           break;
           case GraphicsPolicy3D::TOOL_ADD_ROAD:
           {
+            context.state.setPaused(true);
             // If a node exists, and our y value is insane.
             if (road_point_previous.Y == -10 && node_exists(point.X, point.Z, context.state.getGraph())) {
               road_point_previous.X = point.X;

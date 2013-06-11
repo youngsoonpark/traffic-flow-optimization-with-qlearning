@@ -96,10 +96,10 @@ void GraphicsPolicy3D::create_scene()
 void GraphicsPolicy3D::create_gui()
 {
   IGUISkin* skin = m_gui->getSkin();
-  IGUIFont* font = m_gui->getFont("data/media/fonthaettenschweiler.bmp");
+  m_font = m_gui->getFont("data/media/fonthaettenschweiler.bmp");
 
-  if (font) {
-    skin->setFont(font);
+  if (m_font) {
+    skin->setFont(m_font);
   }
 
   // Create the menu
@@ -266,6 +266,7 @@ void GraphicsPolicy3D::sync_scene_and_state()
     // We don't have to update it.
     if (it->mesh_node != NULL) continue;
     IMeshSceneNode* node;
+    ITextSceneNode* text;
 
     float x = it->x == GRID_OFFSET ? it->x * GRID_SZ - GRID_OFFSET : it->x * GRID_SZ + GRID_OFFSET;
     float y = it->y == GRID_OFFSET ? it->y * GRID_SZ - GRID_OFFSET : it->y * GRID_SZ + GRID_OFFSET;
@@ -275,20 +276,27 @@ void GraphicsPolicy3D::sync_scene_and_state()
       node->setScale(vector3df(20, 20, 20));
       node->setMaterialFlag(EMF_LIGHTING, false);
       node->setPosition(vector3df(x, 0, y));
+      text = m_smgr->addTextSceneNode(m_font, stringw(it->uid.c_str()).c_str(), video::SColor(255,255,255,255), 0);
+      text->setPosition(vector3df(x, 100, y));
     } else if (it->type == core::Vertex::SINK) {
       node = m_smgr->addMeshSceneNode(m_sink_mesh);
       node->setScale(vector3df(0.05, 0.05, 0.05));
       //node = m_smgr->addCubeSceneNode(100);
       node->setMaterialFlag(EMF_LIGHTING, false);
       node->setPosition(vector3df(x, 0, y));
+      text = m_smgr->addTextSceneNode(m_font, stringw(it->uid.c_str()).c_str(), video::SColor(255,255,255,255), 0);
+      text->setPosition(vector3df(x, 400, y));
     } else if (it->type == core::Vertex::INTERSECTION) {
       node = m_smgr->addCubeSceneNode(100);
       m_intersection_node = node;
       node->setMaterialFlag(EMF_LIGHTING, false);
       node->setPosition(vector3df(x, -40, y));
       node->setMaterialTexture(0, m_intersection_texture);
+      text = m_smgr->addTextSceneNode(m_font, stringw(it->uid.c_str()).c_str(), video::SColor(255,255,255,255), 0);
+      text->setPosition(vector3df(x, 100, y));
     }
     it->mesh_node = node;
+    it->text_node = text;
   }
 
   // Iterate over the edges.
@@ -310,6 +318,7 @@ void GraphicsPolicy3D::sync_scene_and_state()
     float distance;
     float offset;
     ISceneNode* node = m_smgr->addCubeSceneNode(100);
+    ITextSceneNode* text;
 
     node->setMaterialFlag(EMF_LIGHTING, false);
     node->setMaterialTexture(0, m_road_texture);
@@ -326,6 +335,10 @@ void GraphicsPolicy3D::sync_scene_and_state()
       node->setPosition(vector3df(src.x * GRID_SZ + GRID_OFFSET, -5, src.y * GRID_SZ + offset * GRID_SZ));
       node->getMaterial(0).getTextureMatrix(0).setTextureScale(10,1);
       node->getMaterial(0).getTextureMatrix(0).setTextureRotationCenter(1.57f);
+
+      text = m_smgr->addTextSceneNode(m_font, stringw(edge_it->uid.c_str()).c_str(), video::SColor(255,255,255,255), 0);
+      text->setPosition(node->getPosition());
+
       // Else if the x values are equal.
     } else {
       if ((dest.x < 0 && src.x > 0) || (dest.x > 0 && src.x < 0)) {
@@ -338,9 +351,14 @@ void GraphicsPolicy3D::sync_scene_and_state()
       node->setScale(vector3df(distance, 0.1, 1));
       node->setPosition(vector3df(src.x * GRID_SZ + offset * GRID_SZ, -5, src.y*GRID_SZ + GRID_OFFSET));
       node->getMaterial(0).getTextureMatrix(0).setTextureScale(1,10);
+
+      text = m_smgr->addTextSceneNode(m_font, stringw(edge_it->uid.c_str()).c_str(), video::SColor(255,255,255,255), 0);
+      text->setPosition(node->getPosition());
+
     }
 
     edge_it->mesh_node = node;
+    edge_it->text_node = text;
   }
 
 }
