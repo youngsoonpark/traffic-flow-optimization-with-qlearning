@@ -29,7 +29,7 @@ namespace road
 
     namespace sim
     {
-        const uint8_t g_probability = 45;
+        const uint8_t g_probability = 50;
         /**
          * @author Christopher Di Bella <chrisdb@cse.unsw.edu.au>
          * @description Determines if something with a probability p will happen
@@ -61,6 +61,18 @@ namespace road
             }
         };
 
+        struct isEdge
+        {
+            std::string id;
+
+            isEdge(std::string id) : id(id) {}
+
+            bool operator()(const core::Edge& e)
+            {
+                return (((char)*e.uid.rbegin() - '0') == ((char)*id.rbegin() - '0'));
+            }
+        };
+
          /**
           * Alright, here's where stuff gets interesting.
           * Unlike in Naive, Cellular will attempt to replicate a known, working traffic model.
@@ -69,6 +81,7 @@ namespace road
         void SimulationPolicyCellular::update(core::State& state)
         {
             int toPop;
+            int roadIdentity;
             const int roadLength = state.getMaxCars();
             core::Graph* graph = state.getGraph();
 
@@ -78,9 +91,10 @@ namespace road
 
             core::Graph::EdgeContainer roads;
 
-            for (auto it = sources.begin(); it != sources.end(); ++it)
+            // Update the sinks
+            for (auto it = sinks.begin(); it != sinks.end(); ++it)
             {
-                roads = graph->get_edges_from(*it);
+                roads = graph->get_edges_to(*it);
 
                for (auto roadIt = roads.begin(); roadIt != roads.end(); ++roadIt)
                {
@@ -108,7 +122,11 @@ namespace road
                             }
                         }
 
-                        // TO DO: Random slowing
+                        // Random slowing
+                        if (carRevIt->speed > 1 && probabilityCalculator(g_probability))
+                        {
+                            --(carIt->speed);
+                        }
 
                         // Update position
                         carRevIt->position -= carRevIt->speed;
@@ -131,30 +149,94 @@ namespace road
             }
 
             // Update the sources.
-            for (auto source_it = sources.begin(); source_it != sources.end(); source_it++)
+            for (auto it = sources.begin(); it != sources.end(); ++it)
             {
-                // Grab all the edges going from the source.
-                auto edges_from_source = graph->get_edges_from(*source_it);
-                for (auto edge_it = edges_from_source.begin(); edge_it != edges_from_source.end(); edge_it++)
+                roads = graph->get_edges_from(*it);
+
+                for (auto roadIt = roads.begin(); roadIt != roads.end(); ++roadIt)
                 {
-                    //std::cout << "Updating Source For Edge: " << edge_it->uid << std::endl;
+                    toPop = 0;
+                    roadIdentity = (char)*(roadIt->uid.rbegin()) - '0';
+
+                    // Get the corresponding sink road
+                    core::Edge correspondingSink;
+                    bool found = false;
+                    /*for (auto sinkIt = sinks.begin(); sinkIt != sinks.end() && found == false; ++sinkIt)
+                    {
+                        core::Graph::EdgeContainer destinations = graph->get_edges_to(*sinkIt);
+
+                        correspondingSink = *std::find_if(destinations.begin(), destinations.end(), isEdge(roadIt->uid));
+                    }*/
+
+                    for (auto carRevIt = roadIt->cars.rbegin(); carRevIt != roadIt->cars.rend(); ++carRevIt)
+                    {
+                        // Acceleration
+                        if (carRevIt->speed < roadIt->speed_limit)
+                        {
+                            ++(carRevIt->speed);
+                        }
+
+                        // Deceleration
+                        auto carIt = (carRevIt + 1).base();
+                        while (true)
+                        {
+                            if (std::count_if(carIt, roadIt->cars.end(), carAtPos(carIt->position - carIt->speed, roadLength)) > 0)
+                                //(carIt->position - carIt->speed < 0 && std::count_if(correspondingSink.cars.begin(), correspondingSink.cars.end(), carAtPos(carIt->position * -1, roadLength)) > 0))
+                            {
+                                --(carIt->speed);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+
+                        if (roadIdentity != state.getLights() && carIt->position - carIt->speed > 1 && carIt->speed > 0)
+                        {
+                            --carIt->speed;
+                        }
+
+                        // Random slowing
+                        if (carRevIt->speed > 1 && probabilityCalculator(g_probability))
+                        {
+                            --(carIt->speed);
+                        }
+
+                        // Update position
+                        carRevIt->position -= carRevIt->speed;
+
+                        // Check if off road and give permission to remove if it is
+                        if (carRevIt->position < 0)
+                        {
+                            ++toPop;
+                        }
+                    }
+
+                    /*while (!roadIt->cars.empty() && toPop != 0)
+                    {
+                        correspondingSink.cars.push_front(roadIt->cars.back());
+                        roadIt->cars.pop_back();
+                        --toPop;
+                    }*/
 
                     // Check if it is possible to push a car
-                    if (edge_it->cars.empty() || edge_it->cars.front().position < edge_it->capacity - 1)
+                    if (roadIt->cars.empty() || roadIt->cars.front().position < roadIt->capacity - 1)
                     {
                         int car_placement_probability = rand() % 101;
                         // Update the edge.
-                        if ((source_it == sources.begin() && car_placement_probability >= 70) || (source_it != sources.begin() && car_placement_probability >= 20))
+                        if ((it == sources.begin() && car_placement_probability >= 70) || (it != sources.begin() && car_placement_probability >= 20))
                         {
                             //std::cout << "Not adding new car" << std::endl;
                         }
                         else
                         {
                             //std::cout << "Adding new car" << std::endl;
-                            edge_it->cars.push_front(core::Car(1, 0, edge_it->capacity - 1));
-                            graph->update_edge(*edge_it);
+                            roadIt->cars.push_front(core::Car(5, 0, roadIt->capacity - 1));
                         }
                     }
+
+                    graph->update_edge(*roadIt);
+                    graph->update_edge(correspondingSink);
                 }
             }
         }
