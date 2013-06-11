@@ -1,10 +1,11 @@
+# Author Benjamin James Wright <bwright@cse.unsw.edu.au>
 
 CPP=g++
-INCLUDES= -I../include -I/usr/include/irrlicht
+INCLUDES= -I../include -I../lib/irrlicht/include
 
 CFLAGS = ${INCLUDES} -g -Wall -O2 -pipe -std=c++0x 
 
-LDFLAGS = -L/usr/lib/
+LDFLAGS = -L../lib/irrlicht/
 LDLIBS = -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -ljpeg -lpng
 
 SRC := $(shell echo **/*.cpp main.cpp)
