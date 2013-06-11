@@ -51,7 +51,7 @@ Traffic light reinforcement learning is achieved using the Q-learning algorithm.
 for each state, it is calculated whenever it is needed by finding the action yielding the maximum reward. This still operates at close to constant-time,
 as there are only two possible traffic light states to consider per intersection.\\
 
-Since this problem is a continuing task (that is, it has no end state), a discount factor is applied to expected future rewards when calculating the action-value
+Since this problem is a continuous task (that is, it has no end state), a discount factor is applied to expected future rewards when calculating the action-value
 function and operates at a rate of $0.9$. An exploration rate is also used to ensure that all states are explored, operating at a ten-percent probability to choose
 a random action instead of the action with the highest possible reward. Finally, this problem is non-deterministic, and so a ten-percent learning rate of is used; only a
 portion of the action-value function is updated after each action is made.\\
@@ -70,13 +70,25 @@ a zero reward.
 
 \subsection{Simulating policy}
 \subsubsection{Naive policy}
-The purpose of this part of the system is to show how the learner works. This task employs reinforcement learning; the system shall perform best when utilising online learning in place of active learning. The simulator provides the all the necessary data for the learner to create its own hypothesis function.\\
+The purpose of this part of the system is to provide the learner with data. This task employs reinforcement learning; the system
+shall perform best when utilising online learning in place of active learning. The simulator provides the all the necessary
+data for the learner to create its own hypothesis function.\\
 
-The traffic light state is first updated according to the learner's hypothesis. Any traffic that cannot safely stop will continue to pass through the intersection (usually about three `ticks' worth of traffic). Following this, traffic is then allowed to pass. Traffic that is heading in the direction of the active traffic light state (horisontal traffic = 0; vertical traffic = 1) passes from the front of the source \verb/deque/ to the back of the sink \verb/deque/. Only the active source's front-most car (or \verb/noCar/ if it is an empty space) is actually transferred at any time step. All sinks' front-most car leave the system for good by being popped from the front of the \verb/deque/.
-
-The simulator has a forty-five percent chance to introduce a new car into each road after updating the previous cars' positions. Due to the fact that each road is given a chance to introduce a new car, the probability to introduce a new car must be low enough that it does not introduce too many cars too quickly (and thus consume too much memory), but high enough that cars will be introduced often enough for the learner to update the system.
+The traffic light state is first updated according to the learner's hypothesis. Any traffic that cannot safely stop will
+continue to pass through the intersection (usually about three `ticks' worth of traffic). Following this, traffic is then
+allowed to pass. Traffic that is heading in the direction of the active traffic light state (horisontal traffic = 0;
+vertical traffic = 1) passes from the back of the source \verb/deque/ to the front of the corresponding sink \verb/deque/.
+Only the active source's back-most car is actually transferred at any time step. All sinks' back-most car leave the system
+for good by being popped from the front of the \verb/deque/.
 
 \subsubsection{Cellular policy}
+Although not implemented to completion, the simulation system also supported a second policy that would model a slightly modified
+version of the Nagel-Schreckenberg model. The key difference was that cars operating at a speed of 1 or less would not be allowed
+to stop unless absolutely necessary (e.g. a red light or the car in front of them stopped), as opposed to being allowed to randomly
+stop. \verb/Car/s operating at higher speeds are still able to do this.\\
+
+This model would have provided a more realistic model of our traffic system, as cars do not behave naively, but due to its complexity,
+was abandoned in favour of ensuring that the Naive policy is absolutely correct.
 
 \subsection{Rendering policy}
 As a traffic light simulator is best observed using a graphical user interface, \emph{Roadster}
@@ -89,11 +101,9 @@ and, write intersection files stored as XML files. To render, the rendering syst
 unlike vertices are cars and intersection lights), and, cleans the cars up once they have arrived at a
 sink via an internal resource manager.
 
-
-\subsection{Extensions}
-
 \section{Experiment}
 \subsection{Method}
+
 \subsection{Results}
 \subsection{Discussion}
 
