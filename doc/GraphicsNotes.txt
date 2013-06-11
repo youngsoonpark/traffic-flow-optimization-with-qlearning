@@ -1,0 +1,16 @@
+# Graphics Notes
+The graphics system works on top of an adjacency list graph, consisting of Edges and Vertices.
+The edges in this graph represent a road, and the verticies reperesent either sources (nodes that
+generate cars), sinks (nodes that consume cars) or intersections (nodes that control the flow from
+edge to edge). The system allows for sources, sinks and roads to be placed with a graphical editor
+and for you to output this data to an xml file. Data can also be read into the scene with an xml
+file. The GraphicsPolicy3D handles rendering our current state to the screen. This involves converting
+the underlying adjacency list implementation into a scene graph representation (which the graphics engine
+uses to render the scene), and keeping track of all the dynamic nodes (cars and intersection light)
+and where they are in the scene, updating their position and garbage collecting them once they arrive
+at a sink. It contains its own resource manager that keeps track of all this information. The goal
+of the graphics component was to provide an easy way to build custom senarios and visualise the
+learner. This task is a very visual one and you really need a graphics system to understand how
+your learner is distributing the cars, in addition being able to quickly make new maps to test
+the learner on really helps build a well rounded learning and simulation policy.
+
