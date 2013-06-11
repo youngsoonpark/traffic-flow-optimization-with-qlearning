@@ -18,7 +18,7 @@ namespace ml
 
 
 /**
- * @author Benjamin James Wright <bwright@cse.unsw.edu.au>
+ * @author Daniel Playfair Cal <danielpc@cse.unsw.edu.au>
  * @description A reinforcement learning policy.
  */
 class LearnerPolicyRL

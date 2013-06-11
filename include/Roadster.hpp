@@ -9,6 +9,7 @@
 // Include the valid policies.
 #include "graphics/GraphicsPolicy3D.hpp"
 #include "ml/LearnerPolicyRL.hpp"
+#include "ml/LearnerPolicyDumb.hpp"
 #include "sim/SimulationPolicyCellular.hpp"
 #include "sim/SimulationPolicyNaive.hpp"
 
@@ -84,6 +85,7 @@ public:
 };
 
 // Some useful typedefs, that build some standard approaches we want to utilise.
+typedef Roadster<graphics::GraphicsPolicy3D, sim::SimulationPolicyNaive, ml::LearnerPolicyDumb> RoadsterDumb;
 typedef Roadster<graphics::GraphicsPolicy3D, sim::SimulationPolicyNaive, ml::LearnerPolicyRL> RoadsterNaive;
 typedef Roadster<graphics::GraphicsPolicy3D, sim::SimulationPolicyCellular, ml::LearnerPolicyRL> RoadsterCellular;
 
