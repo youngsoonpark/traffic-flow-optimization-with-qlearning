@@ -20,7 +20,7 @@ Before detailing the implementation and experimentation, it is important to have
 
 \begin{description}
 \item[Task \emph{T}:]
-\item[Performance measure \emph{P}:]
+\item[Performance measure \emph{P}:] The total time spent by any car waiting at a light.
 \item[Experience \emph{E}:]
 \end{description}
 
@@ -33,7 +33,7 @@ The data was modelled using a combination of the coded simulator and XML files.
 The task makes use of the strategy design pattern and is split into three main sections:
 learning,
 simulating, and,
-rendering
+rendering.
 
 \subsection{Data model}
 The implementation for the model can be found in \verb/State.hpp/ and \verb/State.cpp/.
@@ -42,12 +42,31 @@ The best way to mentally picture the model (i.e. without running the program) is
 cartesian plane with horisontal traffic moving along the $x$-axis from $(-x, 0)$ to $(x, 0)$, and, vertical traffic moving along the $y$-axis from $(0, y)$ to $(0, -y)$, where $x, y \in \mathbb{R}$. The intersection is at the origin.\\
 
 Roadster traffic lights are dictated by a binary control system that will either allow horisontal or vertical
-traffic to flow. A bidirectional graph is used to represent the roads: verticies are used to represent the towns and cities that act as sources (where cars come from) and sinks (where cars go to); edges consist of double-ended queues (\verb/deque/) that store the \verb/Car/s.
+traffic to flow. A bidirectional graph is used to represent the roads: verticies are used to represent the towns and cities that act as sources (where cars come from), sinks (where cars go to) and intersections (to control flow between corresponding edges); edges consist of double-ended queues (\verb/deque/) that store the \verb/Car/s.
 
 A \verb/Car/ is little more than an absolute position relative to the road the car is travelling on and the speed at which it travels.
 
 \subsection{Learning policy}
+Traffic light reinforcement learning is achieved using the Q-learning algorithm. Due to the complexity of explicitly storing the optimal action
+for each state, it is calculated whenever it is needed by finding the action yielding the maximum reward. This still operates at close to constant-time,
+as there are only two possible traffic light states to consider per intersection.\\
 
+Since this problem is a continuing task (that is, it has no end state), a discount factor is applied to expected future rewards when calculating the action-value
+function and operates at a rate of $0.9$. An exploration rate is also used to ensure that all states are explored, operating at a ten-percent probability to choose
+a random action instead of the action with the highest possible reward. Finally, this problem is non-deterministic, and so a ten-percent learning rate of is used; only a
+portion of the action-value function is updated after each action is made.\\
+
+The implementation involves an array of rewards for each state/action pair with enough memory to store all possible states within defined maximum values for the number of
+lanes approaching an intersection, leaving an intersection and the number of light values. States that are ignored by the learner would not affect the learning process as
+no action leads to their state. Due to the simplicity of the state and the resulting small number of states, there are a small number of actions.
+
+Internally, they are represented as an integer between zero and the number of states. The learner's state is a subset of the simulator's state (discussed below) and is a
+composition of the light setting, the number of ticks since the last change (no more than three ticks), and, the distance to the closest car in each lane. This distance
+is represented by the numbers zero through to nine. Distances up to and including eight represent the actual distance between the car; nine is used to represent distances
+beyond eight.\\
+
+While cars are waiting at red lights, the reward function applies the negative sum of all cars queued as its reward; whenever no cars are waiting, the reward function returns
+a zero reward.
 
 \subsection{Simulating policy}
 \subsubsection{Naive policy}
@@ -60,6 +79,15 @@ The simulator has a forty-five percent chance to introduce a new car into each r
 \subsubsection{Cellular policy}
 
 \subsection{Rendering policy}
+As a traffic light simulator is best observed using a graphical user interface, \emph{Roadster}
+employs a three dimensional world to show how the system works. Additionally, the interface provides
+a WYSIWYG to provide users with a way of creating their own intersections.
+
+\verb/GraphicsPolicy3D/ is a front-end to the \emph{Boost} \verb/AdjacencyList/ and is able to read,
+and, write intersection files stored as XML files. To render, the rendering system converts the
+\verb/AdjacencyList/ to a \verb/SceneGraph/. The system also keeps track of all dynamic nodes (which,
+unlike vertices are cars and intersection lights), and, cleans the cars up once they have arrived at a
+sink via an internal resource manager.
 
 
 \subsection{Extensions}
