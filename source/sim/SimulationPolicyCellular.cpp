@@ -50,14 +50,14 @@ namespace road
 
         struct carAtPos
         {
-            int pos;
-            int roadLength;
+            unsigned int pos;
+            unsigned int roadLength;
 
             carAtPos(int p, int r) : pos(p), roadLength(r) {}
 
             bool operator()(const core::Car& car)
             {
-                return (car->position == pos && pos < roadLength);
+                return (car.position == pos && pos < roadLength);
             }
         };
 
@@ -69,7 +69,7 @@ namespace road
         void SimulationPolicyCellular::update(core::State& state)
         {
             int toPop;
-            const int roadLength = state.getMaxCars;
+            const int roadLength = state.getMaxCars();
             core::Graph* graph = state.getGraph();
 
             core::Graph::VertexContainer sources = graph->get_vertices(core::Vertex::Type::SOURCE);
@@ -82,20 +82,16 @@ namespace road
             {
                 roads = graph->get_edges_to(*it);
 
-                for (auto roadIt = roads.begin(); it != roads.end(); ++it)
-                {
-                    toPop = 0;
+               for (auto roadIt = roads.begin(); roadIt != roads.end(); ++roadIt)
+               {
+                   toPop = 0;
 
-                    for (auto carIt = roadIt->cars.end(); carIt != roadIt->cars.begin(); --carIt)
+                    for (auto carRevIt = roadIt->cars.rbegin(); carRevIt != roadIt->cars.rend(); ++carRevIt)
                     {
-                        if (carIt == roadIt->cars.end())
-                        {
-                            --carIt;
-                        }
-
                         // TO DO: Acceleration
 
                         // Deceleration phase
+                        /*auto carIt =
                         while (true)
                         {
                             if (std::count_if(carIt, roadIt->cars.end(), carAtPos(carIt->position + carIt->speed, roadLength)) > 0)
@@ -106,27 +102,27 @@ namespace road
                             {
                                 break;
                             }
-                        }
+                        }*/
 
                         // TO DO: Random slowing
 
                         // Update position
-                        carIt->position += carIt->speed;
+                        carRevIt->position += carRevIt->speed;
 
                         // Check if off road and give permission to remove if it is
-                        if (carIt->position >= roadLength)
+                        if (carRevIt->position >= roadLength)
                         {
                             ++toPop;
                         }
                     }
-
-                    while (toPop != 0)
+/*
+                    while (!roadIt->cars.empty() && toPop != 0)
                     {
                         roadIt->cars.pop_back();
                         --toPop;
                     }
 
-                    graph->update_edge(*roadIt);
+                    graph->update_edge(*roadIt);*/
                 }
             }
 

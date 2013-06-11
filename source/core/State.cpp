@@ -58,7 +58,7 @@ uint8_t State::getDelay() {
   return m_delay;
 }
 
-int8_t State::getMaxCars() const
+int State::getMaxCars() const
 {
   return m_maxCars;
 }

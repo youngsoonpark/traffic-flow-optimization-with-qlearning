@@ -33,7 +33,7 @@ public:
   enum Lights {
     HORIZONTAL,
     VERTICAL
-  
+
   };
 
   /**
@@ -83,7 +83,7 @@ public:
    * @param What the lights are set to
    */
   void setLights(const Lights lights);
-  
+
   /**
    * @description Get the number of cycles the lights have been in their current
    * position
@@ -93,7 +93,7 @@ public:
   /**
    * @return returns the maximum number of allowed cars
    */
-  int8_t getMaxCars() const;
+  int getMaxCars() const;
 private:
   bool m_running;      // Whether the game is running or not, we set this to true at the start.
   bool m_paused;       // True if the game is paused, else false.
@@ -101,7 +101,7 @@ private:
   size_t m_tick_speed; // Determines the speed of a tick in the simulator.
   Graph m_graph;       // The map, the actual graph of the entire scene. This is critical.
   uint8_t m_delay;       // The number of cycles the lights have been in their current position.
-  const int8_t m_maxCars; // The maximum number of cars that a road is allowed to hold at any given time.
+  const int m_maxCars; // The maximum number of cars that a road is allowed to hold at any given time.
 };
 
 } // End of namespace core.
