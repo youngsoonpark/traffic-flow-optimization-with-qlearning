@@ -53,7 +53,7 @@ as there are only two possible traffic light states to consider per intersection
 
 Since this problem is a continuous task (that is, it has no end state), a discount factor is applied to expected future rewards when calculating the action-value
 function and operates at a rate of $0.9$. An exploration rate is also used to ensure that all states are explored, operating at a ten-percent probability to choose
-a random action instead of the action with the highest possible reward. Finally, this problem is non-deterministic, and so a ten-percent learning rate of is used; only a
+a random action instead of the action with the highest expected reward. Finally, this problem is non-deterministic (as cars are randomly added to the simulation), and so a ten-percent learning rate of is used; only a
 portion of the action-value function is updated after each action is made.\\
 
 The implementation involves an array of rewards for each state/action pair with enough memory to store all possible states within defined maximum values for the number of
@@ -103,12 +103,24 @@ sink via an internal resource manager.
 
 \section{Experiment}
 \subsection{Method}
+Using the Naive simulation policy, the reinforcement learner was tested against a dumb learner that alternates states every ten cycles.
+Traffic was modelled so that one road had a seventy percent saturation of cars, while the other road had a twenty percent saturation.
+The average queue lengths are the total number of cars queued at either intersection at each cycle, averaged across sets of 25 consecutive cycles.
 
 \subsection{Results}
+The results show the learner progressively reducing the average queue length
+and responding better and faster to increasing in the queue length as time goes
+on.
+
 \subsection{Discussion}
 
 \section{Conclusion}
 
+
 \section{References}
+\begin{thebibliography}{99}
+\bibitem{bib:one_book} Abu-Mostafa, Y. S; Magdon-Ismail, M; Lin, H. \emph{Learning From Data}. AMLBook, 2012
+\bibitem{bib:one_article} Mitchell, T. \emph{Machine Learning}. McGraw Hill, 1997.
+\end{thebibliography}
 
 \end{document}
