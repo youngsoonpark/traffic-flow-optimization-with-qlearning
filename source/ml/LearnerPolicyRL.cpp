@@ -63,17 +63,24 @@ void LearnerPolicyRL::action(core::State& state)
     return;
   }
   
+  updatePerformance(state);
+  if (queue_records.size() % 25 == 0)
+  {
+    printPerformance();
+    queue_records.clear();
+  }
+  
   // Determine what action to perform
   int state_index = stateIndex(state);
   int new_action = -1;
   if (rand() % 100 <= exploration_rate * 100) {
-    std::cout << "Choosing random action" << std::endl;
+    //std::cout << "Choosing random action" << std::endl;
     new_action = rand() % NUM_LIGHT_SETTINGS;
   } else {
     // Find the optimal action to perform
     new_action = optimalAction(state_index);
   }
-  std::cout << "Chose action " << new_action << std::endl;
+  //std::cout << "Chose action " << new_action << std::endl;
 
   // Perform the action
   state.setLights(static_cast<core::State::Lights>(new_action));
@@ -92,7 +99,7 @@ void LearnerPolicyRL::action(core::State& state)
 int LearnerPolicyRL::stateIndex(core::State& state)
 {
   unsigned int state_index = 0;
-  std::vector<uint8_t> lanes = approachingCars(state);
+  std::vector<uint8_t> lanes = approachingCars(state, MAX_CAR_DISTANCE);
   assert(lanes.size() <= (unsigned int) MAX_APPROACHING_LANES);
   
   for (unsigned int lane = 0; lane < lanes.size(); lane++) {
@@ -132,9 +139,42 @@ int LearnerPolicyRL::stateIndex(core::State& state)
   return 0;
 }*/
 
+
+void LearnerPolicyRL::printPerformance()
+{
+  if (queue_records.size() == 0) return;
+  unsigned int average_length = 0;
+  for (unsigned int cycle = 0; cycle < queue_records.size(); cycle++)
+  {
+    average_length += queue_records[cycle];
+  }
+  average_length /= queue_records.size();
+  
+  std::cout << "Learner::Performance metrics: Total cycles: " <<
+        cycles_completed << ". Average queue length for last " <<
+        queue_records.size() << " cycles: " <<
+        average_length << "." << std::endl;
+}
+
+void LearnerPolicyRL::updatePerformance(core::State& state)
+{
+  // Update the records
+  cycles_completed++;
+  if (cycles_completed > 60)  // Wait for the iitial cars to reach the intersection and queue up
+  {
+    std::vector<uint8_t> queue_lengths = queueLengths(state, 50);
+    unsigned int total_queue_length = 0;
+    for (unsigned int lane = 0; lane < queue_lengths.size(); lane++)
+    {
+      total_queue_length += queue_lengths[lane];
+    }
+    queue_records.push_back(total_queue_length);
+  }
+}
+
 double LearnerPolicyRL::reward(core::State& state)
 {
-  std::vector<uint8_t> queue_lengths = queueLengths(state);
+  std::vector<uint8_t> queue_lengths = queueLengths(state, MAX_CAR_DISTANCE);
   return - queue_lengths[1 - state.getLights()];
 }
 
@@ -143,8 +183,8 @@ int LearnerPolicyRL::optimalAction(int state_index)
   // Find the optimal reward attainable
   double optimal_reward = -DBL_MAX;
   for (unsigned int action = 0; action < NUM_LIGHT_SETTINGS; action++) {
-    std::cout << "Action " << action << " has reward " <<
-          reward_map[state_index][action] << ". ";
+    /*std::cout << "Action " << action << " has reward " <<
+          reward_map[state_index][action] << ". ";*/
     if (reward_map[state_index][action] > optimal_reward) {
       optimal_reward = reward_map[state_index][action];
     }
@@ -185,7 +225,8 @@ double LearnerPolicyRL::optimalReward(int state_index)
   return optimal_reward;
 }
 
-std::vector<uint8_t> LearnerPolicyRL::approachingCars(core::State& state)
+std::vector<uint8_t> LearnerPolicyRL::approachingCars(core::State& state,
+                                        unsigned int maximum_distance)
 {
   core::Graph *graph = state.getGraph();
   
@@ -207,9 +248,9 @@ std::vector<uint8_t> LearnerPolicyRL::approachingCars(core::State& state)
     core::Edge::Container cars = it->cars;
     if (cars.empty())
     {
-      result.push_back(MAX_CAR_DISTANCE + 1);
+      result.push_back(maximum_distance + 1);
     }
-    else if (cars.back().position <= MAX_CAR_DISTANCE)
+    else if (cars.back().position <= maximum_distance)
     {
       result.push_back(cars.back().position);
     }
@@ -217,13 +258,14 @@ std::vector<uint8_t> LearnerPolicyRL::approachingCars(core::State& state)
     {
       result.push_back(MAX_CAR_DISTANCE + 1);
     }
-    std::cout << "Closest car on road " << result.size() - 1 << ": " <<
-      static_cast<int>(result[result.size() - 1]) << std::endl;
+    /*std::cout << "Closest car on road " << result.size() - 1 << ": " <<
+      static_cast<int>(result[result.size() - 1]) << std::endl;*/
   }
   return result;
 }
 
-std::vector<uint8_t> LearnerPolicyRL::queueLengths(core::State& state)
+std::vector<uint8_t> LearnerPolicyRL::queueLengths(core::State& state,
+                                          unsigned int maximum_distance)
 {
   core::Graph *graph = state.getGraph();
   
@@ -248,7 +290,7 @@ std::vector<uint8_t> LearnerPolicyRL::queueLengths(core::State& state)
     unsigned int queue_length = 0;
     int prev_pos = -1;
     for (core::Edge::Container::reverse_iterator it = cars.rbegin();
-          it != cars.rend() && queue_length <= MAX_CAR_DISTANCE; it++)
+          it != cars.rend() && queue_length <= maximum_distance; it++)
     {
       if(it->position == static_cast<unsigned int>(prev_pos + 1))
       {
@@ -261,8 +303,8 @@ std::vector<uint8_t> LearnerPolicyRL::queueLengths(core::State& state)
       }
     }
     result.push_back(queue_length);
-    std::cout << "Queue length on road " << result.size() - 1 << ": " <<
-      static_cast<int>(result[result.size() - 1]) << std::endl;
+    /*std::cout << "Queue length on road " << result.size() - 1 << ": " <<
+      static_cast<int>(result[result.size() - 1]) << std::endl;*/
   }
   return result;
 }

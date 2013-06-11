@@ -98,13 +98,24 @@ private:
    * far the nearest car is from the intersection in each approaching lane.
    * @return The vector
    */
-  std::vector<uint8_t> approachingCars(core::State& state);
+  std::vector<uint8_t> approachingCars(core::State& state, unsigned int max_car_distance);
   
   /**
    * @description Given a state, return a vector of integers representing how
    * many cars there are waiting at each lane approaching thee intersection
    */
-  std::vector<uint8_t> queueLengths(core::State& state);
+  std::vector<uint8_t> queueLengths(core::State& state, unsigned int max_car_distance);
+  
+  /**
+   * @description print out the current queue length as well as the average queue
+   * length sinc the learner has been running to the console
+   */
+  void printPerformance();
+  
+  /**
+   * @description Update the records of queue lengths
+   */
+  void updatePerformance(core::State& state);
 
   /**
    * The learning rate is the extent to which old information overwrites new
@@ -137,9 +148,15 @@ private:
   double reward_map[NUM_STATES][NUM_LIGHT_SETTINGS];
 
   /**
-   * The map of states to optimal actions
+   * A vector storing the cumulative queue length (i.e. for both roads) at each
+   * step
    */
-  //int optimal_actions[NUM_STATES];
+  std::vector<unsigned int> queue_records;
+  
+  /**
+   * The number of cycles completed
+   */
+  unsigned int cycles_completed = 0;
 };
 
 
