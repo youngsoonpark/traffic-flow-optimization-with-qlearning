@@ -19,9 +19,9 @@ Traffic lights are one such system. Current Australian traffic light systems are
 Before detailing the implementation and experimentation, it is important to have a formal definition for our learning problem:
 
 \begin{description}
-\item[Task \emph{T}:]
+\item[Task \emph{T}:] To create a system to manage traffic lights to optimise the flow of traffic.
 \item[Performance measure \emph{P}:] The total time spent by any car waiting at a light.
-\item[Experience \emph{E}:]
+\item[Experience \emph{E}:] The learner state reached after performing an action at each cycle.
 \end{description}
 
 \section{Apparatus}
@@ -118,10 +118,15 @@ where the data is better suited.
 
 Files prefixed with `DL' refer to the dumb learner; files prefixed with `RL' refer to the reinforcement leanrer.
 
+These files can be found in the output folder provided.
+
 \subsection{Discussion}
+As shown in the data files, the reinforcement learner outperforms the dumb learner. This can be extrapolated from
+the fact that the reinforcement learner's car queues never fill (a full queue has fifty cars). The learner almost
+immediately learns that the busy road deserves more time.\\
 
-\section{Conclusion}
-
+This test could be improved if it were allowed to run for longer periods of time. Unfortunately, such testing times
+would be inappropriate for a household computer.
 
 \begin{thebibliography}{99}
 \bibitem{bib:one_book} Abu-Mostafa, Y. S; Magdon-Ismail, M; Lin, H. \emph{Learning From Data}. AMLBook, 2012
