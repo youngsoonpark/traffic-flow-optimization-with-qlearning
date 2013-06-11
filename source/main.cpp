@@ -5,7 +5,7 @@ using namespace road;
 int main(int argc, char* argv[])
 {
   // Create a naive roadster.
-  RoadsterDumb roadster;
+  RoadsterNaive roadster;
   roadster.run();
 
   return 0;
