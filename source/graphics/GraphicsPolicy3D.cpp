@@ -205,12 +205,6 @@ void GraphicsPolicy3D::update_state()
         IMeshSceneNode* node = m_smgr->addMeshSceneNode(m_cars[car->hash % NUM_CAR_TYPES]);
         node->setScale(vector3df(3, 3, 3));
         node->setMaterialFlag(EMF_LIGHTING, false);
-        // Rotate it.
-        if (start.y == end.y) {
-          node->setRotation(vector3df(0, 3*90, 0));
-        } else {
-          node->setRotation(vector3df(0, 2*90, 0));
-        }
         m_road_map[car->hash] = node;
       }
 
@@ -218,17 +212,21 @@ void GraphicsPolicy3D::update_state()
       if (start.x == end.x) {
         int y = 0;
         if (end.y < start.y) {
-          y = start.y * GRID_SZ - (GRID_OFFSET - car->position) * GRID_SZ;
+          y = start.y * GRID_SZ - (it->capacity - car->position) * GRID_SZ;
+          m_road_map[car->hash]->setRotation(vector3df(0, 0, 0));
         } else {
-          y = start.y * GRID_SZ + (GRID_OFFSET - car->position) * GRID_SZ;
+          y = start.y * GRID_SZ + (it->capacity - car->position) * GRID_SZ;
+          m_road_map[car->hash]->setRotation(vector3df(0, 2*90, 0));
         }
-        m_road_map[car->hash]->setPosition(vector3df(start.x*GRID_SZ + (GRID_SZ/2), 20, y));
+        m_road_map[car->hash]->setPosition(vector3df(start.x * GRID_SZ + GRID_OFFSET, 20, y));
       } else {
         int x = 0;
         if (end.x < start.x) {
-          x = start.x * GRID_SZ - (GRID_OFFSET - car->position) * GRID_SZ;
+          x = start.x * GRID_SZ - (it->capacity - car->position) * GRID_SZ;
+          m_road_map[car->hash]->setRotation(vector3df(0, 90, 0));
         } else {
-          x = start.x * GRID_SZ + (GRID_OFFSET - car->position) * GRID_SZ;
+          x = start.x * GRID_SZ + (it->capacity - car->position) * GRID_SZ;
+          m_road_map[car->hash]->setRotation(vector3df(0, 3*90, 0));
         }
         m_road_map[car->hash]->setPosition(vector3df(x, 20, start.y * GRID_SZ + GRID_OFFSET));
       }
