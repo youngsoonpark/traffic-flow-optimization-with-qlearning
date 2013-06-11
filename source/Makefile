@@ -2,7 +2,7 @@
 CPP=g++
 INCLUDES= -I../include -I../lib/irrlicht/include
 
-CFLAGS = ${INCLUDES} -m32 -g -Wall -O2 -pipe -std=c++0x 
+CFLAGS = ${INCLUDES} -g -Wall -O2 -pipe -std=c++0x 
 
 LDFLAGS = -L../lib/irrlicht/
 LDLIBS = -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -ljpeg -lpng

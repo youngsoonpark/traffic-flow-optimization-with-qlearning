@@ -11,11 +11,16 @@ namespace road
 {
 namespace ml
 {
+// Do things after.
+double LearnerPolicyRL::DEFAULT_LEARNING_RATE = 0.1f;
+double LearnerPolicyRL::DEFAULT_EXPLORATION_RATE = 0.1f;
+double LearnerPolicyRL::DEFAULT_DISCOUNT_FACTOR = 0.9f;
 
 LearnerPolicyRL::LearnerPolicyRL(): learning_rate(DEFAULT_LEARNING_RATE),
   discount_factor(DEFAULT_DISCOUNT_FACTOR),
   exploration_rate(DEFAULT_EXPLORATION_RATE)
 {
+  
   for (unsigned int state = 0; state < NUM_STATES; state++) {
     //optimal_actions[state] = -1;
     for (unsigned int action = 0; action < NUM_LIGHT_SETTINGS; action++) {

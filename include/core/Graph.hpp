@@ -103,11 +103,11 @@ public:
         std::string
         > graph_t;
   // Create a typedef for graph traits
-  typedef typename boost::graph_traits<graph_t> graph_traits;
-  typedef typename graph_traits::vertex_descriptor vertex_t;
-  typedef typename graph_traits::edge_descriptor edge_t;
-  typedef typename graph_traits::vertex_iterator vertex_iterator;
-  typedef typename graph_traits::edge_iterator edge_iterator;
+  typedef boost::graph_traits<graph_t> graph_traits;
+  typedef graph_traits::vertex_descriptor vertex_t;
+  typedef graph_traits::edge_descriptor edge_t;
+  typedef graph_traits::vertex_iterator vertex_iterator;
+  typedef graph_traits::edge_iterator edge_iterator;
 
   // Defines an edge and vertex container.
   typedef std::list<Edge> EdgeContainer;
@@ -142,7 +142,7 @@ public:
   /**
    * @description retrieves all the verticies of a given type.
    **/
-  VertexContainer get_vertices(typename Vertex::Type type);
+  VertexContainer get_vertices(Vertex::Type type);
 
   /**
    * @description retrieves all the edges in the graph.

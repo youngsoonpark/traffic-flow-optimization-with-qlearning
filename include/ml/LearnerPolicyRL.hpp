@@ -24,17 +24,15 @@ namespace ml
 class LearnerPolicyRL
 {
 public:
-  static constexpr double DEFAULT_LEARNING_RATE = 0.1f;
-  static constexpr double DEFAULT_EXPLORATION_RATE = 0.1f;
-  static constexpr double DEFAULT_DISCOUNT_FACTOR = 0.9f;
+  static double DEFAULT_LEARNING_RATE;
+  static double DEFAULT_EXPLORATION_RATE;
+  static double DEFAULT_DISCOUNT_FACTOR;
 
   static const unsigned int NUM_LIGHT_SETTINGS = 2;
   static const unsigned int MAX_APPROACHING_LANES = 2;
   static const unsigned int MAX_CAR_DISTANCE = 8;
   static const unsigned int MAX_DELAY = 3;
-  static const unsigned int NUM_STATES = (MAX_DELAY + 1) *
-                      pow((MAX_CAR_DISTANCE + 2), MAX_APPROACHING_LANES) *
-                      NUM_LIGHT_SETTINGS;
+  static const unsigned int NUM_STATES = (MAX_DELAY + 1) * (MAX_CAR_DISTANCE + 2) * (MAX_CAR_DISTANCE + 2) * NUM_LIGHT_SETTINGS;
 
 protected:
   /**
@@ -143,6 +141,7 @@ private:
    */
   //int optimal_actions[NUM_STATES];
 };
+
 
 } // End of namespace ml.
 } // End of namespace road.

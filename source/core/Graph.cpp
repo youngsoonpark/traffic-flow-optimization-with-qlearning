@@ -63,21 +63,28 @@ Graph::VertexContainer Graph::get_vertices() {
   return vertices;
 }
 
-Graph::VertexContainer Graph::get_vertices(typename Vertex::Type type) {
+Graph::VertexContainer Graph::get_vertices(Vertex::Type type) {
   // Define a nested predicate functor.
-  struct is_type {
-    typename Vertex::Type type;
-    is_type(typename Vertex::Type type) : type(type) {}
+  
+  /*struct is_type {
+    Vertex::Type type;
+    is_type(Vertex::Type type) : type(type) {}
     bool operator()(const Vertex& vertex) {
       return vertex.type != type;
     }
-  };
+  };*/
   // Retrieve the list of verticies.
   Graph::VertexContainer vertices = get_vertices();
   // Remove the ones we don't want.
-  vertices.remove_if(is_type(type));
+  //vertices.remove_if(is_type(type));
+
+  Graph::VertexContainer new_vertices;
+  for (auto it = vertices.begin(); it != vertices.end(); it++) {
+    if (it->type == type)
+        new_vertices.push_back(*it);
+  }
   // Return the list.
-  return vertices;
+  return new_vertices;
 }
 
 Graph::EdgeContainer Graph::get_edges() {
@@ -108,53 +115,76 @@ Graph::EdgeContainer Graph::get_edges() {
 
 Graph::EdgeContainer Graph::get_edges(Vertex& vertex) {
   // Create the predicate functor, todo make efficent.
-  struct has_vertex {
+  /*struct has_vertex {
     Vertex& vertex;
     has_vertex(Vertex& vertex) : vertex(vertex) {}
     bool operator()(const Edge& edge) {
       return edge.src != vertex.uid && edge.dest != vertex.uid;
     }
-  };
+  };*/
+
   // Retrieve the edges.
   Graph::EdgeContainer edges = get_edges();
   // Remove the components of the edge we don't.
-  edges.remove_if(has_vertex(vertex));
+  //edges.remove_if(has_vertex(vertex));
+
+  Graph::EdgeContainer new_edges;
+  for (auto it = edges.begin(); it != edges.end(); it++) {
+    if (it->src == vertex.uid || it->dest == vertex.uid)
+        new_edges.push_back(*it); 
+  }
+
   // Rteturn the edge.
-  return edges;
+  return new_edges;
 }
 
 Graph::EdgeContainer Graph::get_edges_from(Vertex& vertex) {
   // Create the predicate functor, todo make efficient.
+  /*
   struct has_vertex {
     Vertex& vertex;
     has_vertex(Vertex& vertex) : vertex(vertex) {}
     bool operator()(const Edge& edge) {
       return edge.src != vertex.uid;
     }
-  };
+  };*/
   // Retrieve the edges.
   Graph::EdgeContainer edges = get_edges();
   // Remove the components of the edge we don't.
-  edges.remove_if(has_vertex(vertex));
+  //edges.remove_if(has_vertex(vertex));
+
+  Graph::EdgeContainer new_edges;
+  for (auto it = edges.begin(); it != edges.end(); it++) {
+    if (it->src == vertex.uid)
+        new_edges.push_back(*it);
+  }
+
   // Rteturn the edge.
-  return edges;
+  return new_edges;
 }
 
 Graph::EdgeContainer Graph::get_edges_to(Vertex vertex) {
   // Create the predicate functor, todo make efficient.
-  struct has_vertex {
+  /*struct has_vertex {
     Vertex& vertex;
     has_vertex(Vertex& vertex) : vertex(vertex) {}
     bool operator()(const Edge& edge) {
       return edge.dest != vertex.uid;
     }
-  };
+  };*/
   // Retrieve the edges.
   Graph::EdgeContainer edges = get_edges();
+
   // Remove the components of the edge we don't.
-  edges.remove_if(has_vertex(vertex));
+  //edges.remove_if(has_vertex(vertex));
+
+  Graph::EdgeContainer new_edges;
+  for (auto it = edges.begin(); it != edges.end(); it++) {
+   if (it->dest == vertex.uid)
+    new_edges.push_back(*it);
+  }
   // Rteturn the edge.
-  return edges;
+  return new_edges;
 }
 
 void Graph::update_edge(const Edge& edge) {
